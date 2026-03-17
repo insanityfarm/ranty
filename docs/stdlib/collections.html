@@ -364,7 +364,8 @@ The current item to be checked.</p>
 </code></pre>
 <p>→ <code>bool</code></p>
 <p>Returns a boolean indicating whether <code>value</code> occurs in <code>collection</code>.</p>
-<p>If <code>collection</code> is a <code>map</code>, this function searches the map's keys.</p>
+<p>If <code>collection</code> is a <code>map</code>, this function searches the map's keys.
+For maps, <code>[has]</code> checks only keys stored directly on the map itself; inherited prototype keys do not count.</p>
 <h3 id="parameters-9"><a class="header" href="#parameters-9">Parameters</a></h3>
 <p><strong><code>collection</code></strong> ← <code>list | map</code> <br/>
 The collection to search.</p>
@@ -825,7 +826,8 @@ If <code>collection</code> is a <code>list</code>, this argument must be an <cod
 </code></pre>
 <p>→ <code>list</code></p>
 <p>Matches each item in a list to a map and returns a list with the corresponding map values.
-Values that have no corresponding key in the map are passed through as-is.</p>
+Values that have no corresponding key in the map are passed through as-is.
+For maps with prototypes, <code>[translate]</code> uses only keys stored directly on the provided map.</p>
 <h3 id="parameters-33"><a class="header" href="#parameters-33">Parameters</a></h3>
 <p><strong><code>list</code></strong> ← <code>list</code> <br/>
 The input list.</p>
@@ -876,12 +878,16 @@ Decoded: \"&lt;decoded-message&gt;\"\n
 
 </code></pre>
 <p>Prints a list of the keys stored in <code>map</code>.</p>
+<p>This function lists only keys physically stored in <code>map</code>.
+Inherited prototype keys are not included.</p>
 <h2 id="values"><a class="header" href="#values">values</a></h2>
 <pre><code class="language-rant">
 [%values: map]
 
 </code></pre>
 <p>Prints a list of the values stored in <code>map</code>.</p>
+<p>This function lists only values physically stored in <code>map</code>.
+Inherited prototype values are not included.</p>
 <h2 id="zip"><a class="header" href="#zip">zip</a></h2>
 <pre><code class="language-rant">
 [%zip: list-a; list-b; zip-func]

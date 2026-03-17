@@ -13,6 +13,15 @@ pub fn set_proto(
     vm: &mut VM,
     (map, proto): (RantMapHandle, Option<RantMapHandle>),
 ) -> RantStdResult {
+    if let Some(proto) = proto.as_ref() {
+        if map.would_create_proto_cycle(proto) {
+            runtime_error!(
+                RuntimeErrorType::ArgumentError,
+                "set-proto: prototype assignment would create a cycle"
+            );
+        }
+    }
+
     map.borrow_mut().set_proto(proto);
     Ok(())
 }

@@ -33,3 +33,32 @@ Map keys come in two flavors:
     {<secret-key>} = painter
 )
 ```
+
+## Prototypes
+
+Maps can also inherit keys and functions from an optional **prototype** map.
+
+Prototype lookup is fallback-based:
+
+* getters check the map's own keys first
+* if the key is missing, Rant walks the prototype chain
+* setters still write only to the target map
+
+Use `[set-proto]` to attach or clear a prototype and `[proto]` to inspect the current one.
+
+```rant
+<$obj = (::)>
+<$proto = (:: flavor = vanilla)>
+[set-proto: <obj>; <proto>]
+
+<obj/flavor>   # -> vanilla
+[proto: <obj>] # -> (:: flavor = vanilla)
+```
+
+Prototype inheritance in Rant is intentionally small:
+
+* own keys shadow inherited keys
+* inherited functions are ordinary functions, not bound methods
+* utility functions such as `[keys]` and `[has]` still inspect only the map's own stored keys
+
+See [Map Prototypes](./map-prototypes.md) for the full mental model and [Prototype Patterns](./prototype-patterns.md) for worked examples.

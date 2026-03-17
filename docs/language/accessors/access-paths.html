@@ -213,6 +213,22 @@ Simply specify the desired map key after the <code>/</code> to access the map el
 &lt;citizen/mood&gt;\n    # -&gt; angry
 </code></pre>
 <p>Keys follow the same naming rules as variables, unless specified as a dynamic key (see below).</p>
+<p>If a getter cannot find the requested key on the map itself, Rant will continue searching that map's prototype chain.</p>
+<pre><code class="language-rant">&lt;$defaults = (:: role = villager)&gt;
+&lt;$npc = (:: name = Tavi)&gt;
+[set-proto: &lt;npc&gt;; &lt;defaults&gt;]
+
+&lt;npc/name&gt;\n
+&lt;npc/role&gt;
+
+##
+  Output:
+
+  Tavi
+  villager
+##
+</code></pre>
+<p>Setters are different: writing <code>&lt;npc/role = merchant&gt;</code> would create or update the <code>role</code> key on <code>&lt;npc&gt;</code> itself and would not modify <code>&lt;defaults&gt;</code>.</p>
 <h2 id="dynamic-keys"><a class="header" href="#dynamic-keys">Dynamic keys</a></h2>
 <p>Where an index or key must be calculated at runtime, a dynamic key may be used. Simply use an expression enclosed in <code>()</code> in place of the index or key:</p>
 <pre><code class="language-rant">&lt;%fruits = (apple; orange; banana; tomato)&gt;

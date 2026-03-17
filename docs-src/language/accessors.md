@@ -37,6 +37,9 @@ A **setter** modifies an existing variable or value.
 <name = Susan>
 ```
 
+When a setter targets a map key, it always writes to that map directly.
+If the same key also exists on a prototype, the setter creates or updates a local key instead of mutating the prototype.
+
 Along with setting variables, setters can also write to specific elements of collections.
 
 ```rant
@@ -55,6 +58,9 @@ Attempting to retrieve a variable that does not exist causes a runtime error.
 <$name = Robin>
 My name is <name>.\n # Prints "My name is Robin."
 ```
+
+Map getters can also resolve inherited members through a map's prototype chain.
+For the detailed rules, see [Map Prototypes](./data-types/map-prototypes.md).
 
 ## Attribute keyword accessors
 

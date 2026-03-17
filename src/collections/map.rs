@@ -10,6 +10,17 @@ impl RantMapHandle {
     pub fn cloned(&self) -> Self {
         Self(Rc::new(RefCell::new((*self.0.borrow()).clone())))
     }
+
+    pub fn would_create_proto_cycle(&self, proto: &RantMapHandle) -> bool {
+        let mut next_proto = Some(RantMapHandle::clone(proto));
+        while let Some(cur_proto) = next_proto {
+            if &cur_proto == self {
+                return true;
+            }
+            next_proto = cur_proto.borrow().proto();
+        }
+        false
+    }
 }
 
 impl PartialEq for RantMapHandle {

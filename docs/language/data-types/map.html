@@ -206,6 +206,29 @@
     {&lt;secret-key&gt;} = painter
 )
 </code></pre>
+<h2 id="prototypes"><a class="header" href="#prototypes">Prototypes</a></h2>
+<p>Maps can also inherit keys and functions from an optional <strong>prototype</strong> map.</p>
+<p>Prototype lookup is fallback-based:</p>
+<ul>
+<li>getters check the map's own keys first</li>
+<li>if the key is missing, Rant walks the prototype chain</li>
+<li>setters still write only to the target map</li>
+</ul>
+<p>Use <code>[set-proto]</code> to attach or clear a prototype and <code>[proto]</code> to inspect the current one.</p>
+<pre><code class="language-rant">&lt;$obj = (::)&gt;
+&lt;$proto = (:: flavor = vanilla)&gt;
+[set-proto: &lt;obj&gt;; &lt;proto&gt;]
+
+&lt;obj/flavor&gt;   # -&gt; vanilla
+[proto: &lt;obj&gt;] # -&gt; (:: flavor = vanilla)
+</code></pre>
+<p>Prototype inheritance in Rant is intentionally small:</p>
+<ul>
+<li>own keys shadow inherited keys</li>
+<li>inherited functions are ordinary functions, not bound methods</li>
+<li>utility functions such as <code>[keys]</code> and <code>[has]</code> still inspect only the map's own stored keys</li>
+</ul>
+<p>See <a href="./map-prototypes.html">Map Prototypes</a> for the full mental model and <a href="./prototype-patterns.html">Prototype Patterns</a> for worked examples.</p>
 
                     </main>
 
@@ -215,7 +238,7 @@
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../language/data-types/range.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../language/data-types/map-prototypes.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -229,7 +252,7 @@
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../language/data-types/range.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../language/data-types/map-prototypes.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

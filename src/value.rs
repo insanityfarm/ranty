@@ -637,8 +637,8 @@ impl RantValue {
         match self {
             Self::Map(map) => {
                 let map = map.borrow();
-                if let Some(val) = map.raw_get(key) {
-                    Ok(val.clone())
+                if let Some(val) = map.get(key) {
+                    Ok(val.into_owned())
                 } else {
                     Err(KeyError::KeyNotFound(key.to_owned()))
                 }

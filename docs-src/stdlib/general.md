@@ -144,6 +144,27 @@ Prints the list of currently registered data-source IDs.
 
 Prints the prototype map of `map`, or `nothing` if no prototype is set.
 
+Prototype maps are used only as lookup fallbacks for missing keys.
+They do not merge physically into the map, and they are not treated as bound objects.
+
+### Example
+
+```rant
+<$obj = (::)>
+<$proto = (:: flavor = vanilla)>
+[set-proto: <obj>; <proto>]
+
+[proto: <obj>]\n
+<obj/flavor>
+
+##
+  Output:
+
+  (:: flavor = vanilla)
+  vanilla
+##
+```
+
 ## set-proto
 
 ```rant
@@ -151,6 +172,40 @@ Prints the prototype map of `map`, or `nothing` if no prototype is set.
 ```
 
 Sets or clears the prototype map for `map`.
+
+Pass `<>` to clear the current prototype.
+
+Prototype assignment is validated eagerly.
+If a call to `[set-proto]` would create a cycle, Rant raises a runtime error instead of allowing the assignment.
+
+### Examples
+
+```rant
+# Attach a prototype
+<$obj = (::)>
+<$proto = (:: flavor = vanilla)>
+[set-proto: <obj>; <proto>]
+<obj/flavor>
+# -> vanilla
+```
+
+```rant
+# Clear a prototype
+<$obj = (::)>
+<$proto = (:: flavor = vanilla)>
+[set-proto: <obj>; <proto>]
+[set-proto: <obj>; <>]
+<obj/flavor ? missing>
+# -> missing
+```
+
+```rant
+# Cycles are rejected
+<$a = (::)>
+<$b = (::)>
+[set-proto: <a>; <b>]
+[set-proto: <b>; <a>] # runtime error
+```
 
 ## error
 

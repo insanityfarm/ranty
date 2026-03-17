@@ -203,6 +203,8 @@ You can leave the assignment part out and it will be initialized to nothing.</p>
 # Overwrite value on existing variable `name`
 &lt;name = Susan&gt;
 </code></pre>
+<p>When a setter targets a map key, it always writes to that map directly.
+If the same key also exists on a prototype, the setter creates or updates a local key instead of mutating the prototype.</p>
 <p>Along with setting variables, setters can also write to specific elements of collections.</p>
 <pre><code class="language-rant">&lt;$numbers = (: 1; 2; 3)&gt;
 &lt;numbers/0 = 4&gt; # list is now (: 4; 2; 3)
@@ -214,6 +216,8 @@ You can leave the assignment part out and it will be initialized to nothing.</p>
 &lt;$name = Robin&gt;
 My name is &lt;name&gt;.\n # Prints "My name is Robin."
 </code></pre>
+<p>Map getters can also resolve inherited members through a map's prototype chain.
+For the detailed rules, see <a href="./data-types/map-prototypes.html">Map Prototypes</a>.</p>
 <h2 id="attribute-keyword-accessors"><a class="header" href="#attribute-keyword-accessors">Attribute keyword accessors</a></h2>
 <p>Some runtime attributes also expose dedicated accessor forms:</p>
 <ul>

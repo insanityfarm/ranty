@@ -122,6 +122,14 @@ A module is a library of Rant functions that can be loaded into another program 
 
 Pipeval is short for "Pipe value" and refers to the return value of a piped function that has been passed to the next function in a piped call.
 
+### Prototype
+
+A prototype is a map used as a fallback source of keys for another map.
+
+### Prototype inheritance
+
+Prototype inheritance is the process of a map getter searching the map's own keys first and then walking up that map's prototype chain when a key is missing.
+
 ### Repeater
 
 A looping block that uses **attributes**. Blocks can be made to loop by setting the repetition count with `[rep]`.

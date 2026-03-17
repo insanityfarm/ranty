@@ -22,6 +22,8 @@
         - [list](language/data-types/list.md)
         - [tuple](language/data-types/tuple.md)
         - [map](language/data-types/map.md)
+            - [Map Prototypes](language/data-types/map-prototypes.md)
+            - [Prototype Patterns](language/data-types/prototype-patterns.md)
         - [range](language/data-types/range.md)
         - [function](language/data-types/function.md)
         - [selector](language/data-types/selector.md)

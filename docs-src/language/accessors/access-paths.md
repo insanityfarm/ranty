@@ -51,6 +51,26 @@ Simply specify the desired map key after the `/` to access the map element with 
 
 Keys follow the same naming rules as variables, unless specified as a dynamic key (see below).
 
+If a getter cannot find the requested key on the map itself, Rant will continue searching that map's prototype chain.
+
+```rant
+<$defaults = (:: role = villager)>
+<$npc = (:: name = Tavi)>
+[set-proto: <npc>; <defaults>]
+
+<npc/name>\n
+<npc/role>
+
+##
+  Output:
+
+  Tavi
+  villager
+##
+```
+
+Setters are different: writing `<npc/role = merchant>` would create or update the `role` key on `<npc>` itself and would not modify `<defaults>`.
+
 ## Dynamic keys
 
 Where an index or key must be calculated at runtime, a dynamic key may be used. Simply use an expression enclosed in `()` in place of the index or key:

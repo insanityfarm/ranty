@@ -290,6 +290,7 @@ The predicate to run against each element in the input list.
 Returns a boolean indicating whether `value` occurs in `collection`.
 
 If `collection` is a `map`, this function searches the map's keys.
+For maps, `[has]` checks only keys stored directly on the map itself; inherited prototype keys do not count.
 
 ### Parameters
 
@@ -992,6 +993,7 @@ Raises an error if `pos` is not a valid location in the collection.
 
 Matches each item in a list to a map and returns a list with the corresponding map values. 
 Values that have no corresponding key in the map are passed through as-is.
+For maps with prototypes, `[translate]` uses only keys stored directly on the provided map.
 
 ### Parameters
 
@@ -1053,6 +1055,9 @@ Decoded: \"<decoded-message>\"\n
 
 Prints a list of the keys stored in `map`.
 
+This function lists only keys physically stored in `map`.
+Inherited prototype keys are not included.
+
 ## values
 
 ```rant
@@ -1062,6 +1067,9 @@ Prints a list of the keys stored in `map`.
 ```
 
 Prints a list of the values stored in `map`.
+
+This function lists only values physically stored in `map`.
+Inherited prototype values are not included.
 
 
 ## zip
