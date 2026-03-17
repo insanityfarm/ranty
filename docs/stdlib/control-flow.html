@@ -1,25 +1,310 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Attributes And Control Flow - Rant Reference</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
-    <link rel="stylesheet" href="../styles.css">
-  </head>
-  <body>
-    <div class="layout">
-      <nav class="sidebar" aria-label="Table of contents">
-        <div class="brand"><a href="../intro.html">Rant Reference</a></div>
-        <ol><li class=""><a href="../intro.html">Introduction</a></li><li class=""><a href="../getting-started.html">Getting Started</a></li><li class=""><a href="../language.html">Language</a><ol><li class=""><a href="../language/text.html">Text</a></li><li class=""><a href="../language/blocks.html">Blocks</a></li><li class=""><a href="../language/functions.html">Functions</a></li><li class=""><a href="../language/data-types.html">Data Types</a></li><li class=""><a href="../language/accessors.html">Accessors</a></li><li class=""><a href="../language/keywords.html">Keywords</a><ol><li class=""><a href="../language/keywords/require.html">@require</a></li><li class=""><a href="../language/keywords/return.html">@return</a></li><li class=""><a href="../language/keywords/continue.html">@continue</a></li><li class=""><a href="../language/keywords/break.html">@break</a></li><li class=""><a href="../language/keywords/weight.html">@weight</a></li><li class=""><a href="../language/keywords/text.html">@text</a></li></ol></li><li class=""><a href="../language/operators.html">Operators</a></li><li class=""><a href="../language/conditional-expressions.html">Conditional Expressions</a></li><li class=""><a href="../language/output-modifiers.html">Output Modifiers</a></li></ol></li><li class=""><a href="../runtime.html">Runtime Features</a><ol><li class=""><a href="../runtime/attributes.html">Attributes</a></li><li class=""><a href="../runtime/formatters.html">Formatters</a></li><li class=""><a href="../modules.html">Modules</a></li><li class=""><a href="../cli.html">CLI And REPL</a></li></ol></li><li class=""><a href="../stdlib.html">Standard Library</a><ol><li class=""><a href="general.html">General</a></li><li class="active"><a href="control-flow.html">Attributes And Control Flow</a></li><li class=""><a href="collections.html">Collections</a></li><li class=""><a href="generators.html">Generators</a></li><li class=""><a href="formatting.html">Formatting</a></li><li class=""><a href="strings.html">Strings</a></li><li class=""><a href="boolean.html">Boolean</a></li><li class=""><a href="comparison.html">Comparison</a></li><li class=""><a href="math.html">Math</a></li><li class=""><a href="conversion.html">Conversion</a></li><li class=""><a href="verification.html">Verification</a></li><li class=""><a href="assertion.html">Assertion</a></li><li class=""><a href="constants.html">Constants</a></li></ol></li><li class=""><a href="../compiler-messages.html">Diagnostics</a></li><li class=""><a href="../glossary.html">Glossary</a></li></ol>
-      </nav>
-      <main class="content">
-        <div class="topbar">
-          <div>Stable 4.0 Reference</div>
-          <div><a href="https://github.com/rant-lang/rant">Repository</a></div>
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Attributes &amp; Control Flow - Rant Reference</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
         </div>
-        <h1 id="attributes-and-control-flow"><a class="header" href="#attributes-and-control-flow">Attributes And Control Flow</a></h1><p>Functions that configure block behavior or expose active block state.</p><table><thead><tr><th>Name</th><th>Call Form</th><th>Summary</th></tr></thead><tbody><tr><td><code>if</code></td><td><code>[%if: cond]</code></td><td>Reference entry for `if`.</td></tr><tr><td><code>elseif</code></td><td><code>[%elseif: cond]</code></td><td>Reference entry for `elseif`.</td></tr><tr><td><code>else</code></td><td><code>[%else]</code></td><td>Reference entry for `else`.</td></tr><tr><td><code>mksel</code></td><td><code>[%mksel: mode]</code></td><td>Creates a selector value for use with `[sel]`.</td></tr><tr><td><code>rep</code></td><td><code>[%rep: reps]</code></td><td>Configures repetition count or repetition mode for the current block.</td></tr><tr><td><code>sel</code></td><td><code>[%sel: selector?]</code></td><td>Sets the active selector for the current block, or returns it when called without arguments.</td></tr><tr><td><code>sep</code></td><td><code>[%sep: separator]</code></td><td>Sets the separator for repeated block iterations.</td></tr><tr><td><code>mut</code></td><td><code>[%mut: mutator?]</code></td><td>Assigns a mutator function for block elements.</td></tr><tr><td><code>sel-skip</code></td><td><code>[%sel-skip: selector; n?]</code></td><td>Advances a selector without printing the selected value.</td></tr><tr><td><code>sel-freeze</code></td><td><code>[%sel-freeze: selector; frozen?]</code></td><td>Freezes or unfreezes a selector in place.</td></tr><tr><td><code>sel-frozen</code></td><td><code>[%sel-frozen: selector]</code></td><td>Returns whether a selector is frozen.</td></tr><tr><td><code>reset-attrs</code></td><td><code>[%reset-attrs]</code></td><td>Clears the active block-attribute state.</td></tr><tr><td><code>step</code></td><td><code>[%step]</code></td><td>Returns the current step number as a one-based integer.</td></tr><tr><td><code>step-index</code></td><td><code>[%step-index]</code></td><td>Returns the current step index as a zero-based integer.</td></tr><tr><td><code>step-count</code></td><td><code>[%step-count]</code></td><td>Returns the number of steps in the active block.</td></tr></tbody></table>
-      </main>
     </div>
-  </body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rant Reference</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="standard-library-attributes--control-flow"><a class="header" href="#standard-library-attributes--control-flow">Standard Library: Attributes &amp; Control Flow</a></h1>
+<h2 id="if"><a class="header" href="#if">if</a></h2>
+<pre><code class="language-rant">[%if: condition]
+</code></pre>
+<p>Marks the next block as conditional and resolves it only when <code>condition</code> is truthy.</p>
+<h2 id="elseif"><a class="header" href="#elseif">elseif</a></h2>
+<pre><code class="language-rant">[%elseif: condition]
+</code></pre>
+<p>Marks the next block as an <code>else if</code> branch following a previous conditional block.</p>
+<h2 id="else"><a class="header" href="#else">else</a></h2>
+<pre><code class="language-rant">[%else]
+</code></pre>
+<p>Marks the next block as the fallback branch after a previous conditional block.</p>
+<h2 id="mksel"><a class="header" href="#mksel">mksel</a></h2>
+<pre><code class="language-rant">[%mksel: selector-mode]
+</code></pre>
+<p>Creates and returns a selector with the specified mode.</p>
+<h3 id="options-for-selector-mode"><a class="header" href="#options-for-selector-mode">Options for <code>selector-mode</code></a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Mode</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>random</code></td><td>Select a random element each time. <em>(default)</em></td></tr>
+<tr><td><code>one</code></td><td>Select the same, random element each time.</td></tr>
+<tr><td><code>forward</code></td><td>Select in a wrapping sequence from first to last.</td></tr>
+<tr><td><code>forward-clamp</code></td><td>Select from first to last, then repeat the last element forever.</td></tr>
+<tr><td><code>forward-mirror</code></td><td>Select from first to last, then last to first, then start over.</td></tr>
+<tr><td><code>reverse</code></td><td>Select in a wrapping reverse sequence from last to first.</td></tr>
+<tr><td><code>reverse-clamp</code></td><td>Select from last to first, then repeat the first element forever.</td></tr>
+<tr><td><code>reverse-mirror</code></td><td>Select in a from last to first, then first to last, then start over.</td></tr>
+<tr><td><code>deck</code></td><td>Select each element once in a random sequence, then reshuffles.</td></tr>
+<tr><td><code>deck-loop</code></td><td>Select each element once in a wrapping random sequence, without reshuffling.</td></tr>
+<tr><td><code>deck-clamp</code></td><td>Select each element once in a random sequence, repeating the final element.</td></tr>
+<tr><td><code>deck-mirror</code></td><td>Select each element once in a random sequence, then repeats the sequence backwards before reshuffling.</td></tr>
+<tr><td><code>ping</code></td><td>Select from first to last, switching directions when a boundary element is reached.</td></tr>
+<tr><td><code>pong</code></td><td>Select from last to first, switching directions when a boundary element is reached.</td></tr>
+<tr><td><code>no-double</code></td><td>Select a random element each time, ensuring the same element never occurs twice in a row.</td></tr>
+</tbody></table>
+</div>
+<h2 id="rep"><a class="header" href="#rep">rep</a></h2>
+<pre><code class="language-rant">[%rep: reps]
+</code></pre>
+<p>Sets the repetition count or repetition mode for the next block.</p>
+<h2 id="sel"><a class="header" href="#sel">sel</a></h2>
+<pre><code class="language-rant">[%sel: selector?]
+</code></pre>
+<p>Sets the active selector for the next block. With no argument, prints the current selector or <code>nothing</code>.</p>
+<h2 id="sep"><a class="header" href="#sep">sep</a></h2>
+<pre><code class="language-rant">[%sep: separator]
+</code></pre>
+<p>Sets the separator value for repeated block iterations.</p>
+<h2 id="mut"><a class="header" href="#mut">mut</a></h2>
+<pre><code class="language-rant">[%mut: mutator?]
+</code></pre>
+<p>Sets the mutator function for the next block, or clears it when passed <code>nothing</code>.</p>
+<h2 id="sel-skip"><a class="header" href="#sel-skip">sel-skip</a></h2>
+<pre><code class="language-rant">[%sel-skip: selector; n?]
+</code></pre>
+<p>Advances <code>selector</code> without printing any selected value.</p>
+<h2 id="sel-freeze"><a class="header" href="#sel-freeze">sel-freeze</a></h2>
+<pre><code class="language-rant">[%sel-freeze: selector; frozen?]
+</code></pre>
+<p>Sets the frozen state of <code>selector</code>. Omitting <code>frozen</code> freezes it.</p>
+<h2 id="sel-frozen"><a class="header" href="#sel-frozen">sel-frozen</a></h2>
+<pre><code class="language-rant">[%sel-frozen: selector]
+</code></pre>
+<p>Prints whether <code>selector</code> is currently frozen.</p>
+<h2 id="reset-attrs"><a class="header" href="#reset-attrs">reset-attrs</a></h2>
+<pre><code class="language-rant">[%reset-attrs]
+</code></pre>
+<p>Resets the current attribute state back to the runtime defaults.</p>
+<h2 id="step"><a class="header" href="#step">step</a></h2>
+<pre><code class="language-rant">[%step]
+</code></pre>
+<p>Prints the current repeater step value.</p>
+<h2 id="step-index"><a class="header" href="#step-index">step-index</a></h2>
+<pre><code class="language-rant">[%step-index]
+</code></pre>
+<p>Prints the zero-based iteration index of the active repeater.</p>
+<h2 id="step-count"><a class="header" href="#step-count">step-count</a></h2>
+<pre><code class="language-rant">[%step-count]
+</code></pre>
+<p>Prints the total number of iterations scheduled for the active repeater.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../stdlib/general.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../stdlib/collections.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../stdlib/general.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../stdlib/collections.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
 </html>

@@ -3,182 +3,186 @@ use std::{fmt::Display, ops::Range};
 /// Describes where in a source file a message was triggered.
 #[derive(Debug, Clone)]
 pub struct Position {
-  line: usize,
-  col: usize,
-  span: Range<usize>
+    line: usize,
+    col: usize,
+    span: Range<usize>,
 }
 
 impl Position {
-  pub(crate) fn new(line: usize, col: usize, span: Range<usize>) -> Self {
-    Self {
-      line,
-      col, 
-      span,
+    pub(crate) fn new(line: usize, col: usize, span: Range<usize>) -> Self {
+        Self { line, col, span }
     }
-  }
-  
-  /// Gets the line number of the position.
-  pub fn line(&self) -> usize {
-    self.line
-  }
-  
-  /// Gets the column number of the position.
-  pub fn col(&self) -> usize {
-    self.col
-  }
 
-  /// Gets the span associated with the position.
-  pub fn span(&self) -> Range<usize> {
-    self.span.clone()
-  }
+    /// Gets the line number of the position.
+    pub fn line(&self) -> usize {
+        self.line
+    }
+
+    /// Gets the column number of the position.
+    pub fn col(&self) -> usize {
+        self.col
+    }
+
+    /// Gets the span associated with the position.
+    pub fn span(&self) -> Range<usize> {
+        self.span.clone()
+    }
 }
 
 impl Display for Position {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{},{}", self.line, self.col)
-  }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{},{}", self.line, self.col)
+    }
 }
 
 /// Describes the severity of a compiler message.
 #[derive(Debug, Copy, Clone)]
 pub enum Severity {
-  /// Advises the user of a potential problem, but still allows compilation to finish.
-  Warning,
-  /// Advises the user of a problem that prevents the source from compiling.
-  Error
+    /// Advises the user of a potential problem, but still allows compilation to finish.
+    Warning,
+    /// Advises the user of a problem that prevents the source from compiling.
+    Error,
 }
 
 impl Display for Severity {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}", match self {
-      Severity::Warning => "warning",
-      Severity::Error => "error",
-    })
-  }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Severity::Warning => "warning",
+                Severity::Error => "error",
+            }
+        )
+    }
 }
 
 /// Describes the location and nature of a compiler message.
 #[derive(Debug)]
 pub struct CompilerMessage {
-  pos: Option<Position>,
-  severity: Severity,
-  info: Problem
+    pos: Option<Position>,
+    severity: Severity,
+    info: Problem,
 }
 
 impl CompilerMessage {
-  pub(crate) fn new(info: Problem, severity: Severity, pos: Option<Position>) -> Self {
-    Self { pos, severity, info }
-  }
+    pub(crate) fn new(info: Problem, severity: Severity, pos: Option<Position>) -> Self {
+        Self {
+            pos,
+            severity,
+            info,
+        }
+    }
 
-  /// Gets the position in the source where the message was triggered.
-  pub fn pos(&self) -> Option<Position> {
-    self.pos.clone()
-  }
+    /// Gets the position in the source where the message was triggered.
+    pub fn pos(&self) -> Option<Position> {
+        self.pos.clone()
+    }
 
-  /// Gets the severity of the message.
-  pub fn severity(&self) -> Severity {
-    self.severity
-  }
-  
-  /// Gets a reference to the problem variant triggering the message.
-  pub fn info(&self) -> &Problem {
-    &self.info
-  }
-  
-  /// Consumes the `CompilerMessage` and returns its position and info as a tuple.
-  pub fn consume(self) -> (Option<Position>, Severity, Problem) {
-    (self.pos, self.severity, self.info)
-  }
+    /// Gets the severity of the message.
+    pub fn severity(&self) -> Severity {
+        self.severity
+    }
 
-  /// Gets the message code associated with the message.
-  pub fn code(&self) -> &'static str {
-    self.info.code()
-  }
+    /// Gets a reference to the problem variant triggering the message.
+    pub fn info(&self) -> &Problem {
+        &self.info
+    }
 
-  /// Gets a message describing the error.
-  pub fn message(&self) -> String {
-    self.info.message()
-  }
+    /// Consumes the `CompilerMessage` and returns its position and info as a tuple.
+    pub fn consume(self) -> (Option<Position>, Severity, Problem) {
+        (self.pos, self.severity, self.info)
+    }
 
-  /// Gets the inline message text, usually used to annotate the span.
-  pub fn inline_message(&self) -> Option<String> {
-    self.info.inline_message()
-  }
+    /// Gets the message code associated with the message.
+    pub fn code(&self) -> &'static str {
+        self.info.code()
+    }
 
-  /// Gets the hint text associated with the message.
-  pub fn hint(&self) -> Option<String> {
-    self.info.hint()
-  }
+    /// Gets a message describing the error.
+    pub fn message(&self) -> String {
+        self.info.message()
+    }
 
-  /// Returns true if the message is an error.
-  pub fn is_error(&self) -> bool {
-    matches!(self.severity, Severity::Error)
-  }
+    /// Gets the inline message text, usually used to annotate the span.
+    pub fn inline_message(&self) -> Option<String> {
+        self.info.inline_message()
+    }
 
-  /// Returns true if the message is a warning.
-  pub fn is_warning(&self) -> bool {
-    matches!(self.severity, Severity::Warning)
-  }
+    /// Gets the hint text associated with the message.
+    pub fn hint(&self) -> Option<String> {
+        self.info.hint()
+    }
+
+    /// Returns true if the message is an error.
+    pub fn is_error(&self) -> bool {
+        matches!(self.severity, Severity::Error)
+    }
+
+    /// Returns true if the message is a warning.
+    pub fn is_warning(&self) -> bool {
+        matches!(self.severity, Severity::Warning)
+    }
 }
 
 /// Describes a problem (warning/error) encountered when building a source.
 #[derive(Debug)]
 pub enum Problem {
-  TemporalAssignPipeRedefinesVariable(String),
-  TemporalAssignPipeRedefinesConstant(String),
-  AccessPathStartsWithIndex,
-  AccessPathStartsWithSlice,
-  AnonValueAssignment,
-  ConstantReassignment(String),
-  ConstantRedefinition(String),
-  DuplicateParameter(String),
-  DynamicKeyBlockMultiElement,
-  EmptyCondition,
-  EmptyFunctionBody(String),
-  ExpectedToken(String),
-  FallibleOptionalArgAccess(String),
-  FileNotFound(String),
-  FileSystemError(String),
-  FloatLiteralOutOfRange,
-  IntegerLiteralOutOfRange,
-  InvalidEscapeChar(char),
-  InvalidEscapeCodePoint(String),
-  InvalidHint,
-  InvalidHintOn(&'static str),
-  InvalidIdentifier(String),
-  InvalidKeyword(String),
-  InvalidParameter(String),
-  InvalidParamOrder(String, String),
-  InvalidRequireArgumentToken,
-  InvalidShorthandVariable,
-  InvalidSink,
-  InvalidSinkOn(&'static str),
-  InvalidSliceBound(String),
-  MissingFunctionBody,
-  MissingIdentifier,
-  MissingLeftOperand,
-  MissingOperand,
-  MissingRequireArgument,
-  MissingRightOperand,
-  MultipleVariadicParams,
-  NestedFunctionDefMarkedConstant,
-  NothingToPipe,
-  UnclosedAccessor,
-  UnclosedBlock,
-  UnclosedCondition,
-  UnclosedFunctionBody,
-  UnclosedFunctionCall,
-  UnclosedFunctionSignature,
-  UnclosedList,
-  UnclosedMap,
-  UnclosedParens,
-  UnclosedStringLiteral,
-  UnclosedTuple,
-  UnexpectedToken(String),
-  UnusedFunction(String),
-  UnusedParameter(String),
-  UnusedVariable(String),
-  WeightNotAllowed,
+    TemporalAssignPipeRedefinesVariable(String),
+    TemporalAssignPipeRedefinesConstant(String),
+    AccessPathStartsWithIndex,
+    AccessPathStartsWithSlice,
+    AnonValueAssignment,
+    ConstantReassignment(String),
+    ConstantRedefinition(String),
+    DuplicateParameter(String),
+    DynamicKeyBlockMultiElement,
+    EmptyCondition,
+    EmptyFunctionBody(String),
+    ExpectedToken(String),
+    FallibleOptionalArgAccess(String),
+    FileNotFound(String),
+    FileSystemError(String),
+    FloatLiteralOutOfRange,
+    IntegerLiteralOutOfRange,
+    InvalidEscapeChar(char),
+    InvalidEscapeCodePoint(String),
+    InvalidHint,
+    InvalidHintOn(&'static str),
+    InvalidIdentifier(String),
+    InvalidKeyword(String),
+    InvalidParameter(String),
+    InvalidParamOrder(String, String),
+    InvalidRequireArgumentToken,
+    InvalidShorthandVariable,
+    InvalidSink,
+    InvalidSinkOn(&'static str),
+    InvalidSliceBound(String),
+    MissingFunctionBody,
+    MissingIdentifier,
+    MissingLeftOperand,
+    MissingOperand,
+    MissingRequireArgument,
+    MissingRightOperand,
+    MultipleVariadicParams,
+    NestedFunctionDefMarkedConstant,
+    NothingToPipe,
+    UnclosedAccessor,
+    UnclosedBlock,
+    UnclosedCondition,
+    UnclosedFunctionBody,
+    UnclosedFunctionCall,
+    UnclosedFunctionSignature,
+    UnclosedList,
+    UnclosedMap,
+    UnclosedParens,
+    UnclosedStringLiteral,
+    UnclosedTuple,
+    UnexpectedToken(String),
+    UnusedFunction(String),
+    UnusedParameter(String),
+    UnusedVariable(String),
+    WeightNotAllowed,
 }
 
 macro_rules! rmsg {
@@ -191,94 +195,94 @@ macro_rules! rmsg {
 }
 
 impl Problem {
-  fn code(&self) -> &'static str {
-    /// Formats Rant error code constants.
-    macro_rules! rcode {
-      ($code:literal) => {
-        concat!("R", stringify!($code))
-      }
+    fn code(&self) -> &'static str {
+        /// Formats Rant error code constants.
+        macro_rules! rcode {
+            ($code:literal) => {
+                concat!("R", stringify!($code))
+            };
+        }
+
+        match self {
+            // Un/expected token errors (0000 - 0001)
+            Self::UnexpectedToken(_) => rcode!(0000),
+            Self::ExpectedToken(_) => rcode!(0001),
+
+            // Common (0002 - 0019)
+            Self::IntegerLiteralOutOfRange => rcode!(0002),
+            Self::FloatLiteralOutOfRange => rcode!(0003),
+            Self::InvalidEscapeChar(_) => rcode!(0004),
+            Self::InvalidEscapeCodePoint(_) => rcode!(0005),
+            Self::UnclosedBlock => rcode!(0006),
+            Self::UnclosedFunctionCall => rcode!(0007),
+            Self::UnclosedFunctionSignature => rcode!(0008),
+            Self::UnclosedAccessor => rcode!(0009),
+            Self::UnclosedStringLiteral => rcode!(0010),
+            Self::UnclosedList => rcode!(0011),
+            Self::UnclosedMap => rcode!(0012),
+            Self::UnclosedTuple => rcode!(0013),
+            Self::UnclosedParens => rcode!(0014),
+            Self::UnclosedCondition => rcode!(0015),
+
+            // Functions (0021 - 0039)
+            Self::InvalidParamOrder(..) => rcode!(0021),
+            Self::MissingFunctionBody => rcode!(0022),
+            Self::UnclosedFunctionBody => rcode!(0023),
+            Self::InvalidParameter(_) => rcode!(0024),
+            Self::DuplicateParameter(_) => rcode!(0025),
+            Self::MultipleVariadicParams => rcode!(0026),
+            Self::TemporalAssignPipeRedefinesVariable(_) => rcode!(0027),
+            Self::TemporalAssignPipeRedefinesConstant(_) => rcode!(0028),
+
+            // Blocks (0040 - 0059)
+            Self::DynamicKeyBlockMultiElement => rcode!(0040),
+
+            // Accessors (0060 - 0099)
+            Self::AnonValueAssignment => rcode!(0060),
+            Self::MissingIdentifier => rcode!(0061),
+            Self::InvalidIdentifier(_) => rcode!(0062),
+            Self::AccessPathStartsWithIndex => rcode!(0063),
+            Self::AccessPathStartsWithSlice => rcode!(0064),
+            Self::InvalidSliceBound(_) => rcode!(0065),
+            Self::NothingToPipe => rcode!(0066),
+            Self::FallibleOptionalArgAccess(_) => rcode!(0067),
+            Self::InvalidShorthandVariable => rcode!(0068),
+
+            // Static analysis errors (0100 - 0199)
+            Self::ConstantReassignment(_) => rcode!(0100),
+            Self::ConstantRedefinition(_) => rcode!(0101),
+
+            // Hint/sink errors (0130 - 0139)
+            Self::InvalidSink | Self::InvalidSinkOn(_) => rcode!(0130),
+            Self::InvalidHint | Self::InvalidHintOn(_) => rcode!(0131),
+
+            // Keywords and statements (0200 - 0249)
+            Self::InvalidKeyword(_) => rcode!(0200),
+            Self::WeightNotAllowed => rcode!(0201),
+            Self::MissingRequireArgument => rcode!(0202),
+            Self::InvalidRequireArgumentToken => rcode!(0203),
+            Self::EmptyCondition => rcode!(0204),
+
+            // Operators (0250 - 0299)
+            Self::MissingOperand => rcode!(0250),
+            Self::MissingLeftOperand => rcode!(0251),
+            Self::MissingRightOperand => rcode!(0252),
+
+            // Common warnings (1000 - 1099)
+            Self::UnusedVariable(_) => rcode!(1000),
+            Self::UnusedParameter(_) => rcode!(1002),
+            Self::UnusedFunction(_) => rcode!(1003),
+            Self::EmptyFunctionBody(_) => rcode!(1004),
+            Self::NestedFunctionDefMarkedConstant => rcode!(1005),
+
+            // File access errors (0100 - 0109)
+            Self::FileNotFound(_) => rcode!(2100),
+            Self::FileSystemError(_) => rcode!(2101),
+        }
     }
 
-    match self {
-      // Un/expected token errors (0000 - 0001)
-      Self::UnexpectedToken(_) =>                               rcode!(0000),
-      Self::ExpectedToken(_) =>                                 rcode!(0001),
-
-      // Common (0002 - 0019)
-      Self::IntegerLiteralOutOfRange =>                         rcode!(0002),
-      Self::FloatLiteralOutOfRange =>                           rcode!(0003),
-      Self::InvalidEscapeChar(_) =>                             rcode!(0004),
-      Self::InvalidEscapeCodePoint(_) =>                        rcode!(0005),
-      Self::UnclosedBlock =>                                    rcode!(0006),
-      Self::UnclosedFunctionCall =>                             rcode!(0007),
-      Self::UnclosedFunctionSignature =>                        rcode!(0008),
-      Self::UnclosedAccessor =>                                 rcode!(0009),
-      Self::UnclosedStringLiteral =>                            rcode!(0010),
-      Self::UnclosedList =>                                     rcode!(0011),
-      Self::UnclosedMap =>                                      rcode!(0012),
-      Self::UnclosedTuple =>                                    rcode!(0013),
-      Self::UnclosedParens =>                                   rcode!(0014),
-      Self::UnclosedCondition =>                                rcode!(0015),
-
-      // Functions (0021 - 0039)
-      Self::InvalidParamOrder(..) =>                            rcode!(0021),
-      Self::MissingFunctionBody =>                              rcode!(0022),
-      Self::UnclosedFunctionBody =>                             rcode!(0023),
-      Self::InvalidParameter(_) =>                              rcode!(0024),
-      Self::DuplicateParameter(_) =>                            rcode!(0025),
-      Self::MultipleVariadicParams =>                           rcode!(0026),
-      Self::TemporalAssignPipeRedefinesVariable(_) =>           rcode!(0027),
-      Self::TemporalAssignPipeRedefinesConstant(_) =>           rcode!(0028),
-      
-      // Blocks (0040 - 0059)
-      Self::DynamicKeyBlockMultiElement =>                      rcode!(0040),
-
-      // Accessors (0060 - 0099)
-      Self::AnonValueAssignment =>                              rcode!(0060),
-      Self::MissingIdentifier =>                                rcode!(0061),
-      Self::InvalidIdentifier(_) =>                             rcode!(0062),
-      Self::AccessPathStartsWithIndex =>                        rcode!(0063),
-      Self::AccessPathStartsWithSlice =>                        rcode!(0064),
-      Self::InvalidSliceBound(_) =>                             rcode!(0065),
-      Self::NothingToPipe =>                                    rcode!(0066),
-      Self::FallibleOptionalArgAccess(_) =>                     rcode!(0067),
-      Self::InvalidShorthandVariable =>                         rcode!(0068),
-      
-      // Static analysis errors (0100 - 0199)
-      Self::ConstantReassignment(_) =>                          rcode!(0100),
-      Self::ConstantRedefinition(_) =>                          rcode!(0101),
-
-      // Hint/sink errors (0130 - 0139)
-      Self::InvalidSink | Self::InvalidSinkOn(_) =>             rcode!(0130),
-      Self::InvalidHint | Self::InvalidHintOn(_) =>             rcode!(0131),
-
-      // Keywords and statements (0200 - 0249)
-      Self::InvalidKeyword(_) =>                                rcode!(0200),
-      Self::WeightNotAllowed =>                                 rcode!(0201),
-      Self::MissingRequireArgument =>                           rcode!(0202),
-      Self::InvalidRequireArgumentToken =>                      rcode!(0203),
-      Self::EmptyCondition =>                                   rcode!(0204),
-
-      // Operators (0250 - 0299)
-      Self::MissingOperand =>                                   rcode!(0250),
-      Self::MissingLeftOperand =>                               rcode!(0251),
-      Self::MissingRightOperand =>                              rcode!(0252),
-      
-      // Common warnings (1000 - 1099)
-      Self::UnusedVariable(_) =>                                rcode!(1000),
-      Self::UnusedParameter(_) =>                               rcode!(1002),
-      Self::UnusedFunction(_) =>                                rcode!(1003),
-      Self::EmptyFunctionBody(_) =>                             rcode!(1004),
-      Self::NestedFunctionDefMarkedConstant =>                  rcode!(1005),
-      
-      // File access errors (0100 - 0109)
-      Self::FileNotFound(_) =>                                  rcode!(2100),
-      Self::FileSystemError(_) =>                               rcode!(2101),
-    }
-  }
-
-  fn message(&self) -> String {
-    match self {
+    fn message(&self) -> String {
+        match self {
       Self::AccessPathStartsWithIndex => rmsg!("access paths cannot start with an index; consider using a variable or anonymous value here instead"),
       Self::AccessPathStartsWithSlice => rmsg!("access paths cannot start with a slice; consider using a variable or anonymous value here instead"),
       Self::AnonValueAssignment => rmsg!("can't assign a value to an expression; try assigning to a child of it instead"),
@@ -335,44 +339,44 @@ impl Problem {
       Self::TemporalAssignPipeRedefinesVariable(vname) => rmsg!("temporal assignment pipe could redefine variable '{}'", vname),
       Self::TemporalAssignPipeRedefinesConstant(vname) => rmsg!("temporal assignment pipe could redefine constant '{}'", vname),
     }
-  }
-  
-  fn inline_message(&self) -> Option<String> {
-    Some(match self {
-      Self::AccessPathStartsWithIndex => rmsg!("nothing to index"),
-      Self::AccessPathStartsWithSlice => rmsg!("nothing to slice"),
-      Self::DuplicateParameter(_) => rmsg!("rename parameter to something unique"),
-      Self::DynamicKeyBlockMultiElement => rmsg!("multiple elements not allowed here"),
-      Self::ExpectedToken(token) => rmsg!("expected '{}'", token),
-      Self::InvalidHint | Self::InvalidHintOn(_) => rmsg!("hint not allowed here"),
-      Self::InvalidIdentifier(_) => rmsg!("invalid identifier"),
-      Self::InvalidParameter(_) => rmsg!("invalid parameter"),
-      Self::InvalidParamOrder(_, second) => rmsg!("{} is not valid in this position", second),
-      Self::InvalidSink | Self::InvalidSinkOn(_) => rmsg!("sink not allowed here"),
-      Self::MissingFunctionBody => rmsg!("function body should follow"),
-      Self::MissingIdentifier => rmsg!("missing identifier"),
-      Self::MultipleVariadicParams => rmsg!("remove extra variadic parameter"),
-      Self::NestedFunctionDefMarkedConstant => rmsg!("use '$' here instead"),
-      Self::NothingToPipe => rmsg!("no previous output to consume"),
-      Self::UnclosedAccessor => rmsg!("no matching '>' found"),
-      Self::UnclosedBlock => rmsg!("no matching '}' found"),
-      Self::UnclosedFunctionBody => rmsg!("no matching '}' found"),
-      Self::UnclosedFunctionCall => rmsg!("no matching ']' found"),
-      Self::UnclosedFunctionSignature => rmsg!("no matching ']' found"),
-      Self::UnclosedList => rmsg!("no matching ')' found"),
-      Self::UnclosedMap => rmsg!("no matching ')' found"),
-      Self::UnclosedStringLiteral => rmsg!("string literal needs closing delimiter"),
-      _ => return None
-    })
-  }
+    }
 
-  fn hint(&self) -> Option<String> {
-    None
-  }
+    fn inline_message(&self) -> Option<String> {
+        Some(match self {
+            Self::AccessPathStartsWithIndex => rmsg!("nothing to index"),
+            Self::AccessPathStartsWithSlice => rmsg!("nothing to slice"),
+            Self::DuplicateParameter(_) => rmsg!("rename parameter to something unique"),
+            Self::DynamicKeyBlockMultiElement => rmsg!("multiple elements not allowed here"),
+            Self::ExpectedToken(token) => rmsg!("expected '{}'", token),
+            Self::InvalidHint | Self::InvalidHintOn(_) => rmsg!("hint not allowed here"),
+            Self::InvalidIdentifier(_) => rmsg!("invalid identifier"),
+            Self::InvalidParameter(_) => rmsg!("invalid parameter"),
+            Self::InvalidParamOrder(_, second) => rmsg!("{} is not valid in this position", second),
+            Self::InvalidSink | Self::InvalidSinkOn(_) => rmsg!("sink not allowed here"),
+            Self::MissingFunctionBody => rmsg!("function body should follow"),
+            Self::MissingIdentifier => rmsg!("missing identifier"),
+            Self::MultipleVariadicParams => rmsg!("remove extra variadic parameter"),
+            Self::NestedFunctionDefMarkedConstant => rmsg!("use '$' here instead"),
+            Self::NothingToPipe => rmsg!("no previous output to consume"),
+            Self::UnclosedAccessor => rmsg!("no matching '>' found"),
+            Self::UnclosedBlock => rmsg!("no matching '}' found"),
+            Self::UnclosedFunctionBody => rmsg!("no matching '}' found"),
+            Self::UnclosedFunctionCall => rmsg!("no matching ']' found"),
+            Self::UnclosedFunctionSignature => rmsg!("no matching ']' found"),
+            Self::UnclosedList => rmsg!("no matching ')' found"),
+            Self::UnclosedMap => rmsg!("no matching ')' found"),
+            Self::UnclosedStringLiteral => rmsg!("string literal needs closing delimiter"),
+            _ => return None,
+        })
+    }
+
+    fn hint(&self) -> Option<String> {
+        None
+    }
 }
 
 impl Display for Problem {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}", self.message())
-  }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.message())
+    }
 }

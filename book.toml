@@ -1,0 +1,23 @@
+[book]
+title = "Rant Reference"
+description = "Stable Rant 4.0 language, runtime, CLI, and standard-library reference."
+authors = ["Rant contributors"]
+language = "en"
+src = "docs-src"
+
+[build]
+build-dir = "docs"
+create-missing = false
+
+[output.html]
+additional-css = ["theme/custom.css"]
+default-theme = "ayu"
+git-repository-url = "https://github.com/rant-lang/rant"
+mathjax-support = false
+
+[output.html.fold]
+enable = true
+level = 2
+
+[output.html.print]
+enable = false

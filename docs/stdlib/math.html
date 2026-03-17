@@ -1,25 +1,511 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Math - Rant Reference</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
-    <link rel="stylesheet" href="../styles.css">
-  </head>
-  <body>
-    <div class="layout">
-      <nav class="sidebar" aria-label="Table of contents">
-        <div class="brand"><a href="../intro.html">Rant Reference</a></div>
-        <ol><li class=""><a href="../intro.html">Introduction</a></li><li class=""><a href="../getting-started.html">Getting Started</a></li><li class=""><a href="../language.html">Language</a><ol><li class=""><a href="../language/text.html">Text</a></li><li class=""><a href="../language/blocks.html">Blocks</a></li><li class=""><a href="../language/functions.html">Functions</a></li><li class=""><a href="../language/data-types.html">Data Types</a></li><li class=""><a href="../language/accessors.html">Accessors</a></li><li class=""><a href="../language/keywords.html">Keywords</a><ol><li class=""><a href="../language/keywords/require.html">@require</a></li><li class=""><a href="../language/keywords/return.html">@return</a></li><li class=""><a href="../language/keywords/continue.html">@continue</a></li><li class=""><a href="../language/keywords/break.html">@break</a></li><li class=""><a href="../language/keywords/weight.html">@weight</a></li><li class=""><a href="../language/keywords/text.html">@text</a></li></ol></li><li class=""><a href="../language/operators.html">Operators</a></li><li class=""><a href="../language/conditional-expressions.html">Conditional Expressions</a></li><li class=""><a href="../language/output-modifiers.html">Output Modifiers</a></li></ol></li><li class=""><a href="../runtime.html">Runtime Features</a><ol><li class=""><a href="../runtime/attributes.html">Attributes</a></li><li class=""><a href="../runtime/formatters.html">Formatters</a></li><li class=""><a href="../modules.html">Modules</a></li><li class=""><a href="../cli.html">CLI And REPL</a></li></ol></li><li class=""><a href="../stdlib.html">Standard Library</a><ol><li class=""><a href="general.html">General</a></li><li class=""><a href="control-flow.html">Attributes And Control Flow</a></li><li class=""><a href="collections.html">Collections</a></li><li class=""><a href="generators.html">Generators</a></li><li class=""><a href="formatting.html">Formatting</a></li><li class=""><a href="strings.html">Strings</a></li><li class=""><a href="boolean.html">Boolean</a></li><li class=""><a href="comparison.html">Comparison</a></li><li class="active"><a href="math.html">Math</a></li><li class=""><a href="conversion.html">Conversion</a></li><li class=""><a href="verification.html">Verification</a></li><li class=""><a href="assertion.html">Assertion</a></li><li class=""><a href="constants.html">Constants</a></li></ol></li><li class=""><a href="../compiler-messages.html">Diagnostics</a></li><li class=""><a href="../glossary.html">Glossary</a></li></ol>
-      </nav>
-      <main class="content">
-        <div class="topbar">
-          <div>Stable 4.0 Reference</div>
-          <div><a href="https://github.com/rant-lang/rant">Repository</a></div>
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Math - Rant Reference</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
         </div>
-        <h1 id="math"><a class="header" href="#math">Math</a></h1><p>Arithmetic and numeric utilities.</p><table><thead><tr><th>Name</th><th>Call Form</th><th>Summary</th></tr></thead><tbody><tr><td><code>abs</code></td><td><code></code></td><td>Returns the absolute value.</td></tr><tr><td><code>add</code></td><td><code></code></td><td>Adds two values.</td></tr><tr><td><code>sub</code></td><td><code></code></td><td>Subtracts the right value from the left value.</td></tr><tr><td><code>mul</code></td><td><code></code></td><td>Multiplies two values.</td></tr><tr><td><code>div</code></td><td><code></code></td><td>Divides the left value by the right value.</td></tr><tr><td><code>mul-add</code></td><td><code></code></td><td>Performs a multiply-add operation.</td></tr><tr><td><code>mod</code></td><td><code></code></td><td>Computes the modulo remainder.</td></tr><tr><td><code>neg</code></td><td><code></code></td><td>Negates a numeric value.</td></tr><tr><td><code>pow</code></td><td><code></code></td><td>Raises a value to a power.</td></tr><tr><td><code>recip</code></td><td><code></code></td><td>Returns the reciprocal of a numeric value.</td></tr><tr><td><code>clamp</code></td><td><code></code></td><td>Clamps a value between two bounds.</td></tr><tr><td><code>min</code></td><td><code></code></td><td>Returns the smaller of two values.</td></tr><tr><td><code>max</code></td><td><code></code></td><td>Returns the larger of two values.</td></tr><tr><td><code>floor</code></td><td><code></code></td><td>Rounds a float downward.</td></tr><tr><td><code>ceil</code></td><td><code></code></td><td>Rounds a float upward.</td></tr><tr><td><code>frac</code></td><td><code></code></td><td>Returns the fractional part of a float.</td></tr><tr><td><code>asin</code></td><td><code></code></td><td>Returns the inverse sine.</td></tr><tr><td><code>sin</code></td><td><code></code></td><td>Returns the sine.</td></tr><tr><td><code>acos</code></td><td><code></code></td><td>Returns the inverse cosine.</td></tr><tr><td><code>cos</code></td><td><code></code></td><td>Returns the cosine.</td></tr><tr><td><code>atan</code></td><td><code></code></td><td>Returns the inverse tangent.</td></tr><tr><td><code>atan2</code></td><td><code></code></td><td>Returns the two-argument inverse tangent.</td></tr><tr><td><code>tan</code></td><td><code></code></td><td>Returns the tangent.</td></tr><tr><td><code>sqrt</code></td><td><code></code></td><td>Returns the square root.</td></tr></tbody></table>
-      </main>
     </div>
-  </body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rant Reference</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="standard-library-math-functions"><a class="header" href="#standard-library-math-functions">Standard Library: Math functions</a></h1>
+<h2 id="abs"><a class="header" href="#abs">abs</a></h2>
+<pre><code class="language-rant">
+[%abs: num]
+
+</code></pre>
+<p>→ <code>int | float</code></p>
+<p>Prints the absolute value of <code>num</code>.</p>
+<h3 id="parameters"><a class="header" href="#parameters">Parameters</a></h3>
+<p><strong><code>num</code></strong> ← <code>int | float</code> <br/>
+The input number.</p>
+<h3 id="errors"><a class="header" href="#errors">Errors</a></h3>
+<p>Raises an error if <code>num</code> is an integer and the absolute value overflows.</p>
+<h2 id="add"><a class="header" href="#add">add</a></h2>
+<pre><code class="language-rant">
+[%add: lhs; rhs]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Adds two values and prints the sum.</p>
+<h3 id="parameters-1"><a class="header" href="#parameters-1">Parameters</a></h3>
+<p><strong><code>lhs</code></strong> ← <code>any</code> <br/>
+The left-hand operand of the addition.</p>
+<p><strong><code>rhs</code></strong> ← <code>any</code> <br/>
+The right-hand operand of the addition.</p>
+<h2 id="clamp"><a class="header" href="#clamp">clamp</a></h2>
+<pre><code class="language-rant">
+[%clamp: value; a; b]
+
+</code></pre>
+<p>Prints <code>value</code> clamped to the inclusive range between <code>a</code> and <code>b</code>.</p>
+<h2 id="ceil"><a class="header" href="#ceil">ceil</a></h2>
+<pre><code class="language-rant">
+[%ceil: val]
+
+</code></pre>
+<p>→ <code>int</code></p>
+<p>Prints the smallest integer that is greater than or equal to <code>val</code>.</p>
+<h3 id="parameters-2"><a class="header" href="#parameters-2">Parameters</a></h3>
+<p><strong><code>val</code></strong> ← <code>float</code> <br/>
+The input number.</p>
+<h2 id="div"><a class="header" href="#div">div</a></h2>
+<pre><code class="language-rant">
+[%div: lhs; rhs]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Divides two values and prints the quotient.</p>
+<h3 id="parameters-3"><a class="header" href="#parameters-3">Parameters</a></h3>
+<p><strong><code>lhs</code></strong> ← <code>any</code> <br/>
+The left-hand operand (dividend).</p>
+<p><strong><code>rhs</code></strong> ← <code>any</code> <br/>
+The right-hand operand (divisor).</p>
+<h2 id="floor"><a class="header" href="#floor">floor</a></h2>
+<pre><code class="language-rant">
+[%floor: val]
+
+</code></pre>
+<p>→ <code>int</code></p>
+<p>Prints the largest integer that is less than or equal to <code>val</code>.</p>
+<h3 id="parameters-4"><a class="header" href="#parameters-4">Parameters</a></h3>
+<p><strong><code>val</code></strong> ← <code>float</code> <br/>
+The input number.</p>
+<h2 id="frac"><a class="header" href="#frac">frac</a></h2>
+<pre><code class="language-rant">
+[%frac: val]
+
+</code></pre>
+<p>→ <code>float</code></p>
+<p>Prints the fractional part of <code>val</code>.</p>
+<h3 id="parameters-5"><a class="header" href="#parameters-5">Parameters</a></h3>
+<p><strong><code>val</code></strong> ← <code>float</code> <br/>
+The input number.</p>
+<h2 id="max"><a class="header" href="#max">max</a></h2>
+<pre><code class="language-rant">
+[%max: values+]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Returns the largest value in <code>values</code>.</p>
+<p>Any elements of type <code>list</code> in <code>values</code> will be expanded to their individual elements
+before the maximum value is calculated.</p>
+<h3 id="parameters-6"><a class="header" href="#parameters-6">Parameters</a></h3>
+<p><strong><code>values</code></strong> ← <code>any+</code> <br/>
+The input values.</p>
+<h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
+<pre><code class="language-rant"># Arguments can be single values
+[max: 3; 2 |&gt; assert-eq: 3]
+
+# Lists are treated as their individual elements
+[max: (3; 2) |&gt; assert-eq: 3]
+
+# Even alongside single values, lists are still expanded!
+[max: 3; (4; -2; 0; 10); 6 |&gt; assert-eq: 10]
+</code></pre>
+<h2 id="min"><a class="header" href="#min">min</a></h2>
+<pre><code class="language-rant">
+[%min: values+]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Returns the smallest value in <code>values</code>.</p>
+<p>Any elements of type <code>list</code> in <code>values</code> will be expanded to their individual elements
+before the minimum value is calculated.</p>
+<h3 id="parameters-7"><a class="header" href="#parameters-7">Parameters</a></h3>
+<p><strong><code>values</code></strong> ← <code>any+</code> <br/>
+The input values.</p>
+<h3 id="examples-1"><a class="header" href="#examples-1">Examples</a></h3>
+<pre><code class="language-rant"># Arguments can be single values
+[min: 3; 2 |&gt; assert-eq: 2]
+
+# Lists are treated as their individual elements
+[min: (3; 2) |&gt; assert-eq: 2]
+
+# Even alongside single values, lists are still expanded!
+[min: 3; (4; -2; 0; 10); 6 |&gt; assert-eq: -2]
+</code></pre>
+<h2 id="mod"><a class="header" href="#mod">mod</a></h2>
+<pre><code class="language-rant">
+[%mod: lhs; rhs]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Gets the modulus of two values.</p>
+<h3 id="parameters-8"><a class="header" href="#parameters-8">Parameters</a></h3>
+<p><strong><code>lhs</code></strong> ← <code>any</code> <br/>
+The left-hand operand (dividend).</p>
+<p><strong><code>rhs</code></strong> ← <code>any</code> <br/>
+The right-hand operand (divisor).</p>
+<h2 id="mul"><a class="header" href="#mul">mul</a></h2>
+<pre><code class="language-rant">
+[%mul: lhs; rhs]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Multiplies two values and prints the product.</p>
+<h3 id="parameters-9"><a class="header" href="#parameters-9">Parameters</a></h3>
+<p><strong><code>lhs</code></strong> ← <code>any</code> <br/>
+The left-hand operand.</p>
+<p><strong><code>rhs</code></strong> ← <code>any</code> &lt;br.&gt;
+The right-hand operand.</p>
+<h2 id="mul-add"><a class="header" href="#mul-add">mul-add</a></h2>
+<pre><code class="language-rant">
+[%mul-add: lhs; rhs; add]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Multiplies two values, then adds another value to the result.</p>
+<h3 id="parameters-10"><a class="header" href="#parameters-10">Parameters</a></h3>
+<p><strong><code>lhs</code></strong> ← <code>any</code> <br/>
+The left-hand operand of the multiplication.</p>
+<p><strong><code>rhs</code></strong> ← <code>any</code> <br/>
+The right-hand operand of the multiplication.</p>
+<p><strong><code>add</code></strong> ← <code>any</code> <br/>
+The value to add to the product.</p>
+<h2 id="neg"><a class="header" href="#neg">neg</a></h2>
+<pre><code class="language-rant">
+[%neg: val]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Negates a value and prints it.</p>
+<h3 id="parameters-11"><a class="header" href="#parameters-11">Parameters</a></h3>
+<p><strong><code>val</code></strong> ← <code>any</code> <br/>
+The input value.</p>
+<h2 id="recip"><a class="header" href="#recip">recip</a></h2>
+<pre><code class="language-rant">
+[%recip: n]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Gets the reciprocal of a value.</p>
+<h2 id="sub"><a class="header" href="#sub">sub</a></h2>
+<pre><code class="language-rant">
+[%sub: lhs; rhs]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Prints the difference between two values.</p>
+<h3 id="parameters-12"><a class="header" href="#parameters-12">Parameters</a></h3>
+<p><strong><code>lhs</code></strong> ← <code>any</code> <br/>
+The left-hand operand of the subtraction.</p>
+<p><strong><code>rhs</code></strong> ← <code>any</code> <br/>
+The right-hand side of the subtraction.</p>
+<h2 id="sin"><a class="header" href="#sin">sin</a></h2>
+<pre><code class="language-rant">
+[%sin: x]
+
+</code></pre>
+<p>→ <code>float</code></p>
+<p>Calculates the sine of <code>x</code>.</p>
+<h3 id="parameters-13"><a class="header" href="#parameters-13">Parameters</a></h3>
+<p><strong><code>x</code></strong> ← <code>float</code> <br/>
+The input value, in radians.</p>
+<h2 id="cos"><a class="header" href="#cos">cos</a></h2>
+<pre><code class="language-rant">
+[%cos: x]
+
+</code></pre>
+<p>→ <code>float</code></p>
+<p>Calculates the cosine of <code>x</code>.</p>
+<h3 id="parameters-14"><a class="header" href="#parameters-14">Parameters</a></h3>
+<p><strong><code>x</code></strong> ← <code>float</code> <br/>
+The input value, in radians.</p>
+<h2 id="tan"><a class="header" href="#tan">tan</a></h2>
+<pre><code class="language-rant">
+[%tan: x]
+
+</code></pre>
+<p>→ <code>float</code></p>
+<p>Calculates the tangent of <code>x</code>.</p>
+<h3 id="parameters-15"><a class="header" href="#parameters-15">Parameters</a></h3>
+<p><strong><code>x</code></strong> ← <code>float</code> <br/>
+The input value, in radians.</p>
+<h2 id="asin"><a class="header" href="#asin">asin</a></h2>
+<pre><code class="language-rant">
+[%asin: x]
+
+</code></pre>
+<p>→ <code>float</code></p>
+<p>Calculates the arcsine (in radians) of <code>x</code>.</p>
+<h3 id="parameters-16"><a class="header" href="#parameters-16">Parameters</a></h3>
+<p><strong><code>x</code></strong> ← <code>float</code> <br/>
+The input sine value.</p>
+<h2 id="acos"><a class="header" href="#acos">acos</a></h2>
+<pre><code class="language-rant">
+[%acos: x]
+
+</code></pre>
+<p>→ <code>float</code></p>
+<p>Calculates the arccosine (in radians) of <code>x</code>.</p>
+<h3 id="parameters-17"><a class="header" href="#parameters-17">Parameters</a></h3>
+<p><strong><code>x</code></strong> ← <code>float</code> <br/>
+The input cosine value.</p>
+<h2 id="atan"><a class="header" href="#atan">atan</a></h2>
+<pre><code class="language-rant">
+[%atan: x]
+
+</code></pre>
+<p>→ <code>float</code></p>
+<p>Calculates the arctangent (in radians) of <code>x</code>.</p>
+<h3 id="parameters-18"><a class="header" href="#parameters-18">Parameters</a></h3>
+<p><strong><code>x</code></strong> ← <code>float</code> <br/>
+The input tangent value.</p>
+<h2 id="atan2"><a class="header" href="#atan2">atan2</a></h2>
+<pre><code class="language-rant">
+[%atan2: y; x]
+
+</code></pre>
+<p>→ <code>float</code></p>
+<p>Calculates the four-quadrant arctangent (in radians) of \(\frac{y}{x}\).</p>
+<p>Returns 0 if <code>x</code> or <code>y</code> is 0.</p>
+<h3 id="parameters-19"><a class="header" href="#parameters-19">Parameters</a></h3>
+<p><strong><code>y</code></strong> ← <code>float</code> <br/>
+The input tangent's numerator.</p>
+<p><strong><code>x</code></strong> ← <code>float</code> <br/>
+The input tangent's denominator.</p>
+<h2 id="sqrt"><a class="header" href="#sqrt">sqrt</a></h2>
+<pre><code class="language-rant">
+[%sqrt: x]
+
+</code></pre>
+<p>→ <code>float</code></p>
+<p>Calculates the square root of <code>x</code>.</p>
+<h3 id="parameters-20"><a class="header" href="#parameters-20">Parameters</a></h3>
+<p><strong><code>x</code></strong> ← <code>int | float</code> <br/>
+The input value.</p>
+<h2 id="pow"><a class="header" href="#pow">pow</a></h2>
+<pre><code class="language-rant">
+[%pow: x; y]
+
+</code></pre>
+<p>→ <code>int | float</code></p>
+<p>Calculates \(x^y\) and prints the result. Both <code>x</code> and <code>y</code> can be <code>int</code> or <code>float</code>.</p>
+<h3 id="parameters-21"><a class="header" href="#parameters-21">Parameters</a></h3>
+<p><strong><code>x</code></strong> ← <code>int | float</code> <br/>
+The base number.</p>
+<p><strong><code>y</code></strong> ← <code>int | flaot</code> <br/>
+The exponent to raise <code>x</code> to.</p>
+<h3 id="errors-1"><a class="header" href="#errors-1">Errors</a></h3>
+<p>Raises an overflow error if a <code>x</code> is an <code>int</code> and <code>x ^ y</code> causes an overflow.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../stdlib/comparison.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../stdlib/conversion.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../stdlib/comparison.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../stdlib/conversion.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
 </html>

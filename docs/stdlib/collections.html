@@ -1,25 +1,967 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Collections - Rant Reference</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
-    <link rel="stylesheet" href="../styles.css">
-  </head>
-  <body>
-    <div class="layout">
-      <nav class="sidebar" aria-label="Table of contents">
-        <div class="brand"><a href="../intro.html">Rant Reference</a></div>
-        <ol><li class=""><a href="../intro.html">Introduction</a></li><li class=""><a href="../getting-started.html">Getting Started</a></li><li class=""><a href="../language.html">Language</a><ol><li class=""><a href="../language/text.html">Text</a></li><li class=""><a href="../language/blocks.html">Blocks</a></li><li class=""><a href="../language/functions.html">Functions</a></li><li class=""><a href="../language/data-types.html">Data Types</a></li><li class=""><a href="../language/accessors.html">Accessors</a></li><li class=""><a href="../language/keywords.html">Keywords</a><ol><li class=""><a href="../language/keywords/require.html">@require</a></li><li class=""><a href="../language/keywords/return.html">@return</a></li><li class=""><a href="../language/keywords/continue.html">@continue</a></li><li class=""><a href="../language/keywords/break.html">@break</a></li><li class=""><a href="../language/keywords/weight.html">@weight</a></li><li class=""><a href="../language/keywords/text.html">@text</a></li></ol></li><li class=""><a href="../language/operators.html">Operators</a></li><li class=""><a href="../language/conditional-expressions.html">Conditional Expressions</a></li><li class=""><a href="../language/output-modifiers.html">Output Modifiers</a></li></ol></li><li class=""><a href="../runtime.html">Runtime Features</a><ol><li class=""><a href="../runtime/attributes.html">Attributes</a></li><li class=""><a href="../runtime/formatters.html">Formatters</a></li><li class=""><a href="../modules.html">Modules</a></li><li class=""><a href="../cli.html">CLI And REPL</a></li></ol></li><li class=""><a href="../stdlib.html">Standard Library</a><ol><li class=""><a href="general.html">General</a></li><li class=""><a href="control-flow.html">Attributes And Control Flow</a></li><li class="active"><a href="collections.html">Collections</a></li><li class=""><a href="generators.html">Generators</a></li><li class=""><a href="formatting.html">Formatting</a></li><li class=""><a href="strings.html">Strings</a></li><li class=""><a href="boolean.html">Boolean</a></li><li class=""><a href="comparison.html">Comparison</a></li><li class=""><a href="math.html">Math</a></li><li class=""><a href="conversion.html">Conversion</a></li><li class=""><a href="verification.html">Verification</a></li><li class=""><a href="assertion.html">Assertion</a></li><li class=""><a href="constants.html">Constants</a></li></ol></li><li class=""><a href="../compiler-messages.html">Diagnostics</a></li><li class=""><a href="../glossary.html">Glossary</a></li></ol>
-      </nav>
-      <main class="content">
-        <div class="topbar">
-          <div>Stable 4.0 Reference</div>
-          <div><a href="https://github.com/rant-lang/rant">Repository</a></div>
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Collections - Rant Reference</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
         </div>
-        <h1 id="collections"><a class="header" href="#collections">Collections</a></h1><p>Functions for lists, tuples, maps, and collection transforms.</p><table><thead><tr><th>Name</th><th>Call Form</th><th>Summary</th></tr></thead><tbody><tr><td><code>assoc</code></td><td><code></code></td><td>Builds a map from alternating keys and values.</td></tr><tr><td><code>augment</code></td><td><code></code></td><td>Returns a map containing the merged keys of two maps.</td></tr><tr><td><code>augment-self</code></td><td><code></code></td><td>Mutates a map by merging another map into it.</td></tr><tr><td><code>augment-thru</code></td><td><code></code></td><td>Merges a map and then prints the mutated handle.</td></tr><tr><td><code>chunks</code></td><td><code></code></td><td>Splits a list into evenly sized sublists.</td></tr><tr><td><code>clear</code></td><td><code></code></td><td>Removes all items from a mutable collection.</td></tr><tr><td><code>fill-self</code></td><td><code></code></td><td>Mutates a list by filling it with a value.</td></tr><tr><td><code>fill-thru</code></td><td><code></code></td><td>Fills a list and then prints the same handle.</td></tr><tr><td><code>has</code></td><td><code></code></td><td>Returns whether a collection contains a value or key.</td></tr><tr><td><code>index-of</code></td><td><code></code></td><td>Returns the first matching list index or `nothing`.</td></tr><tr><td><code>insert</code></td><td><code></code></td><td>Inserts into a list by index or a map by key.</td></tr><tr><td><code>keys</code></td><td><code></code></td><td>Returns a list of map keys.</td></tr><tr><td><code>last-index-of</code></td><td><code></code></td><td>Returns the last matching list index or `nothing`.</td></tr><tr><td><code>list</code></td><td><code></code></td><td>Builds a list from its arguments.</td></tr><tr><td><code>nlist</code></td><td><code></code></td><td>Builds a list containing repeated copies of a value.</td></tr><tr><td><code>remove</code></td><td><code></code></td><td>Removes from a list by index or a map by key.</td></tr><tr><td><code>rev</code></td><td><code></code></td><td>Reverses an ordered value.</td></tr><tr><td><code>sift-self</code></td><td><code></code></td><td>Mutates a list by removing `nothing` values.</td></tr><tr><td><code>sift-thru</code></td><td><code></code></td><td>Sifts a list and then prints the same handle.</td></tr><tr><td><code>sift</code></td><td><code></code></td><td>Returns a sifted copy of a list.</td></tr><tr><td><code>squish-self</code></td><td><code></code></td><td>Mutates a list by removing duplicate values.</td></tr><tr><td><code>squish-thru</code></td><td><code></code></td><td>Squishes a list and then prints the same handle.</td></tr><tr><td><code>squish</code></td><td><code></code></td><td>Returns a de-duplicated copy of a list.</td></tr><tr><td><code>take</code></td><td><code></code></td><td>Removes and returns a list item or map entry.</td></tr><tr><td><code>translate</code></td><td><code></code></td><td>Maps values through a translation map.</td></tr><tr><td><code>values</code></td><td><code></code></td><td>Returns a list of map values.</td></tr><tr><td><code>filter</code></td><td><code></code></td><td>Filters a collection through a predicate.</td></tr><tr><td><code>join</code></td><td><code></code></td><td>Joins a collection into text with a separator.</td></tr><tr><td><code>map</code></td><td><code></code></td><td>Transforms a collection through a callback.</td></tr><tr><td><code>sort-self</code></td><td><code></code></td><td>Sorts a list in place.</td></tr><tr><td><code>sort-thru</code></td><td><code></code></td><td>Sorts a list in place and prints the same handle.</td></tr><tr><td><code>sort</code></td><td><code></code></td><td>Returns a sorted copy of a list.</td></tr><tr><td><code>shuffle-self</code></td><td><code></code></td><td>Shuffles a list in place.</td></tr><tr><td><code>shuffle-thru</code></td><td><code></code></td><td>Shuffles a list and prints the same handle.</td></tr><tr><td><code>shuffle</code></td><td><code></code></td><td>Returns a shuffled copy of a list.</td></tr><tr><td><code>sum</code></td><td><code></code></td><td>Adds the contents of an ordered collection.</td></tr><tr><td><code>tuple</code></td><td><code></code></td><td>Builds a tuple from its arguments.</td></tr><tr><td><code>push</code></td><td><code></code></td><td>Appends a value to a list.</td></tr><tr><td><code>pop</code></td><td><code></code></td><td>Removes and returns the last list item.</td></tr><tr><td><code>oxford-join</code></td><td><code></code></td><td>Joins text with a final Oxford-comma conjunction.</td></tr><tr><td><code>zip</code></td><td><code></code></td><td>Zips collections together, optionally through a callback.</td></tr></tbody></table>
-      </main>
     </div>
-  </body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rant Reference</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="standard-library-collection-functions"><a class="header" href="#standard-library-collection-functions">Standard Library: Collection functions</a></h1>
+<h2 id="assoc"><a class="header" href="#assoc">assoc</a></h2>
+<pre><code class="language-rant">
+[%assoc: keys; values]
+
+</code></pre>
+<p>→ <code>map</code></p>
+<p>Creates a map from a list of keys and a list of values.
+Each key in <code>keys</code> will be matched with the value at the same index in <code>values</code>.</p>
+<h3 id="parameters"><a class="header" href="#parameters">Parameters</a></h3>
+<p><strong><code>keys</code></strong> ← <code>list</code> <br/>
+The keys to store in the map.</p>
+<p><strong><code>values</code></strong> ← <code>list</code> <br/>
+The values to associate with the keys.</p>
+<h3 id="errors"><a class="header" href="#errors">Errors</a></h3>
+<p>Raises a runtime error if the lengths of <code>keys</code> and <code>values</code> do not match.</p>
+<h3 id="example"><a class="header" href="#example">Example</a></h3>
+<pre><code class="language-rant"># Generate a map of the "Big Five" personality traits
+# with random rating values that add up to 50
+&lt;$personality = 
+  [assoc:
+    (ope; con; ext; agr; neu);
+    [shred: 50; 5; [rand: 1; 10]] # Use random variance to reduce trait deviation
+  ]
+&gt;
+
+# Print the values
+[whitespace-fmt:verbatim]
+"Openness to experience:"   &lt;personality/ope&gt;\n
+"Conscientiousness:"        &lt;personality/con&gt;\n
+"Extraversion:"             &lt;personality/ext&gt;\n
+"Agreeableness:"            &lt;personality/agr&gt;\n
+"Neuroticism:"              &lt;personality/neu&gt;\n
+
+
+##
+  EXAMPLE OUTPUT:
+
+  Openness to experience:   7
+  Conscientiousness:        11
+  Extraversion:             5
+  Agreeableness:            12
+  Neuroticism:              15
+##
+</code></pre>
+<h2 id="augment"><a class="header" href="#augment">augment</a></h2>
+<pre><code class="language-rant">
+[%augment: dst-map; src-map]
+
+</code></pre>
+<p>→ <code>map</code></p>
+<p>Clones <code>dst-map</code>, adds the values from <code>src-map</code> to the values with matching keys on <code>dst-map</code>, then returns the resulting map.</p>
+<h3 id="parameters-1"><a class="header" href="#parameters-1">Parameters</a></h3>
+<p><strong><code>dst-map</code></strong> ← <code>map</code> <br/>
+The map to copy and augment.</p>
+<p><strong><code>src-map</code></strong> ← <code>map</code> <br/>
+The map containing the values to add to those in <code>dst-map</code>.</p>
+<h2 id="augment-self"><a class="header" href="#augment-self">augment-self</a></h2>
+<pre><code class="language-rant">
+[%augment-self: dst-map; src-map]
+
+</code></pre>
+<p>Adds the values from <code>src-map</code> to the values with matching keys on <code>dst-map</code>.</p>
+<h3 id="parameters-2"><a class="header" href="#parameters-2">Parameters</a></h3>
+<p><strong><code>dst-map</code></strong> ← <code>map</code> <br/>
+The map to augment.</p>
+<p><strong><code>src-map</code></strong> ← <code>map</code> <br/>
+The map containing the values to add to those in <code>dst-map</code>.</p>
+<h2 id="augment-thru"><a class="header" href="#augment-thru">augment-thru</a></h2>
+<pre><code class="language-rant">
+[%augment-self: dst-map; src-map]
+
+</code></pre>
+<p>→ <code>map</code></p>
+<p>Adds the values from <code>src-map</code> to the values with matching keys on <code>dst-map</code>, then prints <code>dst-map</code>.</p>
+<h3 id="parameters-3"><a class="header" href="#parameters-3">Parameters</a></h3>
+<p><strong><code>dst-map</code></strong> ← <code>map</code> <br/>
+The map to augment.</p>
+<p><strong><code>src-map</code></strong> ← <code>map</code> <br/>
+The map containing the values to add to those in <code>dst-map</code>.</p>
+<h2 id="chunks"><a class="header" href="#chunks">chunks</a></h2>
+<pre><code class="language-rant">
+[%chunks: collection; count]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Splits <code>collection</code> into <code>count</code> sub-slices and prints a new list containing the results, making a best-effort to make each chunk the same size.</p>
+<p>If the contents of <code>collection</code> don't divide evenly into <code>count</code> chunks, the function will produce larger chunks first, then smaller chunks with the remaining content.</p>
+<p>If <code>count</code> is greater than the size of <code>collection</code>, the chunk size will be 1 and the output list will be padded with elements set to <code>&lt;&gt;</code>.</p>
+<h3 id="parameters-4"><a class="header" href="#parameters-4">Parameters</a></h3>
+<p><strong><code>collection</code></strong> ← <code>list | string | range</code> <br/>
+The collection to split into chunks.</p>
+<p><strong><code>count</code></strong> ← <code>int</code> <br/>
+The number of chunks to produce.</p>
+<h3 id="errors-1"><a class="header" href="#errors-1">Errors</a></h3>
+<p>Raises a runtime error if <code>collection</code> cannot be sliced.</p>
+<h2 id="clear"><a class="header" href="#clear">clear</a></h2>
+<pre><code class="language-rant">
+[%clear: collection]
+
+</code></pre>
+<p>Removes all elements from a list or map.</p>
+<h3 id="parameters-5"><a class="header" href="#parameters-5">Parameters</a></h3>
+<p><strong><code>collection</code></strong> ← <code>list | map</code> <br/>
+The collection to clear.</p>
+<h3 id="errors-2"><a class="header" href="#errors-2">Errors</a></h3>
+<p>Causes a runtime error if <code>collection</code> is not a list or map.</p>
+<h2 id="fill-self"><a class="header" href="#fill-self">fill-self</a></h2>
+<pre><code class="language-rant">
+[%fill-self: list; value]
+
+</code></pre>
+<p>Mutates <code>list</code> in place by replacing every element with <code>value</code>.</p>
+<h2 id="fill-thru"><a class="header" href="#fill-thru">fill-thru</a></h2>
+<pre><code class="language-rant">
+[%fill-thru: list; value]
+
+</code></pre>
+<p>Mutates <code>list</code> in place and then prints the same list handle.</p>
+<h2 id="list"><a class="header" href="#list">list</a></h2>
+<pre><code class="language-rant">
+[%list: values*]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Prints a <code>list</code> containing the arguments.</p>
+<h3 id="parameters-6"><a class="header" href="#parameters-6">Parameters</a></h3>
+<p><strong><code>values</code></strong> ← <code>any*</code> <br/>
+The values to store in the list.</p>
+<h2 id="tuple"><a class="header" href="#tuple">tuple</a></h2>
+<pre><code class="language-rant">
+[%tuple: values*]
+
+</code></pre>
+<p>→ <code>tuple</code></p>
+<p>Prints a <code>tuple</code> containing the arguments.</p>
+<h3 id="parameters-7"><a class="header" href="#parameters-7">Parameters</a></h3>
+<p><strong><code>values</code></strong> ← <code>any*</code> <br/>
+The values to store in the tuple.</p>
+<h2 id="nlist"><a class="header" href="#nlist">nlist</a></h2>
+<pre><code class="language-rant">
+[%nlist: values*]
+
+</code></pre>
+<p>Prints a single-element list whose only value is the list constructed from <code>values</code>.</p>
+<h2 id="filter"><a class="header" href="#filter">filter</a></h2>
+<pre><code class="language-rant">
+[%filter: list; predicate]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Runs a predicate function against all items in a list and returns another list containing only the values that the predicate returned <code>@true</code> on.</p>
+<h3 id="parameters-8"><a class="header" href="#parameters-8">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<p><strong><code>predicate</code></strong> ← <code>function -&gt; bool</code> <br/>
+The predicate to run against each element in the input list.</p>
+<blockquote>
+<p><strong>Parameters for <code>predicate</code></strong></p>
+<p><strong><code>item</code></strong> ← <code>any</code> <br/>
+The current item to be checked.</p>
+</blockquote>
+<h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
+<h4 id="filter-a-list-of-numbers-by-only-those-divisible-by-3"><a class="header" href="#filter-a-list-of-numbers-by-only-those-divisible-by-3">Filter a list of numbers by only those divisible by 3</a></h4>
+<pre><code class="language-rant">&lt;$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12)&gt;
+&lt;$multiples-of-three = [filter: &lt;numbers&gt;; [?:x] { [is-factor: &lt;x&gt;; 3] }]&gt;
+[join: &lt;multiples-of-three&gt;; ,\s]
+# -&gt; 3, 6, 9, 12
+</code></pre>
+<h4 id="filter-a-list-of-numbers-by-only-odd-numbers"><a class="header" href="#filter-a-list-of-numbers-by-only-odd-numbers">Filter a list of numbers by only odd numbers</a></h4>
+<pre><code class="language-rant">&lt;$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12)&gt;
+# `is-odd` is a function, so we can simply pass it in as the predicate!
+&lt;$odd-numbers = [filter: &lt;numbers&gt;; &lt;is-odd&gt;]&gt;
+[join: &lt;odd-numbers&gt;; ,\s]
+# -&gt; 1, 3, 5, 7, 9, 11
+</code></pre>
+<h4 id="filter-a-list-of-words-to-only-those-that-are-3-letters-or-less"><a class="header" href="#filter-a-list-of-words-to-only-those-that-are-3-letters-or-less">Filter a list of words to only those that are 3 letters or less</a></h4>
+<pre><code class="language-rant">&lt;$words = [split: "the quick brown fox jumps over the lazy dog";\s]&gt;
+&lt;$short-words = [filter: &lt;words&gt;; [?:word] { [le: [len: &lt;word&gt;]; 3] }]&gt;
+[join: &lt;short-words&gt;; ,\s]
+# -&gt; the fox the dog
+</code></pre>
+<h2 id="has"><a class="header" href="#has">has</a></h2>
+<pre><code class="language-rant">
+[%has: collection; value]
+
+</code></pre>
+<p>→ <code>bool</code></p>
+<p>Returns a boolean indicating whether <code>value</code> occurs in <code>collection</code>.</p>
+<p>If <code>collection</code> is a <code>map</code>, this function searches the map's keys.</p>
+<h3 id="parameters-9"><a class="header" href="#parameters-9">Parameters</a></h3>
+<p><strong><code>collection</code></strong> ← <code>list | map</code> <br/>
+The collection to search.</p>
+<p><strong><code>value</code></strong> ← <code>any</code> <br/>
+The value to search for. <br/>
+If <code>collection</code> is of type <code>map</code>, <code>value</code> will be coerced to a string before searching (as map keys can only be strings).</p>
+<h2 id="index-of"><a class="header" href="#index-of">index-of</a></h2>
+<pre><code class="language-rant">
+[%index-of: list; value]
+
+</code></pre>
+<p>→ <code>int | nothing</code></p>
+<p>Returns the index of the first occurrence of <code>value</code> in <code>list</code>.
+If no match is found, returns <code>&lt;&gt;</code>.</p>
+<h3 id="parameters-10"><a class="header" href="#parameters-10">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The list to search.</p>
+<p><strong><code>value</code></strong> ← <code>any</code> <br/>
+The value to search for.</p>
+<h3 id="examples-1"><a class="header" href="#examples-1">Examples</a></h3>
+<pre><code class="language-rant">&lt;$letters = (: A; A; B; C; C; D; E)&gt;
+[index-of: &lt;letters&gt;; A |&gt; assert-eq: 0]
+[index-of: &lt;letters&gt;; C |&gt; assert-eq: 3]
+[index-of: &lt;letters&gt;; E |&gt; assert-eq: 6]
+[index-of: &lt;letters&gt;; F |&gt; assert-eq: &lt;&gt;]
+</code></pre>
+<h2 id="join"><a class="header" href="#join">join</a></h2>
+<pre><code class="language-rant">
+[%join: list; separator?]
+
+</code></pre>
+<p>→ <code>any*</code></p>
+<p>Prints the elements of a list in order separated by the <code>separator</code> value.</p>
+<h3 id="parameters-11"><a class="header" href="#parameters-11">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The list whose elements to print.</p>
+<p><strong><code>separator</code></strong> ← <code>any</code> <em>(optional)</em> <br/>
+The separator to print between each element.</p>
+<h2 id="last-index-of"><a class="header" href="#last-index-of">last-index-of</a></h2>
+<pre><code class="language-rant">
+[%last-index-of: list; value]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Returns the index of the last occurrence of <code>value</code> in <code>list</code>.
+If no match is found, returns <code>&lt;&gt;</code>.</p>
+<h3 id="parameters-12"><a class="header" href="#parameters-12">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The list to search.</p>
+<p><strong><code>value</code></strong> ← <code>any</code> <br/>
+The value to search for.</p>
+<h3 id="example-1"><a class="header" href="#example-1">Example</a></h3>
+<pre><code class="language-rant">&lt;$letters = (: A; A; B; C; C; D; E)&gt;
+[last-index-of: &lt;letters&gt;; A |&gt; assert-eq: 1]
+[last-index-of: &lt;letters&gt;; C |&gt; assert-eq: 4]
+[last-index-of: &lt;letters&gt;; E |&gt; assert-eq: 6]
+[last-index-of: &lt;letters&gt;; F |&gt; assert-eq: &lt;&gt;]
+</code></pre>
+<h2 id="map"><a class="header" href="#map">map</a></h2>
+<pre><code class="language-rant">
+[%map: list; map-func]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Calls the supplied function on each item in a list and returns another list with the results in the same order.</p>
+<h3 id="parameters-13"><a class="header" href="#parameters-13">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The list whose values to map.</p>
+<p><strong><code>map-func</code></strong> ← <code>function -&gt; any</code> <br/>
+The function to map the values with.</p>
+<blockquote>
+<p><strong>Parameters for <code>map-func</code></strong> <p></p>
+<p><strong><code>item</code></strong> ← <code>any</code> <br/>
+The current item to map.</p>
+</blockquote>
+<h3 id="example-2"><a class="header" href="#example-2">Example</a></h3>
+<pre><code class="language-rant"># Multiple each element of a list by 10
+&lt;$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10)&gt;
+&lt;$tens = [map: &lt;numbers&gt;; [?:x] { [mul: &lt;x&gt;; 10] }]&gt;
+[join: ,\s; &lt;tens&gt;]
+# -&gt; 10, 20, 30, 40, 50, 60, 70, 80, 90, 100
+</code></pre>
+<h2 id="oxford-join"><a class="header" href="#oxford-join">oxford-join</a></h2>
+<pre><code class="language-rant">
+[%oxford-join: comma; conj; comma-conj; list]
+
+</code></pre>
+<p>→ <code>any*</code></p>
+<p>A variant of the <code>join</code> function for conveniently formatting comma-separated lists.</p>
+<h3 id="parameters-14"><a class="header" href="#parameters-14">Parameters</a></h3>
+<p><strong><code>comma</code></strong> ← <code>any</code> <br/>
+The <strong>comma</strong> value. Separates all items except for the last 2. Unused in lists of 2 items or less.</p>
+<p><strong><code>conj</code></strong> ← <code>any</code> <br/>
+The <strong>conjunction</strong> value. Only used to separate items in lists of exactly 2 values.</p>
+<p><strong><code>comma-conj</code></strong> ← <code>any</code> <br/>
+The <strong>comma-conjunction</strong> value. Separates the final 2 values in lists with more than 2 values.</p>
+<h3 id="remarks"><a class="header" href="#remarks">Remarks</a></h3>
+<p>These arguments can be used to configure several aspects of list formatting-- namely, the inclusion of
+the <a href="https://en.wikipedia.org/wiki/Serial_comma">Oxford comma</a> or the choice of conjunction separating the final two items.</p>
+<p>The separator values are applied as follows:</p>
+<ul>
+<li><strong>Lists of 1 item</strong> use no separators.</li>
+<li><strong>Lists of 2 items</strong> use <code>conj</code> to separate the two items.</li>
+<li><strong>Lists of 3 or more items</strong> separate the final two items with <code>comma-conj</code>; all others use <code>comma</code>.</li>
+</ul>
+<h3 id="examples-2"><a class="header" href="#examples-2">Examples</a></h3>
+<h4 id="print-lists-with-oxford-comma"><a class="header" href="#print-lists-with-oxford-comma">Print lists with Oxford comma</a></h4>
+<pre><code class="language-rant">&lt;$numbers = (:)&gt;
+[rep: 5][sep: \n]
+{
+  [push: &lt;numbers&gt;; [step]]
+  [oxford-join: ,\s; \sand\s; ,\sand\s; &lt;numbers&gt;]
+}
+
+##
+  OUTPUT:
+
+  1
+  1 and 2
+  1, 2, and 3
+  1, 2, 3, and 4
+  1, 2, 3, 4, and 5
+##
+</code></pre>
+<h4 id="print-lists-without-oxford-comma"><a class="header" href="#print-lists-without-oxford-comma">Print lists without Oxford comma</a></h4>
+<pre><code class="language-rant">&lt;$numbers = (:)&gt;
+[rep: 5][sep: \n]
+{
+  [push: &lt;numbers&gt;; [step]]
+  [oxford-join: ,\s; \sand\s; \sand\s; &lt;numbers&gt;]
+}
+
+##
+  OUTPUT:
+
+  1
+  1 and 2
+  1, 2 and 3
+  1, 2, 3 and 4
+  1, 2, 3, 4 and 5
+##
+</code></pre>
+<h2 id="push"><a class="header" href="#push">push</a></h2>
+<pre><code class="language-rant">
+[%push: list; value]
+
+</code></pre>
+<p>Appends a value to the end of a list.</p>
+<h3 id="parameters-15"><a class="header" href="#parameters-15">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The list to modify.</p>
+<p><strong><code>value</code></strong> ← <code>any</code> <br/>
+The value to add to the end of <code>list</code>.</p>
+<h2 id="pop"><a class="header" href="#pop">pop</a></h2>
+<pre><code class="language-rant">
+[%pop: list]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Removes the last value from a list and prints it.</p>
+<h3 id="parameters-16"><a class="header" href="#parameters-16">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The list to modify.</p>
+<h2 id="insert"><a class="header" href="#insert">insert</a></h2>
+<pre><code class="language-rant">
+[%insert: collection; value; pos]
+
+</code></pre>
+<p>Inserts <code>value</code> into a list or map at the position <code>pos</code>.</p>
+<p>If <code>collection</code> is a list, <code>pos</code> must be an <code>int</code>.<br>
+If <code>collection</code> is a map, <code>pos</code> may be any non-<code>nothing</code> value.</p>
+<h3 id="parameters-17"><a class="header" href="#parameters-17">Parameters</a></h3>
+<p><strong><code>collection</code></strong> ← <code>list | map</code> <br/>
+The collection to modify.</p>
+<p><strong><code>value</code></strong> ← <code>any</code> <br/>
+The value to add to <code>collection</code>.</p>
+<p><strong><code>pos</code></strong> ← <code>some</code> <br/>
+The location at which to insert the value. <br/>
+For lists, this is the index; for maps, this is the key.</p>
+<h3 id="errors-3"><a class="header" href="#errors-3">Errors</a></h3>
+<p>Raises an error if <code>pos</code> is out of range or not the correct type for the provided collection.</p>
+<h2 id="remove"><a class="header" href="#remove">remove</a></h2>
+<pre><code class="language-rant">
+[%remove: collection; pos]
+
+</code></pre>
+<p>Removes the value at the <code>pos</code> from a list or map.</p>
+<p>If <code>collection</code> is a list, <code>pos</code> must be an <code>int</code>.<br>
+If <code>collection</code> is a map, <code>pos</code> may be any non-<code>nothing</code> value.</p>
+<h3 id="parameters-18"><a class="header" href="#parameters-18">Parameters</a></h3>
+<p><strong><code>collection</code></strong> ← <code>list | map</code> <br/>
+The collection to modify.</p>
+<p><strong><code>pos</code></strong> ← <code>some</code> <br/>
+The location of the value to remove. Must be of type <code>int</code> for lists.</p>
+<h3 id="errors-4"><a class="header" href="#errors-4">Errors</a></h3>
+<p>Raises an error if <code>pos</code> is an unsupported type for the provided collection.</p>
+<h2 id="rev"><a class="header" href="#rev">rev</a></h2>
+<pre><code class="language-rant">
+[%rev: collection]
+
+</code></pre>
+<p>→ <code>list | string | block | range</code></p>
+<p>Prints a reversed copy of the input collection.</p>
+<h3 id="parameters-19"><a class="header" href="#parameters-19">Parameters</a></h3>
+<p><strong><code>collection</code></strong> ← <code>list | string | block | range</code> <br/>
+The collection to reverse.</p>
+<h3 id="example-3"><a class="header" href="#example-3">Example</a></h3>
+<pre><code class="language-rant">[rev: (foo; bar)]
+# -&gt; (bar; foo)
+</code></pre>
+<h2 id="shuffle"><a class="header" href="#shuffle">shuffle</a></h2>
+<pre><code class="language-rant">
+[%shuffle: list]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Creates a shuffled copy of a list.</p>
+<h3 id="parameters-20"><a class="header" href="#parameters-20">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<h3 id="example-4"><a class="header" href="#example-4">Example</a></h3>
+<pre><code class="language-rant"># Shuffle the words in a string
+&lt;$message = "the quick brown fox jumps over he lazy dog"&gt;
+[join: \s; [shuffle: [split: &lt;message&gt;; \s]]]
+
+# ~&gt; jumps fox quick dog lazy the brown the over
+</code></pre>
+<h2 id="shuffle-self"><a class="header" href="#shuffle-self">shuffle-self</a></h2>
+<pre><code class="language-rant">
+[%shuffle-self: list]
+
+</code></pre>
+<p>Shuffles the elements of a list in-place.</p>
+<h3 id="parameters-21"><a class="header" href="#parameters-21">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<h3 id="cost"><a class="header" href="#cost">Cost</a></h3>
+<p>Where \(n\) = the length of <code>list</code>:</p>
+<p><strong>Time complexity</strong><br/>\(O(n)\)<br/></p>
+<p><strong>RNG complexity</strong><br/>\(n - 1\)<br/></p>
+<h3 id="example-5"><a class="header" href="#example-5">Example</a></h3>
+<pre><code class="language-rant"># Shuffles a list of letters and concatenates them into a single string
+&lt;$letters = (:A;B;C;D;E;F;G;H;I;J;K;L)&gt;
+[shuffle-self: &lt;letters&gt;]
+[join: &lt;letters&gt;]
+
+# ~&gt; GKIBCHLEJADF
+</code></pre>
+<h2 id="shuffle-thru"><a class="header" href="#shuffle-thru">shuffle-thru</a></h2>
+<pre><code class="language-rant">
+[%shuffle-thru: list]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Shuffles the elements of a list in-place, then prints the list.</p>
+<h3 id="parameters-22"><a class="header" href="#parameters-22">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<h3 id="cost-1"><a class="header" href="#cost-1">Cost</a></h3>
+<p>Where \(n\) = the length of <code>list</code>:</p>
+<p><strong>Time complexity</strong><br/>\(O(n)\)<br/></p>
+<p><strong>RNG complexity</strong><br/>\(n - 1\)<br/></p>
+<h2 id="sift"><a class="header" href="#sift">sift</a></h2>
+<pre><code class="language-rant">
+[%sift: list; target-size]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Returns a copy of a list with random elements removed until the number of elements in the list copy reaches <code>target-size</code>.
+If the number of elements in the list is less than or equal to <code>target-size</code>, this function simply returns an exact copy of the original list.</p>
+<h3 id="parameters-23"><a class="header" href="#parameters-23">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
+The maximum number of elements to reduce the <code>list</code> to.</p>
+<h3 id="example-6"><a class="header" href="#example-6">Example</a></h3>
+<pre><code class="language-rant"># Create a random subset of abilities for a character
+
+&lt;$char-traits = (:
+  berserk;    xray-vision;  speaks-to-bees; 
+  vampirism;  flying;       telekinesis; 
+  many-legs;  high-jump;    bee-allergy
+)&gt;
+
+&lt;$npc = (::
+  name = "Foo Bar";
+  traits = [sift: &lt;char-traits&gt;; 2];
+)&gt;
+
+# Print character info
+&lt;npc/name&gt;: `[join: ,\s; &lt;npc/traits&gt;]
+
+# ~&gt; Foo Bar: speaks-to-bees, many-legs
+</code></pre>
+<h2 id="sift-self"><a class="header" href="#sift-self">sift-self</a></h2>
+<pre><code class="language-rant">
+[%sift-self: list; target-size]
+
+</code></pre>
+<p>Removes random elements from a list in-place until the number of elements in the list reaches <code>target-size</code>.
+If the number of elements in the list is less than or equal to <code>target-size</code>, this function does nothing.</p>
+<h3 id="parameters-24"><a class="header" href="#parameters-24">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
+The maximum number of elements to reduce the <code>list</code> to.</p>
+<h3 id="example-7"><a class="header" href="#example-7">Example</a></h3>
+<pre><code class="language-rant"># Remove a random element from a list and print the contents at each iteration
+&lt;$list = [split: "Sphinx of black quartz, judge my vow."; \s]&gt;
+[rep: [len: &lt;list&gt;]]
+[sep: \n]
+{
+  # Print the current list contents
+  [join: \s; &lt;list&gt;]
+  # Sift the list to n - 1
+  [sift-self: &lt;list&gt;; [sub: [len: &lt;list&gt;]; 1]]
+}
+
+##
+  EXAMPLE OUTPUT:
+
+  Sphinx of black quartz, judge my vow.
+  Sphinx of black quartz, my vow.
+  Sphinx of black quartz, vow.
+  Sphinx of black vow.
+  Sphinx black vow.
+  Sphinx vow.
+  vow.
+##
+</code></pre>
+<h2 id="sift-thru"><a class="header" href="#sift-thru">sift-thru</a></h2>
+<pre><code class="language-rant">
+[%sift-thru: list; target-size]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Removes random elements from a list in-place until the number of elements in the list reaches <code>target-size</code>.
+If the number of elements in the list is less than or equal to <code>target-size</code>, this function does nothing.</p>
+<p>The input list is printed back to the caller.</p>
+<h3 id="parameters-25"><a class="header" href="#parameters-25">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
+The maximum number of elements to reduce the <code>list</code> to.</p>
+<h2 id="squish"><a class="header" href="#squish">squish</a></h2>
+<pre><code class="language-rant">
+[%squish: list; target-size]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Returns a copy of a list with random adjacent elements merged using addition until the number of elements in the list copy reaches <code>target-size</code>.
+If the number of elements in the list is less than or equal to <code>target-size</code>, this function simply returns an exact copy of the original list.</p>
+<h3 id="parameters-26"><a class="header" href="#parameters-26">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
+The maximum number of elements to reduce the list copy to.</p>
+<h2 id="squish-self"><a class="header" href="#squish-self">squish-self</a></h2>
+<pre><code class="language-rant">
+[%squish-self: list; target-size]
+
+</code></pre>
+<p>Merges random adjacent elements in a list using addition until the number of elements in the list reaches <code>target-size</code>.
+If the number of elements in the list is less than or equal to <code>target-size</code>, this function does nothing.</p>
+<h3 id="parameters-27"><a class="header" href="#parameters-27">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
+The maximum number of elements to reduce the list to.</p>
+<h3 id="example-8"><a class="header" href="#example-8">Example</a></h3>
+<pre><code class="language-rant"># Merge random items in a number list
+&lt;$numbers = (: 100; 100; 100; 100; 100; 100; 100; 100; 100; 100)&gt;
+
+# Print the original list
+Before: `[join: ,\s; &lt;numbers&gt;]\n
+
+# Squish the list down to 5 elements
+[squish-self: &lt;numbers&gt;; 5]
+
+# Print the modified list
+After: `[join: ,\s; &lt;numbers&gt;]\n
+
+##
+  EXAMPLE OUTPUT:
+
+  Before: 100, 100, 100, 100, 100, 100, 100, 100, 100, 100
+  After: 100, 200, 100, 400, 200
+##
+</code></pre>
+<h2 id="squish-thru"><a class="header" href="#squish-thru">squish-thru</a></h2>
+<pre><code class="language-rant">
+[%squish-thru: list; target-size]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Merges random adjacent elements in a list using addition until the number of elements in the list reaches <code>target-size</code>, then prints the list.
+If the number of elements in the list is less than or equal to <code>target-size</code>, this function does nothing.</p>
+<h3 id="parameters-28"><a class="header" href="#parameters-28">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
+The maximum number of elements to reduce the list to.</p>
+<h2 id="sort"><a class="header" href="#sort">sort</a></h2>
+<pre><code class="language-rant">
+[%sort: list]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Creates a copy of a list with its elements sorted in ascending order.</p>
+<h3 id="parameters-29"><a class="header" href="#parameters-29">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<h2 id="sort-self"><a class="header" href="#sort-self">sort-self</a></h2>
+<pre><code class="language-rant">
+[%sort-self: list]
+
+</code></pre>
+<p>Sorts the elements of a list in-place in ascending order.</p>
+<h3 id="parameters-30"><a class="header" href="#parameters-30">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<h2 id="sort-thru"><a class="header" href="#sort-thru">sort-thru</a></h2>
+<pre><code class="language-rant">
+[%sort-thru: list]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Sorts the elements of a list in-place in ascending order, then prints the list.</p>
+<h3 id="parameters-31"><a class="header" href="#parameters-31">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<h2 id="sum"><a class="header" href="#sum">sum</a></h2>
+<pre><code class="language-rant">
+[%sum: list]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Adds the elements of a list together from left to right and prints the result.</p>
+<h2 id="take"><a class="header" href="#take">take</a></h2>
+<pre><code class="language-rant">
+[%take: collection; pos]
+
+</code></pre>
+<p>→ <code>any</code></p>
+<p>Removes the value at <code>pos</code> from a list or map and prints it.</p>
+<h3 id="parameters-32"><a class="header" href="#parameters-32">Parameters</a></h3>
+<p><strong><code>collection</code></strong> ← <code>list | map</code> <br/>
+The input collection.</p>
+<p><strong><code>pos</code></strong> ← <code>some</code> <br/>
+The location of the value to take.
+If <code>collection</code> is a <code>list</code>, this argument must be an <code>int</code>.</p>
+<h3 id="errors-5"><a class="header" href="#errors-5">Errors</a></h3>
+<p>Raises an error if <code>pos</code> is not a valid location in the collection.</p>
+<h2 id="translate"><a class="header" href="#translate">translate</a></h2>
+<pre><code class="language-rant">
+[%translate: list; map]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Matches each item in a list to a map and returns a list with the corresponding map values.
+Values that have no corresponding key in the map are passed through as-is.</p>
+<h3 id="parameters-33"><a class="header" href="#parameters-33">Parameters</a></h3>
+<p><strong><code>list</code></strong> ← <code>list</code> <br/>
+The input list.</p>
+<p><strong><code>map</code></strong> ← <code>map</code> <br/>
+A map associating items in <code>list</code> with their replacements.</p>
+<h3 id="example-9"><a class="header" href="#example-9">Example</a></h3>
+<pre><code class="language-rant"># Constructs a substitution cipher function
+[$make-cipher: alphabet] {
+  &lt;
+    $letters = [split: &lt;alphabet&gt;];
+    $sub-letters = [shuffle: &lt;letters&gt;];
+    $cipher = [assoc: &lt;letters&gt;; &lt;sub-letters&gt;];
+    $cipher-rev = [assoc: &lt;sub-letters&gt;; &lt;letters&gt;];
+  &gt;
+  # Return cipher functions
+  (::
+    encode = [?: message] {
+      [sum: [translate: [split: &lt;message&gt;]; &lt;cipher&gt;]]
+    };
+    decode = [?: message] {
+      [sum: [translate: [split: &lt;message&gt;]; &lt;cipher-rev&gt;]]
+    };
+  )
+}
+
+# Create a cipher and encode/decode a message
+&lt;$cipher = [make-cipher: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"]&gt;
+&lt;$secret-message = "The quick brown fox jumps over the lazy dog."&gt;
+&lt;$encoded-message = [cipher/encode: &lt;secret-message&gt;]&gt;
+&lt;$decoded-message = [cipher/decode: &lt;encoded-message&gt;]&gt;
+
+# Finally, print the result
+Original: \"&lt;secret-message&gt;\"\n
+Encoded: \"&lt;encoded-message&gt;\"\n
+Decoded: \"&lt;decoded-message&gt;\"\n
+
+##
+  EXAMPLE OUTPUT:
+
+  Original: "The quick brown fox jumps over the lazy dog."
+  Encoded: "kWj KGvaF QcDiq HDx CGpMJ DOjc AWj Tsyt fDN."
+  Decoded: "The quick brown fox jumps over the lazy dog."
+##
+</code></pre>
+<h2 id="keys"><a class="header" href="#keys">keys</a></h2>
+<pre><code class="language-rant">
+[%keys: map]
+
+</code></pre>
+<p>Prints a list of the keys stored in <code>map</code>.</p>
+<h2 id="values"><a class="header" href="#values">values</a></h2>
+<pre><code class="language-rant">
+[%values: map]
+
+</code></pre>
+<p>Prints a list of the values stored in <code>map</code>.</p>
+<h2 id="zip"><a class="header" href="#zip">zip</a></h2>
+<pre><code class="language-rant">
+[%zip: list-a; list-b; zip-func]
+
+</code></pre>
+<p>→ <code>list</code></p>
+<p>Returns a new list that combines each pair of items from the two input lists using the specified function.
+The lists do not need to be the same length; if there is a difference, it will be made up with empties.</p>
+<h3 id="parameters-34"><a class="header" href="#parameters-34">Parameters</a></h3>
+<p><strong><code>list-a</code></strong> ← <code>list</code> <br/>
+A list containing the left-hand values of the zip.</p>
+<p><strong><code>list-b</code></strong> ← <code>list</code> <br/>
+A list containing the right-hand values of the zip.</p>
+<p><strong><code>zip-func</code></strong> ← <code>function -&gt; any</code> <br/>
+A function that prints a new value for each corresponding pair of values from <code>list-a</code> and <code>list-b</code>.</p>
+<blockquote>
+<p><strong>Parameters for <code>zip-func</code></strong></p>
+<p><strong><code>a</code></strong> ← <code>any</code> <br/>
+The current value from <code>list-a</code>.</p>
+<p><strong><code>b</code></strong> ← <code>any</code> <br/>
+The current value from <code>list-b</code>.</p>
+</blockquote>
+<h3 id="examples-3"><a class="header" href="#examples-3">Examples</a></h3>
+<pre><code class="language-rant"># Dot product
+[$dot: a; b] {
+  [zip: &lt;a&gt;; &lt;b&gt;; &lt;mul&gt; |&gt; sum]
+}
+
+[dot: (1; 2; 3); (4; 5; 6)] # 32
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../stdlib/control-flow.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../stdlib/generators.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../stdlib/control-flow.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../stdlib/generators.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
 </html>

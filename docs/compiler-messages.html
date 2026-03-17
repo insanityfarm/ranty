@@ -1,25 +1,311 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Diagnostics - Rant Reference</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <div class="layout">
-      <nav class="sidebar" aria-label="Table of contents">
-        <div class="brand"><a href="intro.html">Rant Reference</a></div>
-        <ol><li class=""><a href="intro.html">Introduction</a></li><li class=""><a href="getting-started.html">Getting Started</a></li><li class=""><a href="language.html">Language</a><ol><li class=""><a href="language/text.html">Text</a></li><li class=""><a href="language/blocks.html">Blocks</a></li><li class=""><a href="language/functions.html">Functions</a></li><li class=""><a href="language/data-types.html">Data Types</a></li><li class=""><a href="language/accessors.html">Accessors</a></li><li class=""><a href="language/keywords.html">Keywords</a><ol><li class=""><a href="language/keywords/require.html">@require</a></li><li class=""><a href="language/keywords/return.html">@return</a></li><li class=""><a href="language/keywords/continue.html">@continue</a></li><li class=""><a href="language/keywords/break.html">@break</a></li><li class=""><a href="language/keywords/weight.html">@weight</a></li><li class=""><a href="language/keywords/text.html">@text</a></li></ol></li><li class=""><a href="language/operators.html">Operators</a></li><li class=""><a href="language/conditional-expressions.html">Conditional Expressions</a></li><li class=""><a href="language/output-modifiers.html">Output Modifiers</a></li></ol></li><li class=""><a href="runtime.html">Runtime Features</a><ol><li class=""><a href="runtime/attributes.html">Attributes</a></li><li class=""><a href="runtime/formatters.html">Formatters</a></li><li class=""><a href="modules.html">Modules</a></li><li class=""><a href="cli.html">CLI And REPL</a></li></ol></li><li class=""><a href="stdlib.html">Standard Library</a><ol><li class=""><a href="stdlib/general.html">General</a></li><li class=""><a href="stdlib/control-flow.html">Attributes And Control Flow</a></li><li class=""><a href="stdlib/collections.html">Collections</a></li><li class=""><a href="stdlib/generators.html">Generators</a></li><li class=""><a href="stdlib/formatting.html">Formatting</a></li><li class=""><a href="stdlib/strings.html">Strings</a></li><li class=""><a href="stdlib/boolean.html">Boolean</a></li><li class=""><a href="stdlib/comparison.html">Comparison</a></li><li class=""><a href="stdlib/math.html">Math</a></li><li class=""><a href="stdlib/conversion.html">Conversion</a></li><li class=""><a href="stdlib/verification.html">Verification</a></li><li class=""><a href="stdlib/assertion.html">Assertion</a></li><li class=""><a href="stdlib/constants.html">Constants</a></li></ol></li><li class="active"><a href="compiler-messages.html">Diagnostics</a></li><li class=""><a href="glossary.html">Glossary</a></li></ol>
-      </nav>
-      <main class="content">
-        <div class="topbar">
-          <div>Stable 4.0 Reference</div>
-          <div><a href="https://github.com/rant-lang/rant">Repository</a></div>
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Diagnostics - Rant Reference</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="theme/custom.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
         </div>
-        <h1 id="diagnostics"><a class="header" href="#diagnostics">Diagnostics</a></h1><p>The compiler emits stable message codes, and runtime failures report a stable error category in square brackets.</p><h2 id="compiler-messages"><a class="header" href="#compiler-messages">Compiler Messages</a></h2><table><thead><tr><th>Code</th><th>Severity</th><th>Message Template</th></tr></thead><tbody><tr><td><code>R0000</code></td><td>error</td><td><code>unexpected token: &#x27;{}&#x27;</code></td></tr><tr><td><code>R0001</code></td><td>error</td><td><code>expected &#x27;{}&#x27;</code></td></tr><tr><td><code>R0002</code></td><td>error</td><td><code>integer literal is out of range for the `int` type; consider changing it (or if applicable, using a string instead)</code></td></tr><tr><td><code>R0003</code></td><td>error</td><td><code>float literal is out of range for the `float` type; consider changing it (or if applicable, using a string instead)</code></td></tr><tr><td><code>R0004</code></td><td>error</td><td><code>invalid escape character: &#x27;{}&#x27;</code></td></tr><tr><td><code>R0005</code></td><td>error</td><td><code>invalid code point in unicode escape: &#x27;{}&#x27;</code></td></tr><tr><td><code>R0006</code></td><td>error</td><td><code>no matching &#x27;}&#x27; found</code></td></tr><tr><td><code>R0007</code></td><td>error</td><td><code>no matching &#x27;]&#x27; found</code></td></tr><tr><td><code>R0008</code></td><td>error</td><td><code>no matching &#x27;]&#x27; found</code></td></tr><tr><td><code>R0009</code></td><td>error</td><td><code>no matching &#x27;&gt;&#x27; found</code></td></tr><tr><td><code>R0010</code></td><td>error</td><td><code>string literal needs closing delimiter</code></td></tr><tr><td><code>R0011</code></td><td>error</td><td><code>no matching &#x27;)&#x27; found</code></td></tr><tr><td><code>R0012</code></td><td>error</td><td><code>no matching &#x27;)&#x27; found</code></td></tr><tr><td><code>R0013</code></td><td>error</td><td><code>unclosed tuple; expected &#x27;)&#x27;</code></td></tr><tr><td><code>R0014</code></td><td>error</td><td><code>unclosed parenthetical; expected &#x27;)&#x27;</code></td></tr><tr><td><code>R0015</code></td><td>error</td><td><code>unclosed condition; expected &#x27;:&#x27;</code></td></tr><tr><td><code>R0021</code></td><td>error</td><td><code>{} is not valid in this position</code></td></tr><tr><td><code>R0022</code></td><td>error</td><td><code>function body should follow</code></td></tr><tr><td><code>R0023</code></td><td>error</td><td><code>no matching &#x27;}&#x27; found</code></td></tr><tr><td><code>R0024</code></td><td>error</td><td><code>invalid parameter</code></td></tr><tr><td><code>R0025</code></td><td>error</td><td><code>rename parameter to something unique</code></td></tr><tr><td><code>R0026</code></td><td>error</td><td><code>remove extra variadic parameter</code></td></tr><tr><td><code>R0027</code></td><td>warning</td><td><code>temporal assignment pipe could redefine variable &#x27;{}&#x27;</code></td></tr><tr><td><code>R0028</code></td><td>error</td><td><code>temporal assignment pipe could redefine constant &#x27;{}&#x27;</code></td></tr><tr><td><code>R0040</code></td><td>error</td><td><code>multiple elements not allowed here</code></td></tr><tr><td><code>R0060</code></td><td>error</td><td><code>can&#x27;t assign a value to an expression; try assigning to a child of it instead</code></td></tr><tr><td><code>R0061</code></td><td>error</td><td><code>missing identifier</code></td></tr><tr><td><code>R0062</code></td><td>error</td><td><code>invalid identifier</code></td></tr><tr><td><code>R0063</code></td><td>error</td><td><code>nothing to index</code></td></tr><tr><td><code>R0064</code></td><td>error</td><td><code>nothing to slice</code></td></tr><tr><td><code>R0065</code></td><td>error</td><td><code>invalid slice bound: &#x27;{}&#x27;</code></td></tr><tr><td><code>R0066</code></td><td>error</td><td><code>no previous output to consume</code></td></tr><tr><td><code>R0067</code></td><td>error</td><td><code>access to optional argument &#x27;{}&#x27; can fail; add a fallback to the accessor or specify a default argument</code></td></tr><tr><td><code>R0068</code></td><td>error</td><td><code>invalid shorthand; only variable getters are supported</code></td></tr><tr><td><code>R0100</code></td><td>error</td><td><code>reassignment of known constant &#x27;{}&#x27;</code></td></tr><tr><td><code>R0101</code></td><td>error</td><td><code>redefinition of known constant &#x27;{}&#x27;</code></td></tr><tr><td><code>R0130</code></td><td>error</td><td><code>sink not allowed here</code></td></tr><tr><td><code>R0131</code></td><td>error</td><td><code>hint not allowed here</code></td></tr><tr><td><code>R0200</code></td><td>error</td><td><code>invalid keyword: &#x27;@{}&#x27;</code></td></tr><tr><td><code>R0201</code></td><td>error</td><td><code>@weight is not allowed in this context</code></td></tr><tr><td><code>R0202</code></td><td>error</td><td><code>missing argument for @require</code></td></tr><tr><td><code>R0203</code></td><td>error</td><td><code>@require path should be a string literal</code></td></tr><tr><td><code>R0204</code></td><td>error</td><td><code>condition cannot be empty</code></td></tr><tr><td><code>R0250</code></td><td>error</td><td><code>expected operand</code></td></tr><tr><td><code>R0251</code></td><td>error</td><td><code>expected left-hand operand</code></td></tr><tr><td><code>R0252</code></td><td>error</td><td><code>expected right-hand operand</code></td></tr><tr><td><code>R1000</code></td><td>warning</td><td><code>variable &#x27;{}&#x27; is defined but never used</code></td></tr><tr><td><code>R1002</code></td><td>warning</td><td><code>parameter &#x27;{}&#x27; is never used</code></td></tr><tr><td><code>R1003</code></td><td>warning</td><td><code>function &#x27;{}&#x27; is defined but never used</code></td></tr><tr><td><code>R1004</code></td><td>warning</td><td><code>function &#x27;{}&#x27; is empty</code></td></tr><tr><td><code>R1005</code></td><td>warning</td><td><code>use &#x27;$&#x27; here instead</code></td></tr><tr><td><code>R2100</code></td><td>error</td><td><code>file not found: &#x27;{}&#x27;</code></td></tr><tr><td><code>R2101</code></td><td>error</td><td><code>filesystem error: {}</code></td></tr></tbody></table><h2 id="runtime-error-categories"><a class="header" href="#runtime-error-categories">Runtime Error Categories</a></h2><table><thead><tr><th>Category</th><th>Summary</th></tr></thead><tbody><tr><td><code>STACK_OVERFLOW_ERROR</code></td><td>Execution exceeded the maximum call or value stack size.</td></tr><tr><td><code>STACK_UNDERFLOW_ERROR</code></td><td>The runtime attempted to pop an empty stack.</td></tr><tr><td><code>INVALID_ACCESS_ERROR</code></td><td>A variable lookup or write was invalid in the current scope.</td></tr><tr><td><code>INVALID_OP_ERROR</code></td><td>An operation was not valid for the current runtime state.</td></tr><tr><td><code>INTERNAL_ERROR</code></td><td>The runtime encountered an internal engine failure.</td></tr><tr><td><code>ARG_MISMATCH_ERROR</code></td><td>A function received the wrong number of arguments.</td></tr><tr><td><code>ARG_ERROR</code></td><td>A function argument had an invalid value or type.</td></tr><tr><td><code>INVOKE_ERROR</code></td><td>A non-function value was called as if it were a function.</td></tr><tr><td><code>ASSERT_ERROR</code></td><td>An assertion failed.</td></tr><tr><td><code>TYPE_ERROR</code></td><td>A value had an unexpected runtime type.</td></tr><tr><td><code>VALUE_ERROR</code></td><td>A value conversion or construction failed.</td></tr><tr><td><code>INDEX_ERROR</code></td><td>An index operation failed.</td></tr><tr><td><code>KEY_ERROR</code></td><td>A keyed map lookup or write failed.</td></tr><tr><td><code>SLICE_ERROR</code></td><td>A slice operation failed.</td></tr><tr><td><code>SELECTOR_ERROR</code></td><td>A selector could not produce the next result.</td></tr><tr><td><code>MODULE_ERROR</code></td><td>Module resolution, compilation, or initialization failed.</td></tr><tr><td><code>USER_ERROR</code></td><td>A program raised an error explicitly through `[error]`.</td></tr><tr><td><code>CONTROL_FLOW_ERROR</code></td><td>A control-flow keyword was used outside a valid target.</td></tr><tr><td><code>DATA_SOURCE_ERROR</code></td><td>A data source call failed.</td></tr></tbody></table>
-      </main>
     </div>
-  </body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rant Reference</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="diagnostics"><a class="header" href="#diagnostics">Diagnostics</a></h1>
+<p>The tables below are generated from the current compiler and runtime sources during every docs build. They are intended to stay in lockstep with the shipped implementation, not with the older archived site.</p>
+<h2 id="compiler-messages"><a class="header" href="#compiler-messages">Compiler Messages</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Code</th><th>Severity</th><th>Message Template</th></tr></thead><tbody>
+<tr><td><code>R0000</code></td><td>error</td><td><code>unexpected token: '{}'</code></td></tr>
+<tr><td><code>R0001</code></td><td>error</td><td><code>expected token: '{}'</code></td></tr>
+<tr><td><code>R0002</code></td><td>error</td><td><code>integer literal is out of range for the \</code>int` type; consider changing it (or if applicable, using a string instead)`</td></tr>
+<tr><td><code>R0003</code></td><td>error</td><td><code>float literal is out of range for the \</code>float` type; consider changing it (or if applicable, using a string instead)`</td></tr>
+<tr><td><code>R0004</code></td><td>error</td><td><code>invalid escape character: '{}'</code></td></tr>
+<tr><td><code>R0005</code></td><td>error</td><td><code>invalid code point in unicode escape: '{}'</code></td></tr>
+<tr><td><code>R0006</code></td><td>error</td><td><code>unclosed block; expected '}'</code></td></tr>
+<tr><td><code>R0007</code></td><td>error</td><td><code>unclosed function call; expected ']'</code></td></tr>
+<tr><td><code>R0008</code></td><td>error</td><td><code>unclosed function signature; expected ']' followed by body block</code></td></tr>
+<tr><td><code>R0009</code></td><td>error</td><td><code>unclosed accessor; expected '&gt;'</code></td></tr>
+<tr><td><code>R0010</code></td><td>error</td><td><code>unclosed string literal</code></td></tr>
+<tr><td><code>R0011</code></td><td>error</td><td><code>unclosed list initializer; expected ')'</code></td></tr>
+<tr><td><code>R0012</code></td><td>error</td><td><code>unclosed map initializer; expected ')'</code></td></tr>
+<tr><td><code>R0013</code></td><td>error</td><td><code>unclosed tuple; expected ')'</code></td></tr>
+<tr><td><code>R0014</code></td><td>error</td><td><code>unclosed parenthetical; expected ')'</code></td></tr>
+<tr><td><code>R0015</code></td><td>error</td><td><code>unclosed condition; expected ':'</code></td></tr>
+<tr><td><code>R0021</code></td><td>error</td><td><code>{} is not allowed after {}</code></td></tr>
+<tr><td><code>R0022</code></td><td>error</td><td><code>missing body in function definition</code></td></tr>
+<tr><td><code>R0023</code></td><td>error</td><td><code>unclosed function body; expected '}}'</code></td></tr>
+<tr><td><code>R0024</code></td><td>error</td><td><code>invalid parameter '{}'; must be a valid identifier or '*'</code></td></tr>
+<tr><td><code>R0025</code></td><td>error</td><td><code>duplicate parameter '{}' in function signature</code></td></tr>
+<tr><td><code>R0026</code></td><td>error</td><td><code>multiple variadic parameters are not allowed</code></td></tr>
+<tr><td><code>R0027</code></td><td>error</td><td><code>temporal assignment pipe could redefine variable '{}'</code></td></tr>
+<tr><td><code>R0028</code></td><td>error</td><td><code>temporal assignment pipe could redefine constant '{}'</code></td></tr>
+<tr><td><code>R0040</code></td><td>error</td><td><code>dynamic key blocks can't have more than one element; if branching is desired, create an inner block</code></td></tr>
+<tr><td><code>R0060</code></td><td>error</td><td><code>can't assign a value to an expression; try assigning to a child of it instead</code></td></tr>
+<tr><td><code>R0061</code></td><td>error</td><td><code>identifier required but is missing</code></td></tr>
+<tr><td><code>R0062</code></td><td>error</td><td><code>'{}' is not a valid identifier; identifiers may only use alphanumerics, underscores, and hyphens (but cannot be only digits)</code></td></tr>
+<tr><td><code>R0063</code></td><td>error</td><td><code>access paths cannot start with an index; consider using a variable or anonymous value here instead</code></td></tr>
+<tr><td><code>R0064</code></td><td>error</td><td><code>access paths cannot start with a slice; consider using a variable or anonymous value here instead</code></td></tr>
+<tr><td><code>R0065</code></td><td>error</td><td><code>invalid slice bound: '{}'</code></td></tr>
+<tr><td><code>R0066</code></td><td>error</td><td><code>no pipe value is available in this scope</code></td></tr>
+<tr><td><code>R0067</code></td><td>error</td><td><code>access to optional argument '{}' can fail; add a fallback to the accessor or specify a default argument</code></td></tr>
+<tr><td><code>R0068</code></td><td>error</td><td><code>invalid shorthand; only variable getters are supported</code></td></tr>
+<tr><td><code>R0100</code></td><td>error</td><td><code>reassignment of known constant '{}'</code></td></tr>
+<tr><td><code>R0101</code></td><td>error</td><td><code>redefinition of known constant '{}'</code></td></tr>
+<tr><td><code>R0130</code></td><td>error</td><td><code>sink is not valid on {}</code></td></tr>
+<tr><td><code>R0131</code></td><td>error</td><td><code>hint is not valid on {}</code></td></tr>
+<tr><td><code>R0200</code></td><td>error</td><td><code>invalid keyword: '@{}'</code></td></tr>
+<tr><td><code>R0201</code></td><td>error</td><td><code>@weight is not allowed in this context</code></td></tr>
+<tr><td><code>R0202</code></td><td>error</td><td><code>missing argument for @require</code></td></tr>
+<tr><td><code>R0203</code></td><td>error</td><td><code>@require path should be a string literal</code></td></tr>
+<tr><td><code>R0204</code></td><td>error</td><td><code>condition cannot be empty</code></td></tr>
+<tr><td><code>R0250</code></td><td>error</td><td><code>expected operand</code></td></tr>
+<tr><td><code>R0251</code></td><td>error</td><td><code>expected left-hand operand</code></td></tr>
+<tr><td><code>R0252</code></td><td>error</td><td><code>expected right-hand operand</code></td></tr>
+<tr><td><code>R1000</code></td><td>warning</td><td><code>variable '{}' is defined but never used</code></td></tr>
+<tr><td><code>R1002</code></td><td>warning</td><td><code>parameter '{}' is never used</code></td></tr>
+<tr><td><code>R1003</code></td><td>warning</td><td><code>function '{}' is defined but never used</code></td></tr>
+<tr><td><code>R1004</code></td><td>warning</td><td><code>function '{}' is empty</code></td></tr>
+<tr><td><code>R1005</code></td><td>warning</td><td><code>nested function definition can't be made constant; function will be mutable</code></td></tr>
+<tr><td><code>R2100</code></td><td>error</td><td><code>file not found: '{}'</code></td></tr>
+<tr><td><code>R2101</code></td><td>error</td><td><code>filesystem error: {}</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="runtime-error-categories"><a class="header" href="#runtime-error-categories">Runtime Error Categories</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Category</th><th>Summary</th></tr></thead><tbody>
+<tr><td><code>ARG_ERROR</code></td><td>Invalid argument passed to function.</td></tr>
+<tr><td><code>ARG_MISMATCH_ERROR</code></td><td>Too few/many arguments were passed to a function.</td></tr>
+<tr><td><code>ASSERT_ERROR</code></td><td>Assertion failed.</td></tr>
+<tr><td><code>CONTROL_FLOW_ERROR</code></td><td>Error during control flow operation (e.g. return or break).</td></tr>
+<tr><td><code>DATA_SOURCE_ERROR</code></td><td>Error occurred during data source operation.</td></tr>
+<tr><td><code>INDEX_ERROR</code></td><td>Error occurred while indexing value.</td></tr>
+<tr><td><code>INTERNAL_ERROR</code></td><td>Internal VM error, usually indicating a bug or corrupted data.</td></tr>
+<tr><td><code>INVALID_ACCESS_ERROR</code></td><td>Variable access error, such as attempting to access a nonexistent variable or write to a constant.</td></tr>
+<tr><td><code>INVALID_OP_ERROR</code></td><td>Operation is not valid for the current program state.</td></tr>
+<tr><td><code>INVOKE_ERROR</code></td><td>Tried to invoke a non-function.</td></tr>
+<tr><td><code>KEY_ERROR</code></td><td>Error occurred while keying value.</td></tr>
+<tr><td><code>MODULE_ERROR</code></td><td>Error occurred while trying to load a module.</td></tr>
+<tr><td><code>SELECTOR_ERROR</code></td><td>Error occurred while iterating selector.</td></tr>
+<tr><td><code>SLICE_ERROR</code></td><td>Error occurred while slicing value.</td></tr>
+<tr><td><code>STACK_OVERFLOW_ERROR</code></td><td>Stack has overflowed.</td></tr>
+<tr><td><code>STACK_UNDERFLOW_ERROR</code></td><td>Stack has underflowed.</td></tr>
+<tr><td><code>TYPE_ERROR</code></td><td>Error occurred due to unexpected value type.</td></tr>
+<tr><td><code>USER_ERROR</code></td><td>Error manually triggered by program.</td></tr>
+<tr><td><code>VALUE_ERROR</code></td><td>Error occurred when creating value.</td></tr>
+</tbody></table>
+</div>
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="stdlib/constants.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="rant-3-vs-4.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="stdlib/constants.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="rant-3-vs-4.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
 </html>

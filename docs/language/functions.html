@@ -1,26 +1,367 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Functions - Rant Reference</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
-    <link rel="stylesheet" href="../styles.css">
-  </head>
-  <body>
-    <div class="layout">
-      <nav class="sidebar" aria-label="Table of contents">
-        <div class="brand"><a href="../intro.html">Rant Reference</a></div>
-        <ol><li class=""><a href="../intro.html">Introduction</a></li><li class=""><a href="../getting-started.html">Getting Started</a></li><li class=""><a href="../language.html">Language</a><ol><li class=""><a href="text.html">Text</a></li><li class=""><a href="blocks.html">Blocks</a></li><li class="active"><a href="functions.html">Functions</a></li><li class=""><a href="data-types.html">Data Types</a></li><li class=""><a href="accessors.html">Accessors</a></li><li class=""><a href="keywords.html">Keywords</a><ol><li class=""><a href="keywords/require.html">@require</a></li><li class=""><a href="keywords/return.html">@return</a></li><li class=""><a href="keywords/continue.html">@continue</a></li><li class=""><a href="keywords/break.html">@break</a></li><li class=""><a href="keywords/weight.html">@weight</a></li><li class=""><a href="keywords/text.html">@text</a></li></ol></li><li class=""><a href="operators.html">Operators</a></li><li class=""><a href="conditional-expressions.html">Conditional Expressions</a></li><li class=""><a href="output-modifiers.html">Output Modifiers</a></li></ol></li><li class=""><a href="../runtime.html">Runtime Features</a><ol><li class=""><a href="../runtime/attributes.html">Attributes</a></li><li class=""><a href="../runtime/formatters.html">Formatters</a></li><li class=""><a href="../modules.html">Modules</a></li><li class=""><a href="../cli.html">CLI And REPL</a></li></ol></li><li class=""><a href="../stdlib.html">Standard Library</a><ol><li class=""><a href="../stdlib/general.html">General</a></li><li class=""><a href="../stdlib/control-flow.html">Attributes And Control Flow</a></li><li class=""><a href="../stdlib/collections.html">Collections</a></li><li class=""><a href="../stdlib/generators.html">Generators</a></li><li class=""><a href="../stdlib/formatting.html">Formatting</a></li><li class=""><a href="../stdlib/strings.html">Strings</a></li><li class=""><a href="../stdlib/boolean.html">Boolean</a></li><li class=""><a href="../stdlib/comparison.html">Comparison</a></li><li class=""><a href="../stdlib/math.html">Math</a></li><li class=""><a href="../stdlib/conversion.html">Conversion</a></li><li class=""><a href="../stdlib/verification.html">Verification</a></li><li class=""><a href="../stdlib/assertion.html">Assertion</a></li><li class=""><a href="../stdlib/constants.html">Constants</a></li></ol></li><li class=""><a href="../compiler-messages.html">Diagnostics</a></li><li class=""><a href="../glossary.html">Glossary</a></li></ol>
-      </nav>
-      <main class="content">
-        <div class="topbar">
-          <div>Stable 4.0 Reference</div>
-          <div><a href="https://github.com/rant-lang/rant">Repository</a></div>
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Functions - Rant Reference</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
         </div>
-        <h1 id="functions"><a class="header" href="#functions">Functions</a></h1><p>Define named functions with `[$name: params] { ... }` and call them with `[name: args]`. Arguments are separated with semicolons.</p><pre data-rant-example="true" data-expect="9"><code class="language-rant">[$square:x] {[mul:&lt;x&gt;;&lt;x&gt;]}
-[square:3]</code></pre><h2 id="parameters"><a class="header" href="#parameters">Parameters</a></h2><p>A required parameter is written as `x`. Optional parameters use `x?`. Variadic parameters use `args*` for zero or more values or `args+` for one or more values.</p><h2 id="lambdas"><a class="header" href="#lambdas">Lambdas</a></h2><p>Anonymous functions use `[?: params] { ... }` and capture surrounding variables by reference when needed.</p><h2 id="piping"><a class="header" href="#piping">Piping</a></h2><p>Use `|>` inside a function-call argument list to pipe a result into the next function call.</p><pre><code class="language-rant">[split: "the quick brown fox"; \s |> filter: []; [?:word] { [len: <word> |> le: 3] } |> join: \s]</code></pre>
-      </main>
     </div>
-  </body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rant Reference</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="functions"><a class="header" href="#functions">Functions</a></h1>
+<p>A function is a reusable block of code that runs when something calls it.
+Functions can optionally accept inputs and print output back to the caller.</p>
+<p>In addition to Rant's built-in functions, you can also define your own and use them however you see fit.</p>
+<h2 id="calling-functions"><a class="header" href="#calling-functions">Calling functions</a></h2>
+<p>To call a function, place the function's name inside a pair of square brackets:</p>
+<pre><code class="language-rant">[dig]
+</code></pre>
+<p>This calls the <code>[dig]</code> function from the standard library, which prints a random decimal digit.
+The output of this call then flows into the caller's output, producing our digit:</p>
+<pre><code>8
+</code></pre>
+<h3 id="arguments"><a class="header" href="#arguments">Arguments</a></h3>
+<p>Additionally, functions can accept arguments.
+When a function requires arguments, we first add a colon <code>:</code> after the function's name, followed by a list of arguments separated by semicolons <code>;</code>.</p>
+<p>Here are a few examples of how this works:</p>
+<pre><code class="language-rant"># Function with no arguments
+[func-name]
+
+# Function with one argument
+[func-name: arg1]
+
+# Function with multiple arguments, delimited by ';'
+[func-name: arg1; arg2]
+</code></pre>
+<h2 id="defining-functions"><a class="header" href="#defining-functions">Defining functions</a></h2>
+<p>All functions are objects of the <code>function</code> type, and can be treated like any other variable.
+When we define a function, we are simply defining a variable and storing it there.</p>
+<p>To define a function, we need the following:</p>
+<ul>
+<li>The <strong>function signature</strong>, enclosed in square brackets <code>[ ]</code>, containing:
+<ul>
+<li>The name of the function,</li>
+<li>A list of parameters to accept</li>
+</ul>
+</li>
+<li>The <strong>function body</strong>, enclosed by curly braces <code>{ }</code>.</li>
+</ul>
+<pre><code class="language-rant"># Defines a parameterless function named `say-hello` that prints "Hello"
+[$say-hello] {
+    Hello
+}
+
+# Defines a function `greet` with parameter `name` that prints a custom greeting
+# Arguments can be accessed like regular variables.
+[$greet: name] {
+    Hello, &lt;name&gt;!
+}
+
+# Defines a function `flip-coin` that returns the value of either `heads` and `tails`
+[$flip-coin: heads; tails] {
+    {&lt;heads&gt;|&lt;tails&gt;}
+}
+</code></pre>
+<p>Like other variables, functions can also be made constant by using <code>%</code> in place of <code>$</code> when defining them:</p>
+<pre><code class="language-rant"># Regular functions can be overwritten
+[$foo] { hello! }
+[$foo] { goodbye! }
+
+# Constant function; can't be overwritten
+[%foo] { 
+    important stuff... 
+}
+
+# If we try, the compiler will catch it and produce an error
+[%foo] { # ERROR: constant redefinition
+    this won't work
+}
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>All of Rant's standard library functions are constants, and thus can't be modified—but they can still be shadowed in child scopes.</p>
+</blockquote>
+<h4 id="default-arguments"><a class="header" href="#default-arguments">Default arguments</a></h4>
+<p>You can also specify a custom default value for an optional parameter by adding an expression after the <code>?</code> modifier.</p>
+<p>Each time the function is called without that parameter, Rant will run its default value expression and use its output as the argument.</p>
+<pre><code class="language-rant"># Modification of the previous [gen-pet] to use a default value instead of calling [alt]
+[$gen-pet: name; species ? "dog"] { 
+    (::
+        name = &lt;name&gt;;
+        species = &lt;species&gt;; # No fallback needed!
+    )
+}
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p>Default argument expressions can capture external variables just like the body of the function they're attached to.</p>
+</blockquote>
+<h2 id="closures"><a class="header" href="#closures">Closures</a></h2>
+<p>A function can access variables defined outside of its body.
+When this happens, it "captures" a reference to that variable for use inside the function.
+As a result, changes made to a captured variable persist between calls.
+Functions that capture variables are called <strong>closures</strong>.</p>
+<p>Variable capturing can also be used to maintain a persistent state within a closure instance:
+even if the original variable falls out of scope, the closure still keeps it alive.</p>
+<pre><code class="language-rant"># Create a function with a persistent state
+{
+    &lt;$foo-num = 1&gt;
+    # Define a function [next-foo] in the parent scope
+    [$^next-foo] {
+        # Modify `foo-num` from inside the function
+        foo &lt;$n = &lt;foo-num&gt;; foo-num = [add: &lt;foo-num&gt;; 1]; n&gt;
+    }
+} # `foo-num` falls out of scope here, but [next-foo] can still access it
+
+# Call [next-foo] multiple times
+[rep:4][sep:\n]
+{
+    [next-foo]
+}
+##
+  Output:
+
+  foo 1
+  foo 2
+  foo 3
+  foo 4
+##
+</code></pre>
+<h3 id="limitations-on-variable-capture"><a class="header" href="#limitations-on-variable-capture">Limitations on variable capture</a></h3>
+<p>Capturing is only supported on variables accessed locally from the function body or default argument expressions.
+Descoped and explicit global accessors do not capture variables.</p>
+<h2 id="calling-shadowed-functions"><a class="header" href="#calling-shadowed-functions">Calling shadowed functions</a></h2>
+<p>The situation may occasionally arise where you accidentally (or intentionally)
+define a non-function variable with the same name as a function from a parent scope (e.g. a stdlib function)
+and then try to call it:</p>
+<pre><code class="language-rant">&lt;$rep = "not a function"&gt;
+[rep:10] # Wait a sec...
+[sep:\n]
+{
+    # ...
+}
+</code></pre>
+<p>Some might (understandably) assume that this would crash the program, but this code actually still works!</p>
+<p>When this happens, Rant will perform what is known as <strong>function percolation</strong>:
+the runtime will search each parent scope up to the global scope until it finds a function with the same name, and then call it as normal.</p>
+<p>Function percolation only applies to function calls, so getters will still correctly retrieve the new variable instead of the function.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../language/blocks/protected-blocks.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../language/functions/lambdas.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../language/blocks/protected-blocks.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../language/functions/lambdas.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
 </html>

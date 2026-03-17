@@ -5,73 +5,83 @@
 #![allow(unused_parens)]
 #![allow(unused_variables)]
 
-use crate::*;
 use crate::runtime::*;
-use crate::{lang::{Varity, Parameter, Identifier}, stdlib::RantStdResult};
-use cast::*;
+use crate::*;
+use crate::{
+    lang::{Identifier, Parameter, Varity},
+    stdlib::RantStdResult,
+};
 use cast::Error as CastError;
-use std::{rc::Rc, ops::{DerefMut, Deref}, convert::TryInto};
+use cast::*;
+use std::{
+    convert::TryInto,
+    ops::{Deref, DerefMut},
+    rc::Rc,
+};
 
 /// Enables infallible conversion into a `RantValue`.
 pub trait IntoRant: Sized {
-  /// Converts to a `RantValue`.
-  fn into_rant(self) -> RantValue;
+    /// Converts to a `RantValue`.
+    fn into_rant(self) -> RantValue;
 }
 
 /// Enables fallible conversion into a `RantValue`.
 pub trait TryIntoRant: Sized {
-  /// Attempts to convert to a `RantValue`.
-  fn try_into_rant(self) -> Result<RantValue, ValueError>;
+    /// Attempts to convert to a `RantValue`.
+    fn try_into_rant(self) -> Result<RantValue, ValueError>;
 }
 
 pub trait FromRant: Sized {
-  /// Converts from a `RantValue`.
-  fn from_rant(val: RantValue) -> Self;
+    /// Converts from a `RantValue`.
+    fn from_rant(val: RantValue) -> Self;
 
-  /// Returns `true` if the type can be used to represent an optional Rant parameter in native functions; otherwise, `false`.
-  fn is_optional_param_type() -> bool {
-    false
-  }
+    /// Returns `true` if the type can be used to represent an optional Rant parameter in native functions; otherwise, `false`.
+    fn is_optional_param_type() -> bool {
+        false
+    }
 }
 
 /// Enables fallible conversion from a `RantValue`.
 pub trait TryFromRant: Sized {
-  /// Convert from a `RantValue`.
-  fn try_from_rant(val: RantValue) -> Result<Self, ValueError>;
-  
-  /// Returns `true` if the type can be used to represent an optional Rant parameter in native functions; otherwise, `false`.
-  fn is_optional_param_type() -> bool {
-    false
-  }
+    /// Convert from a `RantValue`.
+    fn try_from_rant(val: RantValue) -> Result<Self, ValueError>;
+
+    /// Returns `true` if the type can be used to represent an optional Rant parameter in native functions; otherwise, `false`.
+    fn is_optional_param_type() -> bool {
+        false
+    }
 }
 
 trait IntoCastResult<T> {
-  fn into_cast_result(self) -> Result<T, CastError>;
+    fn into_cast_result(self) -> Result<T, CastError>;
 }
 
 impl<T> IntoCastResult<T> for Result<T, CastError> {
-  fn into_cast_result(self) -> Result<T, CastError> {
-    self
-  }
+    fn into_cast_result(self) -> Result<T, CastError> {
+        self
+    }
 }
 
 impl IntoCastResult<i64> for i64 {
-  fn into_cast_result(self) -> Result<i64, CastError> {
-    Ok(self)
-  }
+    fn into_cast_result(self) -> Result<i64, CastError> {
+        Ok(self)
+    }
 }
 
 fn rant_cast_error(from: &'static str, to: &'static str, err: CastError) -> ValueError {
-  ValueError::InvalidConversion {
-    from,
-    to,
-    message: Some(match err {
-      CastError::Overflow => "integer overflow",
-      CastError::Underflow => "integer underflow",
-      CastError::Infinite => "infinity",
-      CastError::NaN => "NaN"
-    }.to_owned())
-  }
+    ValueError::InvalidConversion {
+        from,
+        to,
+        message: Some(
+            match err {
+                CastError::Overflow => "integer overflow",
+                CastError::Underflow => "integer underflow",
+                CastError::Infinite => "infinity",
+                CastError::NaN => "NaN",
+            }
+            .to_owned(),
+        ),
+    }
 }
 
 macro_rules! rant_fallible_int_conversions {
@@ -81,14 +91,14 @@ macro_rules! rant_fallible_int_conversions {
         match i64(self).into_cast_result() {
           Ok(i) => Ok(RantValue::Int(i)),
           Err(err) => Err(rant_cast_error(
-            stringify!($int_type), 
-            stringify!(RantValue::Int), 
+            stringify!($int_type),
+            stringify!(RantValue::Int),
             err
           ))
         }
       }
     }
-    
+
     impl TryFromRant for $int_type {
       fn try_from_rant(val: RantValue) -> ValueResult<Self> {
         macro_rules! cast_int {
@@ -144,7 +154,7 @@ macro_rules! rant_fallible_int_conversions {
             // Other conversion failure
             let src_type = val.type_name();
             let dest_type = stringify!{$int_type};
-            
+
             Err(ValueError::InvalidConversion {
               from: src_type,
               to: dest_type,
@@ -163,37 +173,37 @@ macro_rules! rant_fallible_int_conversions {
 
 /// Implements `FromRant` and `TryFromRant` for a type.
 macro_rules! converts_from_rant {
-  ($param:ident -> $t:ty $b:block) => {
-    impl FromRant for $t {
-      fn from_rant($param: RantValue) -> $t {
-        $b
-      }
-    }
+    ($param:ident -> $t:ty $b:block) => {
+        impl FromRant for $t {
+            fn from_rant($param: RantValue) -> $t {
+                $b
+            }
+        }
 
-    impl TryFromRant for $t {
-      fn try_from_rant(val: RantValue) -> Result<$t, ValueError> {
-        Ok(<$t as FromRant>::from_rant(val))
-      }
-    }
-  }
+        impl TryFromRant for $t {
+            fn try_from_rant(val: RantValue) -> Result<$t, ValueError> {
+                Ok(<$t as FromRant>::from_rant(val))
+            }
+        }
+    };
 }
 
 /// Implements `IntoRant` and `TryIntoRant` for a type.
 macro_rules! converts_into_rant {
-  ($param:ident: $t:ty $b:block) => {
-    impl IntoRant for $t {
-      fn into_rant(self) -> RantValue {
-        let $param = self;
-        $b
-      }
-    }
+    ($param:ident: $t:ty $b:block) => {
+        impl IntoRant for $t {
+            fn into_rant(self) -> RantValue {
+                let $param = self;
+                $b
+            }
+        }
 
-    impl TryIntoRant for $t {
-      fn try_into_rant(self) -> Result<RantValue, ValueError> {
-        Ok(IntoRant::into_rant(self))
-      }
-    }
-  }
+        impl TryIntoRant for $t {
+            fn try_into_rant(self) -> Result<RantValue, ValueError> {
+                Ok(IntoRant::into_rant(self))
+            }
+        }
+    };
 }
 
 rant_fallible_int_conversions! { u8, i8, u16, i16, u32, i32, u64, i64, isize, usize }
@@ -225,301 +235,335 @@ converts_into_rant!(v: RantSelectorHandle { RantValue::Selector(v) });
 converts_into_rant!(v: RantRange { RantValue::Range(v) });
 
 impl<'a> IntoRant for &'a str {
-  fn into_rant(self) -> RantValue {
-    RantValue::String(self.into())
-  }
+    fn into_rant(self) -> RantValue {
+        RantValue::String(self.into())
+    }
 }
 
 impl<'a> TryIntoRant for &'a str {
-  fn try_into_rant(self) -> Result<RantValue, ValueError> {
-    Ok(self.into_rant())
-  }
+    fn try_into_rant(self) -> Result<RantValue, ValueError> {
+        Ok(self.into_rant())
+    }
 }
 
 impl IntoRant for isize {
-  fn into_rant(self) -> RantValue {
-    RantValue::Int(self as i64)
-  }
+    fn into_rant(self) -> RantValue {
+        RantValue::Int(self as i64)
+    }
 }
 
 impl IntoRant for i64 {
-  fn into_rant(self) -> RantValue {
-    RantValue::Int(self)
-  }
+    fn into_rant(self) -> RantValue {
+        RantValue::Int(self)
+    }
 }
 
 impl IntoRant for i32 {
-  fn into_rant(self) -> RantValue {
-    RantValue::Int(self as i64)
-  }
+    fn into_rant(self) -> RantValue {
+        RantValue::Int(self as i64)
+    }
 }
 
 impl IntoRant for u32 {
-  fn into_rant(self) -> RantValue {
-    RantValue::Int(self as i64)
-  }
+    fn into_rant(self) -> RantValue {
+        RantValue::Int(self as i64)
+    }
 }
 
 impl IntoRant for i16 {
-  fn into_rant(self) -> RantValue {
-    RantValue::Int(self as i64)
-  }
+    fn into_rant(self) -> RantValue {
+        RantValue::Int(self as i64)
+    }
 }
 
 impl IntoRant for u16 {
-  fn into_rant(self) -> RantValue {
-    RantValue::Int(self as i64)
-  }
+    fn into_rant(self) -> RantValue {
+        RantValue::Int(self as i64)
+    }
 }
 
 impl IntoRant for i8 {
-  fn into_rant(self) -> RantValue {
-    RantValue::Int(self as i64)
-  }
+    fn into_rant(self) -> RantValue {
+        RantValue::Int(self as i64)
+    }
 }
 
 impl IntoRant for u8 {
-  fn into_rant(self) -> RantValue {
-    RantValue::Int(self as i64)
-  }
+    fn into_rant(self) -> RantValue {
+        RantValue::Int(self as i64)
+    }
 }
 
 impl TryFromRant for f32 {
-  fn try_from_rant(val: RantValue) -> ValueResult<Self> {
-    match val {
-      RantValue::Int(i) => Ok(f32(i)),
-      RantValue::Float(f) => match f32(f) {
-        Ok(f) => Ok(f),
-        Err(err) => Err(rant_cast_error(val.type_name(), "f32", err))
-      },
-      _ => Err(ValueError::InvalidConversion {
-        from: val.type_name(),
-        to: "f32",
-        message: Some(format!("Rant value type '{}' cannot be converted to f32", val.type_name()))
-      })
+    fn try_from_rant(val: RantValue) -> ValueResult<Self> {
+        match val {
+            RantValue::Int(i) => Ok(f32(i)),
+            RantValue::Float(f) => match f32(f) {
+                Ok(f) => Ok(f),
+                Err(err) => Err(rant_cast_error(val.type_name(), "f32", err)),
+            },
+            _ => Err(ValueError::InvalidConversion {
+                from: val.type_name(),
+                to: "f32",
+                message: Some(format!(
+                    "Rant value type '{}' cannot be converted to f32",
+                    val.type_name()
+                )),
+            }),
+        }
     }
-  }
 }
 
 impl TryFromRant for f64 {
-  fn try_from_rant(val: RantValue) -> ValueResult<Self> {
-    match val {
-      RantValue::Int(i) => Ok(f64(i)),
-      RantValue::Float(f) => Ok(f),
-      _ => Err(ValueError::InvalidConversion {
-        from: val.type_name(),
-        to: "f64",
-        message: Some(format!("Rant value type '{}' cannot be converted to f64", val.type_name()))
-      })
+    fn try_from_rant(val: RantValue) -> ValueResult<Self> {
+        match val {
+            RantValue::Int(i) => Ok(f64(i)),
+            RantValue::Float(f) => Ok(f),
+            _ => Err(ValueError::InvalidConversion {
+                from: val.type_name(),
+                to: "f64",
+                message: Some(format!(
+                    "Rant value type '{}' cannot be converted to f64",
+                    val.type_name()
+                )),
+            }),
+        }
     }
-  }
 }
 
 impl<T: IntoRant> IntoRant for Vec<T> {
-  fn into_rant(mut self) -> RantValue {
-    let list = self.drain(..).map(|v| v.into_rant()).collect::<RantList>();
-    RantValue::List(list.into_handle())
-  }
+    fn into_rant(mut self) -> RantValue {
+        let list = self.drain(..).map(|v| v.into_rant()).collect::<RantList>();
+        RantValue::List(list.into_handle())
+    }
 }
 
 impl<T: TryIntoRant> TryIntoRant for Vec<T> {
-  fn try_into_rant(mut self) -> Result<RantValue, ValueError> {
-    let list = self.drain(..).map(|v| v.try_into_rant()).collect::<Result<RantList, ValueError>>()?;
-    Ok(list.into_rant())
-  }
+    fn try_into_rant(mut self) -> Result<RantValue, ValueError> {
+        let list = self
+            .drain(..)
+            .map(|v| v.try_into_rant())
+            .collect::<Result<RantList, ValueError>>()?;
+        Ok(list.into_rant())
+    }
 }
 
 impl TryFromRant for RantTupleHandle {
-  fn try_from_rant(val: RantValue) -> ValueResult<Self> {
-    if let RantValue::Tuple(tuple_ref) = val {
-      Ok(tuple_ref)
-    } else {
-      Err(ValueError::InvalidConversion { from: val.type_name(), to: RantValueType::Tuple.name(), message: None })
+    fn try_from_rant(val: RantValue) -> ValueResult<Self> {
+        if let RantValue::Tuple(tuple_ref) = val {
+            Ok(tuple_ref)
+        } else {
+            Err(ValueError::InvalidConversion {
+                from: val.type_name(),
+                to: RantValueType::Tuple.name(),
+                message: None,
+            })
+        }
     }
-  }
 }
 
 impl TryFromRant for RantListHandle {
-  fn try_from_rant(val: RantValue) -> ValueResult<Self> {
-    if let RantValue::List(list_ref) = val {
-      Ok(list_ref)
-    } else {
-      Err(ValueError::InvalidConversion { from: val.type_name(), to: RantValueType::List.name(), message: None })
+    fn try_from_rant(val: RantValue) -> ValueResult<Self> {
+        if let RantValue::List(list_ref) = val {
+            Ok(list_ref)
+        } else {
+            Err(ValueError::InvalidConversion {
+                from: val.type_name(),
+                to: RantValueType::List.name(),
+                message: None,
+            })
+        }
     }
-  }
 }
 
 impl TryFromRant for RantMapHandle {
-  fn try_from_rant(val: RantValue) -> ValueResult<Self> {
-    if let RantValue::Map(map_ref) = val {
-      Ok(map_ref)
-    } else {
-      Err(ValueError::InvalidConversion { from: val.type_name(), to: RantValueType::Map.name(), message: None })
+    fn try_from_rant(val: RantValue) -> ValueResult<Self> {
+        if let RantValue::Map(map_ref) = val {
+            Ok(map_ref)
+        } else {
+            Err(ValueError::InvalidConversion {
+                from: val.type_name(),
+                to: RantValueType::Map.name(),
+                message: None,
+            })
+        }
     }
-  }
 }
 
 impl TryFromRant for RantFunctionHandle {
-  fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
-    if let RantValue::Function(func_ref) = val {
-      Ok(func_ref)
-    } else {
-      Err(ValueError::InvalidConversion { from: val.type_name(), to: RantValueType::Function.name(), message: None })
+    fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
+        if let RantValue::Function(func_ref) = val {
+            Ok(func_ref)
+        } else {
+            Err(ValueError::InvalidConversion {
+                from: val.type_name(),
+                to: RantValueType::Function.name(),
+                message: None,
+            })
+        }
     }
-  }
 }
 
 impl TryFromRant for RantSelectorHandle {
-  fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
-    if let RantValue::Selector(sel_ref) = val {
-      Ok(sel_ref)
-    } else {
-      Err(ValueError::InvalidConversion { from: val.type_name(), to: RantValueType::Selector.name(), message: None })
+    fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
+        if let RantValue::Selector(sel_ref) = val {
+            Ok(sel_ref)
+        } else {
+            Err(ValueError::InvalidConversion {
+                from: val.type_name(),
+                to: RantValueType::Selector.name(),
+                message: None,
+            })
+        }
     }
-  }
 }
 
 impl<T: TryFromRant> TryFromRant for Option<T> {
-  fn try_from_rant(val: RantValue) -> ValueResult<Self> {
-    match val {
-      RantValue::Nothing => Ok(None),
-      other => Ok(Some(T::try_from_rant(other)?))
+    fn try_from_rant(val: RantValue) -> ValueResult<Self> {
+        match val {
+            RantValue::Nothing => Ok(None),
+            other => Ok(Some(T::try_from_rant(other)?)),
+        }
     }
-  }
-  fn is_optional_param_type() -> bool {
-    true
-  }
+    fn is_optional_param_type() -> bool {
+        true
+    }
 }
 
 impl<T: TryIntoRant> TryIntoRant for Option<T> {
-  fn try_into_rant(self) -> ValueResult<RantValue> {
-    match self {
-      Some(val) => Ok(val.try_into_rant()?),
-      None => Ok(RantValue::Nothing),
+    fn try_into_rant(self) -> ValueResult<RantValue> {
+        match self {
+            Some(val) => Ok(val.try_into_rant()?),
+            None => Ok(RantValue::Nothing),
+        }
     }
-  }
 }
 
 impl<T: IntoRant> IntoRant for Option<T> {
-  fn into_rant(self) -> RantValue {
-    match self {
-      Some(val) => val.into_rant(),
-      None => RantValue::Nothing,
+    fn into_rant(self) -> RantValue {
+        match self {
+            Some(val) => val.into_rant(),
+            None => RantValue::Nothing,
+        }
     }
-  }
 }
 
 impl<T: TryFromRant> TryFromRant for Vec<T> {
-  fn try_from_rant(val: RantValue) -> ValueResult<Self> {
-    match val {
-      RantValue::List(vec) => Ok(vec.borrow().iter().cloned().map(T::try_from_rant).collect::<ValueResult<Vec<T>>>()?),
-      other => Err(ValueError::InvalidConversion {
-        from: other.type_name(),
-        to: stringify!(Vec<T>),
-        message: Some("only lists can be turned into vectors".to_owned())
-      })
+    fn try_from_rant(val: RantValue) -> ValueResult<Self> {
+        match val {
+            RantValue::List(vec) => Ok(vec
+                .borrow()
+                .iter()
+                .cloned()
+                .map(T::try_from_rant)
+                .collect::<ValueResult<Vec<T>>>()?),
+            other => Err(ValueError::InvalidConversion {
+                from: other.type_name(),
+                to: stringify!(Vec<T>),
+                message: Some("only lists can be turned into vectors".to_owned()),
+            }),
+        }
     }
-  }
 }
 
 #[inline(always)]
 fn as_varity<T: TryFromRant>() -> Varity {
-  if T::is_optional_param_type() {
-    Varity::Optional
-  } else {
-    Varity::Required
-  }
+    if T::is_optional_param_type() {
+        Varity::Optional
+    } else {
+        Varity::Required
+    }
 }
 
 #[inline(always)]
 fn inc(counter: &mut usize) -> usize {
-  let prev = *counter;
-  *counter += 1;
-  prev
+    let prev = *counter;
+    *counter += 1;
+    prev
 }
 
 /// Converts from argument list to tuple of `impl TryFromRant` values
 pub trait FromRantArgs: Sized {
-  fn from_rant_args(args: Vec<RantValue>) -> ValueResult<Self>;
-  fn as_rant_params() -> Vec<Parameter>;
+    fn from_rant_args(args: Vec<RantValue>) -> ValueResult<Self>;
+    fn as_rant_params() -> Vec<Parameter>;
 }
 
 impl<T: TryFromRant> FromRantArgs for T {
-  fn from_rant_args(args: Vec<RantValue>) -> ValueResult<Self> {
-    let mut args = args.into_iter();
-    T::try_from_rant(args.next().unwrap_or(RantValue::Nothing))
-  }
+    fn from_rant_args(args: Vec<RantValue>) -> ValueResult<Self> {
+        let mut args = args.into_iter();
+        T::try_from_rant(args.next().unwrap_or(RantValue::Nothing))
+    }
 
-  fn as_rant_params() -> Vec<Parameter> {
-    let varity = if T::is_optional_param_type() {
-      Varity::Optional
-    } else {
-      Varity::Required
-    };
+    fn as_rant_params() -> Vec<Parameter> {
+        let varity = if T::is_optional_param_type() {
+            Varity::Optional
+        } else {
+            Varity::Required
+        };
 
-    let param = Parameter {
-      name: Identifier::new(InternalString::from("arg0")),
-      varity,
-      default_value_expr: None,
-    };
+        let param = Parameter {
+            name: Identifier::new(InternalString::from("arg0")),
+            varity,
+            default_value_expr: None,
+        };
 
-    vec![param]
-  }
+        vec![param]
+    }
 }
 
 /// Semantic wrapper around a `Vec<T>`.
-/// 
+///
 /// Use this type to add an optional variadic (`*`) parameter to native functions.
 pub struct VarArgs<T: TryFromRant>(Vec<T>);
 
 impl<T: TryFromRant> VarArgs<T> {
-  pub fn new(args: Vec<T>) -> Self {
-    Self(args)
-  }
+    pub fn new(args: Vec<T>) -> Self {
+        Self(args)
+    }
 }
 
 impl<T: TryFromRant> Deref for VarArgs<T> {
-  type Target = Vec<T>;
-  fn deref(&self) -> &Self::Target {
-    &self.0
-  }
+    type Target = Vec<T>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
 
 impl<T: TryFromRant> DerefMut for VarArgs<T> {
-  fn deref_mut(&mut self) -> &mut Self::Target {
-    &mut self.0
-  }
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
 }
 
 impl<T: TryFromRant> VarArgs<T> {
-  #[inline]
-  pub fn into_vec(self) -> Vec<T> {
-    self.0
-  }
+    #[inline]
+    pub fn into_vec(self) -> Vec<T> {
+        self.0
+    }
 }
 
 /// Semantic wrapper around a `Vec<T>`.
-/// 
+///
 /// Use this type to add a required variadic (`+`) parameter to native functions.
 pub struct RequiredVarArgs<T: TryFromRant>(Vec<T>);
 
 impl<T: TryFromRant> RequiredVarArgs<T> {
-  pub fn new(args: Vec<T>) -> Self {
-    Self(args)
-  }
+    pub fn new(args: Vec<T>) -> Self {
+        Self(args)
+    }
 }
 
 impl<T: TryFromRant> Deref for RequiredVarArgs<T> {
-  type Target = Vec<T>;
-  fn deref(&self) -> &Self::Target {
-    &self.0
-  }
+    type Target = Vec<T>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
 
 impl<T: TryFromRant> DerefMut for RequiredVarArgs<T> {
-  fn deref_mut(&mut self) -> &mut Self::Target {
-    &mut self.0
-  }
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
 }
 
 macro_rules! impl_from_rant_args {
@@ -533,14 +577,14 @@ macro_rules! impl_from_rant_args {
 
       fn as_rant_params() -> Vec<Parameter> {
         let mut i: usize = 0;
-        vec![$(Parameter { 
+        vec![$(Parameter {
           name: Identifier::new(InternalString::from(format!("arg{}", inc(&mut i)))),
           varity: as_varity::<$generic_types>(),
           default_value_expr: None,
         },)*]
       }
     }
-    
+
     // Variadic* implementation
     impl<$($generic_types: TryFromRant,)* VarArgItem: TryFromRant> FromRantArgs for ($($generic_types,)* VarArgs<VarArgItem>) {
       fn from_rant_args(mut args: Vec<RantValue>) -> ValueResult<Self> {
@@ -556,7 +600,7 @@ macro_rules! impl_from_rant_args {
 
       fn as_rant_params() -> Vec<Parameter> {
         let mut i: usize = 0;
-        vec![$(Parameter { 
+        vec![$(Parameter {
           name: Identifier::new(InternalString::from(format!("arg{}", inc(&mut i)))),
           varity: as_varity::<$generic_types>(),
           default_value_expr: None,
@@ -584,7 +628,7 @@ macro_rules! impl_from_rant_args {
 
       fn as_rant_params() -> Vec<Parameter> {
         let mut i: usize = 0;
-        vec![$(Parameter { 
+        vec![$(Parameter {
           name: Identifier::new(InternalString::from(format!("arg{}", inc(&mut i)))),
           varity: as_varity::<$generic_types>(),
           default_value_expr: None,
@@ -615,28 +659,37 @@ impl_from_rant_args!(A, B, C, D, E, F, G, H, I, J, K);
 
 /// Trait for converting something to a Rant function.
 pub trait IntoRantFunction<Params: FromRantArgs> {
-  /// Performs the conversion.
-  fn into_rant_func(self) -> RantFunction;
+    /// Performs the conversion.
+    fn into_rant_func(self) -> RantFunction;
 }
 
-impl<Params: FromRantArgs, Function: 'static + Fn(&mut VM, Params) -> RantStdResult> IntoRantFunction<Params> for Function {
-  fn into_rant_func(self) -> RantFunction {
-    let body = RantFunctionInterface::Foreign(Rc::new(move |vm, args| {
-      self(vm, Params::from_rant_args(args).into_runtime_result()?)
-    }));
+impl<Params: FromRantArgs, Function: 'static + Fn(&mut VM, Params) -> RantStdResult>
+    IntoRantFunction<Params> for Function
+{
+    fn into_rant_func(self) -> RantFunction {
+        let body = RantFunctionInterface::Foreign(Rc::new(move |vm, args| {
+            self(vm, Params::from_rant_args(args).into_runtime_result()?)
+        }));
 
-    let params = Rc::new(Params::as_rant_params());
+        let params = Rc::new(Params::as_rant_params());
 
-    RantFunction {
-      body,
-      captured_vars: vec![],
-      min_arg_count: params.iter().take_while(|p| p.is_required()).count(),
-      vararg_start_index: params.iter()
-      .enumerate()
-      .find_map(|(i, p)| if p.varity.is_variadic() { Some(i) } else { None })
-      .unwrap_or_else(|| params.len()),
-      params,
-      flavor: None,
+        RantFunction {
+            body,
+            captured_vars: vec![],
+            min_arg_count: params.iter().take_while(|p| p.is_required()).count(),
+            vararg_start_index: params
+                .iter()
+                .enumerate()
+                .find_map(|(i, p)| {
+                    if p.varity.is_variadic() {
+                        Some(i)
+                    } else {
+                        None
+                    }
+                })
+                .unwrap_or_else(|| params.len()),
+            params,
+            flavor: None,
+        }
     }
-  }
 }

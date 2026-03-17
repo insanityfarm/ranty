@@ -15,11 +15,5 @@ jobs:
       - name: Run tests
         run: cargo test --all --all-features
 
-      - name: Build docs
-        run: python3 tools/build_docs.py
-
-      - name: Validate docs links
-        run: python3 tools/validate_docs_links.py docs
-
-      - name: Validate docs examples
-        run: python3 tools/check_docs_examples.py docs
+      - name: Verify docs
+        run: cargo xtask docs verify

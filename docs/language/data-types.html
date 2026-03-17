@@ -1,25 +1,325 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Data Types - Rant Reference</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
-    <link rel="stylesheet" href="../styles.css">
-  </head>
-  <body>
-    <div class="layout">
-      <nav class="sidebar" aria-label="Table of contents">
-        <div class="brand"><a href="../intro.html">Rant Reference</a></div>
-        <ol><li class=""><a href="../intro.html">Introduction</a></li><li class=""><a href="../getting-started.html">Getting Started</a></li><li class=""><a href="../language.html">Language</a><ol><li class=""><a href="text.html">Text</a></li><li class=""><a href="blocks.html">Blocks</a></li><li class=""><a href="functions.html">Functions</a></li><li class="active"><a href="data-types.html">Data Types</a></li><li class=""><a href="accessors.html">Accessors</a></li><li class=""><a href="keywords.html">Keywords</a><ol><li class=""><a href="keywords/require.html">@require</a></li><li class=""><a href="keywords/return.html">@return</a></li><li class=""><a href="keywords/continue.html">@continue</a></li><li class=""><a href="keywords/break.html">@break</a></li><li class=""><a href="keywords/weight.html">@weight</a></li><li class=""><a href="keywords/text.html">@text</a></li></ol></li><li class=""><a href="operators.html">Operators</a></li><li class=""><a href="conditional-expressions.html">Conditional Expressions</a></li><li class=""><a href="output-modifiers.html">Output Modifiers</a></li></ol></li><li class=""><a href="../runtime.html">Runtime Features</a><ol><li class=""><a href="../runtime/attributes.html">Attributes</a></li><li class=""><a href="../runtime/formatters.html">Formatters</a></li><li class=""><a href="../modules.html">Modules</a></li><li class=""><a href="../cli.html">CLI And REPL</a></li></ol></li><li class=""><a href="../stdlib.html">Standard Library</a><ol><li class=""><a href="../stdlib/general.html">General</a></li><li class=""><a href="../stdlib/control-flow.html">Attributes And Control Flow</a></li><li class=""><a href="../stdlib/collections.html">Collections</a></li><li class=""><a href="../stdlib/generators.html">Generators</a></li><li class=""><a href="../stdlib/formatting.html">Formatting</a></li><li class=""><a href="../stdlib/strings.html">Strings</a></li><li class=""><a href="../stdlib/boolean.html">Boolean</a></li><li class=""><a href="../stdlib/comparison.html">Comparison</a></li><li class=""><a href="../stdlib/math.html">Math</a></li><li class=""><a href="../stdlib/conversion.html">Conversion</a></li><li class=""><a href="../stdlib/verification.html">Verification</a></li><li class=""><a href="../stdlib/assertion.html">Assertion</a></li><li class=""><a href="../stdlib/constants.html">Constants</a></li></ol></li><li class=""><a href="../compiler-messages.html">Diagnostics</a></li><li class=""><a href="../glossary.html">Glossary</a></li></ol>
-      </nav>
-      <main class="content">
-        <div class="topbar">
-          <div>Stable 4.0 Reference</div>
-          <div><a href="https://github.com/rant-lang/rant">Repository</a></div>
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Data Types - Rant Reference</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
         </div>
-        <h1 id="data-types"><a class="header" href="#data-types">Data Types</a></h1><p>Rant programs operate on a small set of runtime value types. Collections and functions are first-class values, so a script can generate structured output as well as text.</p><table><thead><tr><th>Type</th><th>Description</th><th>Truthiness</th></tr></thead><tbody><tr><td><code>string</code></td><td>Text data.</td><td>Truthy when non-empty.</td></tr><tr><td><code>int</code></td><td>64-bit signed integer.</td><td>Truthy when nonzero.</td></tr><tr><td><code>float</code></td><td>64-bit floating-point value.</td><td>Truthy when nonzero and not NaN.</td></tr><tr><td><code>bool</code></td><td>Boolean value.</td><td>Uses its own value.</td></tr><tr><td><code>list</code></td><td>Ordered mutable collection.</td><td>Truthy when non-empty.</td></tr><tr><td><code>tuple</code></td><td>Ordered immutable collection.</td><td>Always truthy.</td></tr><tr><td><code>map</code></td><td>Keyed mutable collection.</td><td>Truthy when non-empty.</td></tr><tr><td><code>range</code></td><td>Lazy integer range.</td><td>Truthy when non-empty.</td></tr><tr><td><code>function</code></td><td>Callable value.</td><td>Always truthy.</td></tr><tr><td><code>selector</code></td><td>Selection strategy object.</td><td>Always truthy.</td></tr><tr><td><code>nothing</code></td><td>Unit-like empty value.</td><td>Always falsy.</td></tr></tbody></table>
-      </main>
     </div>
-  </body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rant Reference</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="data-types"><a class="header" href="#data-types">Data Types</a></h1>
+<p>Rant has a dynamic type system, which means that variables also don't have to contain a specific type;
+for example, you can initialize a variable with an integer, and later change it to a string (and vice versa).</p>
+<p>Rant's type system supports the following data types:</p>
+<div class="table-wrapper"><table><thead><tr><th>Type name</th><th>Description</th><th>Pass type</th></tr></thead><tbody>
+<tr><td><code>string</code></td><td>Sequence of UTF-8 characters</td><td>by-value</td></tr>
+<tr><td><code>int</code></td><td>64-bit signed integer</td><td>by-value</td></tr>
+<tr><td><code>float</code></td><td>64-bit double-precision float</td><td>by-value</td></tr>
+<tr><td><code>bool</code></td><td>Boolean value</td><td>by-value</td></tr>
+<tr><td><code>list</code></td><td>List of values</td><td>by-ref</td></tr>
+<tr><td><code>tuple</code></td><td>Tuple of values</td><td>by-ref</td></tr>
+<tr><td><code>map</code></td><td>String-keyed collection of values</td><td>by-ref</td></tr>
+<tr><td><code>range</code></td><td>Indexable range of integers with optional interval</td><td>by-value</td></tr>
+<tr><td><code>function</code></td><td>Function/closure</td><td>by-ref</td></tr>
+<tr><td><code>selector</code></td><td>Handle to a selector</td><td>by-ref</td></tr>
+<tr><td><code>nothing</code></td><td>Unit type representing "null" value</td><td>by-value</td></tr>
+</tbody></table>
+</div>
+<h2 id="integer-literals"><a class="header" href="#integer-literals">Integer literals</a></h2>
+<p>Any number literal without a decimal place is known as an <strong>integer literal</strong>.</p>
+<p>An integer literal produces a value of type <code>int</code>.</p>
+<pre><code class="language-rant">[type: 123]  # int
+</code></pre>
+<h2 id="real-literals"><a class="header" href="#real-literals">Real literals</a></h2>
+<p>Any number literal with a decimal place is known as a <strong>real literal</strong>.</p>
+<p>A real literal produces a value of type <code>float</code>.</p>
+<pre><code class="language-rant">[type: 123.0]  # float
+</code></pre>
+<h2 id="collections"><a class="header" href="#collections">Collections</a></h2>
+<p>Rant's variable system has five collection types: <code>list</code>, <code>tuple</code>, <code>map</code>, <code>string</code>, and <code>range</code>.</p>
+<p>Some collections can be mutated (modified), while others are read-only. Some can be sliced but not spliced.
+Below is a breakdown of which operations each collection type supports:</p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">Type</th><th style="text-align: center">Read</th><th style="text-align: center">Write</th><th style="text-align: center">Slice</th><th style="text-align: center">Splice</th></tr></thead><tbody>
+<tr><td style="text-align: center"><code>list</code></td><td style="text-align: center">🟢</td><td style="text-align: center">🟢</td><td style="text-align: center">🟢</td><td style="text-align: center">🟢</td></tr>
+<tr><td style="text-align: center"><code>tuple</code></td><td style="text-align: center">🟢</td><td style="text-align: center">🔴</td><td style="text-align: center">🟢</td><td style="text-align: center">🔴</td></tr>
+<tr><td style="text-align: center"><code>string</code></td><td style="text-align: center">🟢</td><td style="text-align: center">🔴</td><td style="text-align: center">🟢</td><td style="text-align: center">🔴</td></tr>
+<tr><td style="text-align: center"><code>range</code></td><td style="text-align: center">🟢</td><td style="text-align: center">🔴</td><td style="text-align: center">🟢</td><td style="text-align: center">🔴</td></tr>
+<tr><td style="text-align: center"><code>map</code></td><td style="text-align: center">🟢</td><td style="text-align: center">🟢</td><td style="text-align: center">🔴</td><td style="text-align: center">🔴</td></tr>
+</tbody></table>
+</div><p></p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: center">Legend</th></tr></thead><tbody>
+<tr><td style="text-align: center">🟢 = supported; 🔴 = not supported</td></tr>
+</tbody></table>
+</div>
+<h2 id="type-inference-for-multi-part-expressions"><a class="header" href="#type-inference-for-multi-part-expressions">Type inference for multi-part expressions</a></h2>
+<p>At the end of an expression, Rant adds each printed value together from left to right into a single value that is printed to the caller.</p>
+<p>In order to resolve type ambiguities, Rant follows a few rules when concatenating various types:</p>
+<h3 id="expressions-with-strings"><a class="header" href="#expressions-with-strings">Expressions with strings</a></h3>
+<p>If an expression contains a string, fragment, or hinted element, the combined value from the left as well as every value on the right will be coerced to a string.</p>
+<pre><code class="language-rant"># Since there are fragments and whitespace, it's a string
+[type: 99 bottles of beer]  # string
+</code></pre>
+<h3 id="multiple-numbers"><a class="header" href="#multiple-numbers">Multiple numbers</a></h3>
+<p>If the start of an expression is a series of numbers, they will be added together:</p>
+<pre><code class="language-rant">3
+0.14
+# -&gt; 3.14
+</code></pre>
+<h3 id="multiple-lists-and-tuples"><a class="header" href="#multiple-lists-and-tuples">Multiple lists and tuples</a></h3>
+<p>For any expression that only contains lists and/or tuples, the following rules apply:</p>
+<ul>
+<li>An expression that prints multiple lists will return a single list containing the elements of all the original lists in the same order.</li>
+<li>An expression that prints multiple tuples will return a single tuples containing the elements of all the original lists in the same order.</li>
+<li>An expression that prints one or more tuples and one or more lists will return a single list containing the elements of all the original tuples and lists in the same order.</li>
+</ul>
+<p><strong>Multiple lists in an expression</strong></p>
+<pre><code class="language-rant">(: 1; 2) (: 3; 4) 
+# -&gt; (: 1; 2; 3; 4)
+</code></pre>
+<p><strong>Multiple tuples in an expression</strong></p>
+<pre><code class="language-rant">(1; 2) (3; 4) 
+# -&gt; (1; 2; 3; 4)
+</code></pre>
+<p><strong>Mixed tuples and lists in an expression</strong></p>
+<pre><code class="language-rant">(1; 2) (: 3; 4) (5; 6) (: 7; 8)
+# -&gt; (: 1; 2; 3; 4; 5; 6; 7; 8)
+</code></pre>
+<p><strong>Joining lists with a repeater</strong></p>
+<pre><code class="language-rant">[rep:10] {
+    (: [step])
+}
+# -&gt; (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10)
+</code></pre>
+<p><strong>Joining tuples with a repeater</strong></p>
+<pre><code class="language-rant">[rep:10] {
+    ([step];)
+}
+# -&gt; (1; 2; 3; 4; 5; 6; 7; 8; 9; 10)
+</code></pre>
+<h3 id="nothings"><a class="header" href="#nothings">Nothings</a></h3>
+<p>Printing nothing does nothing. Empty expressions return nothing.</p>
+<pre><code class="language-rant">[type:&lt;&gt;&lt;&gt;]     # nothing
+[type:&lt;&gt;]       # nothing
+[type:]         # nothing
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../language/escape-sequences.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../language/data-types/string.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../language/escape-sequences.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../language/data-types/string.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
 </html>
