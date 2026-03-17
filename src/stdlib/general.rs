@@ -1,5 +1,3 @@
-use std::mem;
-
 use data::DataSourceError;
 
 use super::*;
@@ -106,9 +104,7 @@ pub fn tap(vm: &mut VM, _: VarArgs<RantNothing>) -> RantStdResult {
 
 /// Prints the RNG seed currently in use.
 pub fn seed(vm: &mut VM, _: ()) -> RantStdResult {
-  let signed_seed = unsafe {
-    mem::transmute::<u64, i64>(vm.rng().seed())
-  };
+  let signed_seed = i64::from_ne_bytes(vm.rng().seed().to_ne_bytes());
   let frame = vm.cur_frame_mut();
   frame.write(RantValue::Int(signed_seed));
   Ok(())
@@ -160,6 +156,9 @@ pub fn irange(vm: &mut VM, (a, b, step): (i64, Option<i64>, Option<u64>)) -> Ran
 
 /// Imports a module.
 pub fn require(vm: &mut VM, module_path: String) -> RantStdResult {
+  let dependant = Rc::clone(vm.cur_frame().origin());
+  let request_key = module_request_cache_key(module_path.as_str(), Some(dependant.as_ref()));
+
   // Get name of module from path
   if let Some(module_name) = 
     PathBuf::from(&module_path)
@@ -170,17 +169,48 @@ pub fn require(vm: &mut VM, module_path: String) -> RantStdResult {
     .map(|name| name.to_owned())
   {
     // Check if module is cached; if so, don't do anything
-    if let Some(cached_module) = vm.context().get_cached_module(&module_name) {
+    if let Some(cached_module) = vm.context().get_cached_module(request_key.as_str()) {
       vm.def_var_value(module_name.as_str(), VarAccessMode::Descope(1), cached_module, true)?;
       return Ok(())
     }
 
+    if vm.loading_modules.contains(request_key.as_str()) {
+      runtime_error!(RuntimeErrorType::ModuleError(ModuleResolveError {
+        name: module_path.clone(),
+        reason: ModuleResolveErrorReason::FileIOError(IOErrorKind::InvalidData),
+      }), "cyclic module import detected for '{}'", module_path);
+    }
+
     // If not cached, attempt to resolve it and load the module
-    let dependant = Rc::clone(vm.cur_frame().origin());
     let module_resolver = Rc::clone(&vm.context().module_resolver);
     match module_resolver.try_resolve(vm.context_mut(), module_path.as_str(), Some(dependant.as_ref())) {
       Ok(module_program) => {
-        vm.cur_frame_mut().push_intent(Intent::ImportLastAsModule { module_name, descope: 1 });
+        let mut cache_keys = vec![request_key.clone()];
+
+        if let Some(resolved_key) = module_resolved_cache_key(&module_program) {
+          if let Some(cached_module) = vm.context().get_cached_module(resolved_key.as_str()) {
+            vm.context_mut().cache_module(request_key.as_str(), cached_module.clone());
+            vm.def_var_value(module_name.as_str(), VarAccessMode::Descope(1), cached_module, true)?;
+            return Ok(())
+          }
+
+          if vm.loading_modules.contains(resolved_key.as_str()) {
+            runtime_error!(RuntimeErrorType::ModuleError(ModuleResolveError {
+              name: module_path.clone(),
+              reason: ModuleResolveErrorReason::FileIOError(IOErrorKind::InvalidData),
+            }), "cyclic module import detected for '{}'", module_path);
+          }
+
+          if resolved_key != request_key {
+            cache_keys.push(resolved_key);
+          }
+        }
+
+        for cache_key in &cache_keys {
+          vm.loading_modules.insert(cache_key.clone());
+        }
+
+        vm.cur_frame_mut().push_intent(Intent::ImportLastAsModule { module_name, descope: 1, cache_keys });
         vm.push_frame_flavored(Rc::clone(&module_program.root), StackFrameFlavor::FunctionBody)?;
         Ok(())
       },

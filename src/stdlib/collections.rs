@@ -458,7 +458,6 @@ pub fn insert(vm: &mut VM, (collection, value, pos): (RantValue, RantValue, Rant
     (RantValue::Map(map), key_val) => {
       let mut map = map.borrow_mut();
       let key = key_val.to_string();
-      // TODO: Replace with prototype key-set function
       map.raw_set(key.as_str(), value);
     },
     _ => {
@@ -512,7 +511,6 @@ pub fn remove(vm: &mut VM, (collection, pos): (RantValue, RantValue)) -> RantStd
     (RantValue::Map(map), key_val) => {
       let mut map = map.borrow_mut();
       let key = key_val.to_string();
-      // TODO: Replace with prototype key-remove function
       map.raw_remove(key.as_str());
     },
     _ => {
@@ -542,7 +540,6 @@ pub fn take(vm: &mut VM, (collection, pos): (RantValue, RantValue)) -> RantStdRe
     (RantValue::Map(map), key_val) => {
       let mut map = map.borrow_mut();
       let key = key_val.to_string();
-      // TODO: Replace with prototype key-remove function
       if let Some(val) = map.raw_take(key.as_str()) {
         vm.cur_frame_mut().write(val);
       } else {

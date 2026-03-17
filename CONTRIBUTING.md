@@ -6,8 +6,8 @@ Here's a brief overview of how you can contribute:
 
 ## Developer resources
 
-* [Rant Discord]https://discord.gg/U8Bj6gSshJ)
-* [Rant Reference](https://docs.rant-lang.org/)
+* [Rant Discord](https://discord.gg/U8Bj6gSshJ)
+* [Rant Reference](docs/index.html)
 
 ## Ways to contribute
 
@@ -33,5 +33,4 @@ Your ideas for how to improve Rant are always welcome. As with bugs, feature req
 ### Pull requests
 
 If you'd like to tackle a bug yourself you can submit a pull request for review.
-
-(TODO: Pull request template)
+Include tests for user-visible changes and update the relevant documentation in `docs/` when behavior changes.

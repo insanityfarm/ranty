@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Attributes - Rant Reference</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <div class="layout">
+      <nav class="sidebar" aria-label="Table of contents">
+        <div class="brand"><a href="../intro.html">Rant Reference</a></div>
+        <ol><li class=""><a href="../intro.html">Introduction</a></li><li class=""><a href="../getting-started.html">Getting Started</a></li><li class=""><a href="../language.html">Language</a><ol><li class=""><a href="../language/text.html">Text</a></li><li class=""><a href="../language/blocks.html">Blocks</a></li><li class=""><a href="../language/functions.html">Functions</a></li><li class=""><a href="../language/data-types.html">Data Types</a></li><li class=""><a href="../language/accessors.html">Accessors</a></li><li class=""><a href="../language/keywords.html">Keywords</a><ol><li class=""><a href="../language/keywords/require.html">@require</a></li><li class=""><a href="../language/keywords/return.html">@return</a></li><li class=""><a href="../language/keywords/continue.html">@continue</a></li><li class=""><a href="../language/keywords/break.html">@break</a></li><li class=""><a href="../language/keywords/weight.html">@weight</a></li><li class=""><a href="../language/keywords/text.html">@text</a></li></ol></li><li class=""><a href="../language/operators.html">Operators</a></li><li class=""><a href="../language/conditional-expressions.html">Conditional Expressions</a></li><li class=""><a href="../language/output-modifiers.html">Output Modifiers</a></li></ol></li><li class=""><a href="../runtime.html">Runtime Features</a><ol><li class="active"><a href="attributes.html">Attributes</a></li><li class=""><a href="formatters.html">Formatters</a></li><li class=""><a href="../modules.html">Modules</a></li><li class=""><a href="../cli.html">CLI And REPL</a></li></ol></li><li class=""><a href="../stdlib.html">Standard Library</a><ol><li class=""><a href="../stdlib/general.html">General</a></li><li class=""><a href="../stdlib/control-flow.html">Attributes And Control Flow</a></li><li class=""><a href="../stdlib/collections.html">Collections</a></li><li class=""><a href="../stdlib/generators.html">Generators</a></li><li class=""><a href="../stdlib/formatting.html">Formatting</a></li><li class=""><a href="../stdlib/strings.html">Strings</a></li><li class=""><a href="../stdlib/boolean.html">Boolean</a></li><li class=""><a href="../stdlib/comparison.html">Comparison</a></li><li class=""><a href="../stdlib/math.html">Math</a></li><li class=""><a href="../stdlib/conversion.html">Conversion</a></li><li class=""><a href="../stdlib/verification.html">Verification</a></li><li class=""><a href="../stdlib/assertion.html">Assertion</a></li><li class=""><a href="../stdlib/constants.html">Constants</a></li></ol></li><li class=""><a href="../compiler-messages.html">Diagnostics</a></li><li class=""><a href="../glossary.html">Glossary</a></li></ol>
+      </nav>
+      <main class="content">
+        <div class="topbar">
+          <div>Stable 4.0 Reference</div>
+          <div><a href="https://github.com/rant-lang/rant">Repository</a></div>
+        </div>
+        <h1 id="attributes"><a class="header" href="#attributes">Attributes</a></h1><p>Attributes configure how the next block executes. In stable 4.0 they are exposed through standard-library functions.</p><table><thead><tr><th>Attribute</th><th>Purpose</th></tr></thead><tbody><tr><td><code>[rep]</code></td><td>Configures repetition count or repetition mode.</td></tr><tr><td><code>[sep]</code></td><td>Sets the separator between repeated iterations.</td></tr><tr><td><code>[sel]</code></td><td>Sets or returns the active selector.</td></tr><tr><td><code>[mut]</code></td><td>Sets a mutator function for block elements.</td></tr><tr><td><code>[if]</code>, <code>[elseif]</code>, <code>[else]</code></td><td>Configure conditional block behavior.</td></tr><tr><td><code>[step]</code>, <code>[step-index]</code>, <code>[step-count]</code></td><td>Expose the current block position.</td></tr><tr><td><code>[reset-attrs]</code></td><td>Clears the active attribute state.</td></tr></tbody></table>
+      </main>
+    </div>
+  </body>
+</html>

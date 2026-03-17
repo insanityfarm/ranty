@@ -143,6 +143,13 @@ impl OutputWriter {
 }
 
 impl OutputWriter {
+  #[inline]
+  fn trim_trailing_syntactic_whitespace(&mut self) {
+    while matches!(self.buffers.last(), Some(OutputBuffer::Whitespace(_))) {
+      self.buffers.pop();
+    }
+  }
+
   /// Consumes the output and returns the final value.
   #[inline]
   pub fn render_value(mut self) -> RantValue { 
@@ -223,6 +230,14 @@ impl OutputWriter {
         }
       }
     }
+  }
+
+  /// Consumes the output and returns the final value after discarding any
+  /// trailing parser-inserted whitespace buffers.
+  #[inline]
+  pub fn render_modifier_input(mut self) -> RantValue {
+    self.trim_trailing_syntactic_whitespace();
+    self.render_value()
   }
 }
 

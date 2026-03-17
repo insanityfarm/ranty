@@ -25,6 +25,14 @@ struct RantCliOptions {
   seed: Option<u64>,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+enum LaunchMode {
+  Eval,
+  File,
+  Stdin,
+  Repl,
+}
+
 enum ProgramSource {
   Inline(String),
   Stdin(String),
@@ -45,12 +53,13 @@ fn main() {
     .about("Command-line interface for Rant 4.x")
     .long_version(version_long.as_str())
     .arg(Arg::with_name("seed")
-      .help("Specifies the initial 64-bit hex seed")
+      .help("Specifies the initial 64-bit hex seed (1 to 16 hex digits, optional 0x prefix)")
       .short("s")
+      .long("seed")
       .value_name("SEED")
     )
     .arg(Arg::with_name("eval")
-      .help("Specifies a string to run if no file is specified")
+      .help("Runs an inline program string; takes precedence over FILE and stdin")
       .short("e")
       .long("eval")
       .value_name("PROGRAM_STRING")
@@ -71,7 +80,7 @@ fn main() {
       .long("no-debug")
     )
     .arg(Arg::with_name("FILE")
-      .help("Specifies a Rant file to run")
+      .help("Runs a Rant file if --eval is not used")
       .index(1)
     )
     .get_matches();
@@ -88,50 +97,99 @@ fn main() {
     }
   });
 
+  let seed = match arg_matches.value_of("seed") {
+    Some(raw_seed) => match parse_seed_arg(raw_seed) {
+      Ok(seed) => Some(seed),
+      Err(err) => {
+        log_error!("{}", err);
+        process::exit(exitcode::USAGE);
+      },
+    },
+    None => None,
+  };
+
   let opts = RantCliOptions {
     bench_mode: arg_matches.is_present("bench-mode"),
     no_debug: arg_matches.is_present("no-debug"),
     no_warn: arg_matches.is_present("no-warnings"),
-    seed: arg_matches.value_of("seed").map(|seed_str| u64::from_str_radix(seed_str, 16).ok()).flatten(),
+    seed,
   };
   
   let in_str = arg_matches.value_of("eval");
   let in_file = arg_matches.value_of("FILE");
+  let stdin_is_tty = atty::is(Stream::Stdin);
   
   let mut rant = Rant::with_options(RantOptions {
     use_stdlib: true,
     debug_mode: !opts.no_debug,
+    top_level_defs_are_globals: false,
     seed: opts.seed.unwrap_or_else(|| rand::thread_rng().gen()),
   });
 
   register_cli_globals(&mut rant);
   
-  // Check if the user supplied a source to run
-  if let Some(code) = in_str {
-    // Run inline code from cmdline args
-    let code = run_rant(&mut rant, ProgramSource::Inline(code.to_owned()), &opts, false);
-    process::exit(code);
-  } else if let Some(path) = in_file {
-    // Run input file from cmdline args
-    if !Path::new(path).exists() {
-      log_error!("file not found: {}", path);
-      process::exit(exitcode::NOINPUT);
-    }
-    let code = run_rant(&mut rant, ProgramSource::FilePath(path.to_owned()), &opts, false);
-    process::exit(code);
-  } else if atty::isnt(Stream::Stdin) {
-    // Run piped input from stdin
-    let mut buf = vec![];
-    if let Err(err) =  io::stdin().read_to_end(&mut buf) {
-      log_error!("failed to read from stdin: {}", err);
-      process::exit(exitcode::SOFTWARE);
-    }
-    let source = String::from_utf8_lossy(&buf).into_owned();
-    let code = run_rant(&mut rant, ProgramSource::Stdin(source), &opts, false);
-    process::exit(code);
+  match select_launch_mode(in_str, in_file, stdin_is_tty) {
+    LaunchMode::Eval => {
+      let code = run_rant(&mut rant, ProgramSource::Inline(in_str.unwrap().to_owned()), &opts, false);
+      process::exit(code);
+    },
+    LaunchMode::File => {
+      let path = in_file.unwrap();
+      if !Path::new(path).exists() {
+        log_error!("file not found: {}", path);
+        process::exit(exitcode::NOINPUT);
+      }
+      let code = run_rant(&mut rant, ProgramSource::FilePath(path.to_owned()), &opts, false);
+      process::exit(code);
+    },
+    LaunchMode::Stdin => {
+      let mut buf = vec![];
+      if let Err(err) = io::stdin().read_to_end(&mut buf) {
+        log_error!("failed to read from stdin: {}", err);
+        process::exit(exitcode::SOFTWARE);
+      }
+      let source = String::from_utf8_lossy(&buf).into_owned();
+      let code = run_rant(&mut rant, ProgramSource::Stdin(source), &opts, false);
+      process::exit(code);
+    },
+    LaunchMode::Repl => {}
   }
 
   repl(&mut rant, &opts);
+}
+
+fn parse_seed_arg(raw: &str) -> Result<u64, String> {
+  let trimmed = raw.trim();
+  let digits = trimmed
+    .strip_prefix("0x")
+    .or_else(|| trimmed.strip_prefix("0X"))
+    .unwrap_or(trimmed);
+
+  if digits.is_empty() || digits.len() > 16 || !digits.chars().all(|c| c.is_ascii_hexdigit()) {
+    return Err(format!(
+      "invalid seed '{}'; expected 1 to 16 hexadecimal digits with an optional 0x prefix",
+      raw
+    ));
+  }
+
+  u64::from_str_radix(digits, 16).map_err(|_| {
+    format!(
+      "invalid seed '{}'; expected 1 to 16 hexadecimal digits with an optional 0x prefix",
+      raw
+    )
+  })
+}
+
+fn select_launch_mode(eval: Option<&str>, file: Option<&str>, stdin_is_tty: bool) -> LaunchMode {
+  if eval.is_some() {
+    LaunchMode::Eval
+  } else if file.is_some() {
+    LaunchMode::File
+  } else if !stdin_is_tty {
+    LaunchMode::Stdin
+  } else {
+    LaunchMode::Repl
+  }
 }
 
 fn repl(rant: &mut Rant, opts: &RantCliOptions) {
@@ -205,6 +263,8 @@ fn register_cli_globals(rant: &mut Rant) {
 }
 
 fn run_rant(ctx: &mut Rant, source: ProgramSource, opts: &RantCliOptions, is_repl: bool) -> ExitCode {
+  ctx.options_mut().top_level_defs_are_globals = is_repl;
+
   let show_stats = opts.bench_mode;
   let start_time = Instant::now();
   let mut problems = CliReporter::new(is_repl);
@@ -301,5 +361,40 @@ fn run_rant(ctx: &mut Rant, source: ProgramSource, opts: &RantCliOptions, is_rep
       }
       exitcode::SOFTWARE
     }
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::{LaunchMode, parse_seed_arg, select_launch_mode};
+
+  #[test]
+  fn launch_mode_precedence_is_eval_then_file_then_stdin_then_repl() {
+    assert_eq!(
+      select_launch_mode(Some("print"), Some("script.rant"), false),
+      LaunchMode::Eval
+    );
+    assert_eq!(
+      select_launch_mode(None, Some("script.rant"), false),
+      LaunchMode::File
+    );
+    assert_eq!(select_launch_mode(None, None, false), LaunchMode::Stdin);
+    assert_eq!(select_launch_mode(None, None, true), LaunchMode::Repl);
+  }
+
+  #[test]
+  fn seed_parser_accepts_hex_with_or_without_prefix() {
+    assert_eq!(parse_seed_arg("deadbeef").unwrap(), 0xdeadbeef);
+    assert_eq!(parse_seed_arg("0xDEADBEEF").unwrap(), 0xdeadbeef);
+    assert_eq!(parse_seed_arg("0").unwrap(), 0);
+    assert_eq!(parse_seed_arg("ffffffffffffffff").unwrap(), u64::MAX);
+  }
+
+  #[test]
+  fn seed_parser_rejects_invalid_values() {
+    assert!(parse_seed_arg("").is_err());
+    assert!(parse_seed_arg("xyz").is_err());
+    assert!(parse_seed_arg("0x").is_err());
+    assert!(parse_seed_arg("1234567890abcdef0").is_err());
   }
 }

@@ -255,12 +255,15 @@ impl<I> CallStack<I> {
   /// This function does not perform any identifier validation.
   #[inline]
   pub fn def_var_value(&mut self, context: &mut Rant, id: &str, access: VarAccessMode, val: RantValue, is_const: bool) -> RuntimeResult<()> {
-    // In CLI mode, skip the program's root variable scope when defining variables.
-    #[cfg(feature = "cli")]
-    let access = match access {
-      VarAccessMode::Local if self.locals.depth() <= 2 => VarAccessMode::ExplicitGlobal,
-      VarAccessMode::Descope(n) if self.locals.depth() - n <= 2 => VarAccessMode::ExplicitGlobal,
-      other => other,
+    // REPL-style execution can opt into persisting root-scope definitions as globals.
+    let access = if context.options().top_level_defs_are_globals {
+      match access {
+        VarAccessMode::Local if self.locals.depth() <= 2 => VarAccessMode::ExplicitGlobal,
+        VarAccessMode::Descope(n) if self.locals.depth().saturating_sub(n) <= 2 => VarAccessMode::ExplicitGlobal,
+        other => other,
+      }
+    } else {
+      access
     };
 
     match access {
@@ -447,6 +450,13 @@ impl<I> StackFrame<I> {
     let mut other = OutputWriter::new(Some(&self.output));
     std::mem::swap(&mut self.output, &mut other);
     other.render_value()
+  }
+
+  #[inline]
+  pub fn render_and_reset_modifier_input(&mut self) -> RantValue {
+    let mut other = OutputWriter::new(Some(&self.output));
+    std::mem::swap(&mut self.output, &mut other);
+    other.render_modifier_input()
   }
 
   #[inline(always)]

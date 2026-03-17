@@ -1,0 +1,32 @@
+use rant::Rant;
+
+#[test]
+fn stdlib_exports_expected_public_surface() {
+  let rant = Rant::new();
+  for name in [
+    "alt", "call", "cat", "either", "len", "type", "seed", "tap", "print", "range", "require",
+    "irange", "fork", "unfork", "try", "ds-request", "ds-query-sources", "assert", "assert-not",
+    "assert-eq", "assert-neq", "ws-fmt", "num-fmt", "num-fmt-system", "num-fmt-alt",
+    "num-fmt-padding", "num-fmt-precision", "num-fmt-upper", "num-fmt-endian", "num-fmt-sign",
+    "num-fmt-infinity", "num-fmt-group-sep", "num-fmt-decimal-sep", "if", "elseif", "else",
+    "mksel", "rep", "sel", "sep", "mut", "sel-skip", "sel-freeze", "sel-frozen", "reset-attrs",
+    "step", "step-index", "step-count", "and", "not", "or", "xor", "eq", "neq", "gt", "lt",
+    "ge", "le", "is-string", "is-int", "is-float", "is-number", "is-bool", "is-nothing",
+    "is-nan", "is-odd", "is-even", "is-factor", "is-between", "is-some", "is", "abs", "add",
+    "sub", "mul", "div", "mul-add", "mod", "neg", "pow", "recip", "clamp", "min", "max",
+    "floor", "ceil", "frac", "asin", "sin", "acos", "cos", "atan", "atan2", "tan", "sqrt",
+    "to-int", "to-float", "to-string", "to-bool", "to-list", "to-tuple", "alpha", "dig", "digh",
+    "dignz", "maybe", "pick", "pickn", "pick-sparse", "rand", "randf", "rand-list", "randf-list",
+    "rand-list-sum", "proto", "set-proto", "assoc", "augment", "augment-self", "augment-thru",
+    "chunks", "clear", "fill-self", "fill-thru", "has", "index-of", "insert", "keys",
+    "last-index-of", "list", "nlist", "remove", "rev", "sift-self", "sift-thru", "sift",
+    "squish-self", "squish-thru", "squish", "take", "translate", "values", "filter", "join",
+    "map", "sort-self", "sort-thru", "sort", "shuffle-self", "shuffle-thru", "shuffle", "sum",
+    "tuple", "push", "pop", "oxford-join", "zip", "char", "lower", "upper", "seg", "split",
+    "lines", "indent", "string-replace", "trim", "ord", "ord-all", "error", "RANT_VERSION",
+    "BUILD_VERSION", "EPSILON", "MIN_FLOAT", "MAX_FLOAT", "MIN_INT", "MAX_INT", "INFINITY",
+    "NEG_INFINITY", "NAN",
+  ] {
+    assert!(rant.has_global(name), "missing stdlib symbol: {name}");
+  }
+}

@@ -13,7 +13,8 @@ pub use self::intent::*;
 pub use self::stack::*;
 pub use self::error::*;
 
-use std::{fmt::{Debug, Display}, ops::Deref, rc::Rc};
+use std::{collections::HashSet, fmt::{Debug, Display}, ops::Deref, rc::Rc};
+use fnv::FnvBuildHasher;
 use smallvec::{SmallVec, smallvec};
 
 /// The largest possible stack size before a stack overflow error is raised by the runtime.
@@ -31,7 +32,7 @@ pub struct VM<'rant> {
   call_stack: CallStack<Intent>,
   pipeval_overlay_stack: SmallVec<[RantValue; 1]>,
   resolver: Resolver,
-  // TODO: Store unwind states in call stack
+  pub(crate) loading_modules: HashSet<String, FnvBuildHasher>,
   unwinds: SmallVec<[UnwindState; 1]>,
 }
 
@@ -47,6 +48,7 @@ impl<'rant> VM<'rant> {
       call_stack: Default::default(),
       pipeval_overlay_stack: Default::default(),
       unwinds: Default::default(),
+      loading_modules: Default::default(),
     }
   }
 }
@@ -717,16 +719,12 @@ impl<'rant> VM<'rant> {
             return Ok(true)
           }
         },
-        Intent::ImportLastAsModule { module_name, descope } => {
+        Intent::ImportLastAsModule { module_name, descope, cache_keys } => {
           let module = self.pop_val()?;
 
-          // Cache the module
-          if let Some(RantValue::Map(module_cache_ref)) = self.engine.get_global(crate::MODULES_CACHE_KEY) {
-            module_cache_ref.borrow_mut().raw_set(&module_name, module.clone());
-          } else {
-            let mut cache = RantMap::new();
-            cache.raw_set(&module_name, module.clone());
-            self.engine.set_global(crate::MODULES_CACHE_KEY, cache.into_rant());
+          for cache_key in cache_keys {
+            self.loading_modules.remove(cache_key.as_str());
+            self.engine.cache_module(cache_key.as_str(), module.clone());
           }
 
           self.def_var_value(&module_name, VarAccessMode::Descope(descope), module, true)?;
@@ -1219,7 +1217,8 @@ impl<'rant> VM<'rant> {
           return Ok(true)
         },
         Expression::Require { alias, path } => {
-          // TODO: Move this into a separate function
+          let request_key = module_request_cache_key(path.as_str(), Some(self.cur_frame().origin().as_ref()));
+
           // Get name of module from path
           if let Some(module_name) = 
           PathBuf::from(path.as_str())
@@ -1230,16 +1229,54 @@ impl<'rant> VM<'rant> {
           .map(|name| name.to_owned())
           {
             // Check if module is cached; if so, don't do anything
-            if let Some(cached_module) = self.context().get_cached_module(module_name.as_str()) {
-              self.def_var_value(alias.as_ref().map(|a| a.as_str()).unwrap_or_else(|| module_name.as_str()), VarAccessMode::Local, cached_module.clone(), true)?;
+            if let Some(cached_module) = self.context().get_cached_module(request_key.as_str()) {
+              self.def_var_value(alias.as_ref().map(|a| a.as_str()).unwrap_or_else(|| module_name.as_str()), VarAccessMode::Local, cached_module, true)?;
               continue
             }
 
+            if self.loading_modules.contains(request_key.as_str()) {
+              runtime_error!(RuntimeErrorType::ModuleError(ModuleResolveError {
+                name: path.to_string(),
+                reason: ModuleResolveErrorReason::FileIOError(IOErrorKind::InvalidData),
+              }), format!("cyclic module import detected for '{}'", path));
+            }
+
+            let dependant = Rc::clone(self.cur_frame().origin());
+
             // If not cached, attempt to load it from file and run its root sequence
             let module_resolver = Rc::clone(&self.context().module_resolver);
-            let dependant = Rc::clone(self.cur_frame().origin());
             let module_program = module_resolver.try_resolve(self.context_mut(), path.as_str(), Some(dependant.as_ref())).into_runtime_result()?;
-            self.cur_frame_mut().push_intent(Intent::ImportLastAsModule { module_name: alias.as_ref().map(|a| a.to_string()).unwrap_or(module_name), descope: 0 });
+
+            let mut cache_keys = vec![request_key.clone()];
+
+            if let Some(resolved_key) = module_resolved_cache_key(&module_program) {
+              if let Some(cached_module) = self.context().get_cached_module(resolved_key.as_str()) {
+                self.engine.cache_module(request_key.as_str(), cached_module.clone());
+                self.def_var_value(alias.as_ref().map(|a| a.as_str()).unwrap_or_else(|| module_name.as_str()), VarAccessMode::Local, cached_module, true)?;
+                continue
+              }
+
+              if self.loading_modules.contains(resolved_key.as_str()) {
+                runtime_error!(RuntimeErrorType::ModuleError(ModuleResolveError {
+                  name: path.to_string(),
+                  reason: ModuleResolveErrorReason::FileIOError(IOErrorKind::InvalidData),
+                }), format!("cyclic module import detected for '{}'", path));
+              }
+
+              if resolved_key != request_key {
+                cache_keys.push(resolved_key);
+              }
+            }
+
+            for cache_key in &cache_keys {
+              self.loading_modules.insert(cache_key.clone());
+            }
+
+            self.cur_frame_mut().push_intent(Intent::ImportLastAsModule {
+              module_name: alias.as_ref().map(|a| a.to_string()).unwrap_or(module_name),
+              descope: 0,
+              cache_keys,
+            });
             self.push_frame_flavored(Rc::clone(&module_program.root), StackFrameFlavor::FunctionBody)?;
             continue
           } else {
@@ -1688,7 +1725,7 @@ impl<'rant> VM<'rant> {
           
           // Check for output modifier
           if let Some(modifier) = &elem.output_modifier {
-            let modifier_input = self.cur_frame_mut().render_and_reset_output();
+            let modifier_input = self.cur_frame_mut().render_and_reset_modifier_input();
 
             // Push the next element
             self.push_frame_flavored(
@@ -1720,7 +1757,7 @@ impl<'rant> VM<'rant> {
           self.cur_frame_mut().push_intent(Intent::PrintLast);
 
           if let Some(modifier) = &elem.output_modifier {
-            let input_value = self.cur_frame_mut().render_and_reset_output();
+            let input_value = self.cur_frame_mut().render_and_reset_modifier_input();
 
             // Call the mutator function
             self.call_func(mutator_func, vec![RantValue::Function(elem_func)], true)?;

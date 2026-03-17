@@ -21,7 +21,7 @@ pub enum Intent {
   /// Pops a value off the value stack and breaks from the current repeater with it.
   BreakLast,
   /// Pops a map off the stack and loads it as a module with the specified name.
-  ImportLastAsModule { module_name: String, descope: usize },
+  ImportLastAsModule { module_name: String, descope: usize, cache_keys: Vec<String> },
   /// Check if the current block is finished and either continue the block or pop the state from the stack
   TickCurrentBlock,
   /// Pops a value off the stack and assign it to an existing variable.

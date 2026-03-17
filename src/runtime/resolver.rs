@@ -119,7 +119,6 @@ impl BlockState {
       self.prev_step_separated = false;
       self.cur_steps += 1;
 
-      // TODO: Allow customization of default selector
       let next_index = self.attrs.selector.as_ref().map_or_else(
         // Default block selection behavior
         || {

@@ -314,7 +314,6 @@ enum ParsedSequenceExtras {
   }
 }
 
-// TODO: Add a helper function for creating simple instances of `ParsedSequence` to reduce code bloat
 /// Contains information about a successfully parsed sequence and its context.
 struct ParsedSequence {
   sequence: Sequence,
@@ -878,7 +877,6 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
               emit!(Expression::Block(Rc::new(parsed_block.block)));
             }
             _ => {
-              // TODO: Use a more descriptive error here
               self.report_unexpected_last_token_error();
               emit!(Expression::NothingVal);
             },
@@ -1219,7 +1217,6 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
         },
         token => {          
           // Check for ordered operator
-          // TODO: Split out this horror into its own function PLEASE
           if let Some(mut next_op) = Op::from_token(&token) {
             let mut op_end_type = SequenceEndType::Operator;
             loop {

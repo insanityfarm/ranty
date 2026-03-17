@@ -110,7 +110,7 @@ impl RantMap {
   }
 
   #[inline]
-  pub fn get(&self, key: &str) -> Option<Cow<RantValue>> {
+  pub fn get(&self, key: &str) -> Option<Cow<'_, RantValue>> {
     // Check if the member is in the map itself
     if let Some(member) = self.raw_get(key) {
       return Some(Cow::Borrowed(member))

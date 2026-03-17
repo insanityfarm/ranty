@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Generators - Rant Reference</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <div class="layout">
+      <nav class="sidebar" aria-label="Table of contents">
+        <div class="brand"><a href="../intro.html">Rant Reference</a></div>
+        <ol><li class=""><a href="../intro.html">Introduction</a></li><li class=""><a href="../getting-started.html">Getting Started</a></li><li class=""><a href="../language.html">Language</a><ol><li class=""><a href="../language/text.html">Text</a></li><li class=""><a href="../language/blocks.html">Blocks</a></li><li class=""><a href="../language/functions.html">Functions</a></li><li class=""><a href="../language/data-types.html">Data Types</a></li><li class=""><a href="../language/accessors.html">Accessors</a></li><li class=""><a href="../language/keywords.html">Keywords</a><ol><li class=""><a href="../language/keywords/require.html">@require</a></li><li class=""><a href="../language/keywords/return.html">@return</a></li><li class=""><a href="../language/keywords/continue.html">@continue</a></li><li class=""><a href="../language/keywords/break.html">@break</a></li><li class=""><a href="../language/keywords/weight.html">@weight</a></li><li class=""><a href="../language/keywords/text.html">@text</a></li></ol></li><li class=""><a href="../language/operators.html">Operators</a></li><li class=""><a href="../language/conditional-expressions.html">Conditional Expressions</a></li><li class=""><a href="../language/output-modifiers.html">Output Modifiers</a></li></ol></li><li class=""><a href="../runtime.html">Runtime Features</a><ol><li class=""><a href="../runtime/attributes.html">Attributes</a></li><li class=""><a href="../runtime/formatters.html">Formatters</a></li><li class=""><a href="../modules.html">Modules</a></li><li class=""><a href="../cli.html">CLI And REPL</a></li></ol></li><li class=""><a href="../stdlib.html">Standard Library</a><ol><li class=""><a href="general.html">General</a></li><li class=""><a href="control-flow.html">Attributes And Control Flow</a></li><li class=""><a href="collections.html">Collections</a></li><li class="active"><a href="generators.html">Generators</a></li><li class=""><a href="formatting.html">Formatting</a></li><li class=""><a href="strings.html">Strings</a></li><li class=""><a href="boolean.html">Boolean</a></li><li class=""><a href="comparison.html">Comparison</a></li><li class=""><a href="math.html">Math</a></li><li class=""><a href="conversion.html">Conversion</a></li><li class=""><a href="verification.html">Verification</a></li><li class=""><a href="assertion.html">Assertion</a></li><li class=""><a href="constants.html">Constants</a></li></ol></li><li class=""><a href="../compiler-messages.html">Diagnostics</a></li><li class=""><a href="../glossary.html">Glossary</a></li></ol>
+      </nav>
+      <main class="content">
+        <div class="topbar">
+          <div>Stable 4.0 Reference</div>
+          <div><a href="https://github.com/rant-lang/rant">Repository</a></div>
+        </div>
+        <h1 id="generators"><a class="header" href="#generators">Generators</a></h1><p>Random generation helpers built on the active RNG.</p><table><thead><tr><th>Name</th><th>Call Form</th><th>Summary</th></tr></thead><tbody><tr><td><code>alpha</code></td><td><code></code></td><td>Generates random ASCII letters.</td></tr><tr><td><code>dig</code></td><td><code></code></td><td>Generates random decimal digits.</td></tr><tr><td><code>digh</code></td><td><code></code></td><td>Generates random hexadecimal digits.</td></tr><tr><td><code>dignz</code></td><td><code></code></td><td>Generates random nonzero decimal digits.</td></tr><tr><td><code>maybe</code></td><td><code></code></td><td>Prints a value with a probability threshold.</td></tr><tr><td><code>pick</code></td><td><code></code></td><td>Chooses one random value from its arguments.</td></tr><tr><td><code>pickn</code></td><td><code></code></td><td>Chooses multiple random values.</td></tr><tr><td><code>pick-sparse</code></td><td><code></code></td><td>Chooses values independently across the argument list.</td></tr><tr><td><code>rand</code></td><td><code></code></td><td>Generates a random integer.</td></tr><tr><td><code>randf</code></td><td><code></code></td><td>Generates a random float.</td></tr><tr><td><code>rand-list</code></td><td><code></code></td><td>Generates a list of random integers.</td></tr><tr><td><code>randf-list</code></td><td><code></code></td><td>Generates a list of random floats.</td></tr><tr><td><code>rand-list-sum</code></td><td><code></code></td><td>Generates random integers whose sum matches a target total.</td></tr></tbody></table>
+      </main>
+    </div>
+  </body>
+</html>

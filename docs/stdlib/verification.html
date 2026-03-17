@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Verification - Rant Reference</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <div class="layout">
+      <nav class="sidebar" aria-label="Table of contents">
+        <div class="brand"><a href="../intro.html">Rant Reference</a></div>
+        <ol><li class=""><a href="../intro.html">Introduction</a></li><li class=""><a href="../getting-started.html">Getting Started</a></li><li class=""><a href="../language.html">Language</a><ol><li class=""><a href="../language/text.html">Text</a></li><li class=""><a href="../language/blocks.html">Blocks</a></li><li class=""><a href="../language/functions.html">Functions</a></li><li class=""><a href="../language/data-types.html">Data Types</a></li><li class=""><a href="../language/accessors.html">Accessors</a></li><li class=""><a href="../language/keywords.html">Keywords</a><ol><li class=""><a href="../language/keywords/require.html">@require</a></li><li class=""><a href="../language/keywords/return.html">@return</a></li><li class=""><a href="../language/keywords/continue.html">@continue</a></li><li class=""><a href="../language/keywords/break.html">@break</a></li><li class=""><a href="../language/keywords/weight.html">@weight</a></li><li class=""><a href="../language/keywords/text.html">@text</a></li></ol></li><li class=""><a href="../language/operators.html">Operators</a></li><li class=""><a href="../language/conditional-expressions.html">Conditional Expressions</a></li><li class=""><a href="../language/output-modifiers.html">Output Modifiers</a></li></ol></li><li class=""><a href="../runtime.html">Runtime Features</a><ol><li class=""><a href="../runtime/attributes.html">Attributes</a></li><li class=""><a href="../runtime/formatters.html">Formatters</a></li><li class=""><a href="../modules.html">Modules</a></li><li class=""><a href="../cli.html">CLI And REPL</a></li></ol></li><li class=""><a href="../stdlib.html">Standard Library</a><ol><li class=""><a href="general.html">General</a></li><li class=""><a href="control-flow.html">Attributes And Control Flow</a></li><li class=""><a href="collections.html">Collections</a></li><li class=""><a href="generators.html">Generators</a></li><li class=""><a href="formatting.html">Formatting</a></li><li class=""><a href="strings.html">Strings</a></li><li class=""><a href="boolean.html">Boolean</a></li><li class=""><a href="comparison.html">Comparison</a></li><li class=""><a href="math.html">Math</a></li><li class=""><a href="conversion.html">Conversion</a></li><li class="active"><a href="verification.html">Verification</a></li><li class=""><a href="assertion.html">Assertion</a></li><li class=""><a href="constants.html">Constants</a></li></ol></li><li class=""><a href="../compiler-messages.html">Diagnostics</a></li><li class=""><a href="../glossary.html">Glossary</a></li></ol>
+      </nav>
+      <main class="content">
+        <div class="topbar">
+          <div>Stable 4.0 Reference</div>
+          <div><a href="https://github.com/rant-lang/rant">Repository</a></div>
+        </div>
+        <h1 id="verification"><a class="header" href="#verification">Verification</a></h1><p>Predicates for type and value checks.</p><table><thead><tr><th>Name</th><th>Call Form</th><th>Summary</th></tr></thead><tbody><tr><td><code>is-string</code></td><td><code></code></td><td>Returns whether a value is a string.</td></tr><tr><td><code>is-int</code></td><td><code></code></td><td>Returns whether a value is an int.</td></tr><tr><td><code>is-float</code></td><td><code></code></td><td>Returns whether a value is a float.</td></tr><tr><td><code>is-number</code></td><td><code></code></td><td>Returns whether a value is numeric.</td></tr><tr><td><code>is-bool</code></td><td><code></code></td><td>Returns whether a value is a bool.</td></tr><tr><td><code>is-nothing</code></td><td><code></code></td><td>Returns whether a value is `nothing`.</td></tr><tr><td><code>is-nan</code></td><td><code></code></td><td>Returns whether a value is NaN.</td></tr><tr><td><code>is-odd</code></td><td><code></code></td><td>Returns whether an integer is odd.</td></tr><tr><td><code>is-even</code></td><td><code></code></td><td>Returns whether an integer is even.</td></tr><tr><td><code>is-factor</code></td><td><code></code></td><td>Returns whether one integer divides another evenly.</td></tr><tr><td><code>is-between</code></td><td><code></code></td><td>Returns whether a value falls between two bounds.</td></tr><tr><td><code>is-some</code></td><td><code></code></td><td>Returns whether a value is not `nothing`.</td></tr><tr><td><code>is</code></td><td><code></code></td><td>Returns whether a value has the named runtime type.</td></tr></tbody></table>
+      </main>
+    </div>
+  </body>
+</html>

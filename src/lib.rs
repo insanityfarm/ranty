@@ -3,7 +3,7 @@
 //! Rant is a high-level procedural templating language.
 //! It is designed to help you write more dynamic and expressive templates, dialogue, stories, names, test data, and much more.
 //!
-//! For language documentation, see the [Rant Reference](https://docs.rant-lang.org).
+//! The language reference and CLI documentation live in the repository's `docs/` directory.
 //! 
 //! ## The Rant context
 //!
@@ -91,6 +91,36 @@ pub const RANT_FILE_EXTENSION: &str = "rant";
 
 /// Name of global variable that stores cached modules.
 pub(crate) const MODULES_CACHE_KEY: &str = "__MODULES";
+
+fn normalize_module_cache_path<P: AsRef<Path>>(path: P) -> String {
+  path
+    .as_ref()
+    .canonicalize()
+    .unwrap_or_else(|_| path.as_ref().to_path_buf())
+    .to_string_lossy()
+    .into_owned()
+}
+
+pub(crate) fn module_request_cache_key(module_path: &str, dependant: Option<&RantProgramInfo>) -> String {
+  let normalized_module_path = module_path.replace('\\', "/");
+  let dependant_root = dependant
+    .and_then(|info| info.path())
+    .map(PathBuf::from)
+    .or_else(|| env::current_dir().ok())
+    .and_then(|path| path.parent().map(PathBuf::from).or(Some(path)))
+    .map(normalize_module_cache_path);
+
+  match dependant_root {
+    Some(root) => format!("req:{root}::{normalized_module_path}"),
+    None => format!("req::{normalized_module_path}"),
+  }
+}
+
+pub(crate) fn module_resolved_cache_key(program: &RantProgram) -> Option<String> {
+  program
+    .path()
+    .map(|path| format!("path:{}", normalize_module_cache_path(path)))
+}
 
 /// A Rant execution context.
 #[derive(Debug)]
@@ -312,6 +342,11 @@ impl Rant {
   pub fn options(&self) -> &RantOptions {
     &self.options
   }
+
+  /// Gets a mutable reference to the options used by the context.
+  pub fn options_mut(&mut self) -> &mut RantOptions {
+    &mut self.options
+  }
   
   /// Gets the current RNG seed.
   pub fn seed(&self) -> u64 {
@@ -379,38 +414,44 @@ impl Rant {
   }
 
   pub fn try_load_global_module(&mut self, module_path: &str) -> Result<(), ModuleLoadError> {
-    if let Some(module_name) = 
-    PathBuf::from(&module_path)
+    if PathBuf::from(&module_path)
     .with_extension("")
     .file_name()
     .map(|name| name.to_str())
     .flatten()
-    .map(|name| name.to_owned())
-    {
+    .is_some() {
+      let request_key = module_request_cache_key(module_path, None);
+
       // Check if module is cached; if so, don't do anything
-      if self.get_cached_module(module_name.as_ref()).is_some() {
+      if self.get_cached_module(request_key.as_str()).is_some() {
         return Ok(())
       }
 
       let module_resolver = Rc::clone(&self.module_resolver);
 
       // Resolve and load the module
-      let module = match module_resolver.try_resolve(self, module_path, None) {
-        Ok(module_program) => match self.run(&module_program) {
-          Ok(module) => Ok(module),
+      match module_resolver.try_resolve(self, module_path, None) {
+        Ok(module_program) => {
+          if let Some(resolved_key) = module_resolved_cache_key(&module_program) {
+            if let Some(cached_module) = self.get_cached_module(resolved_key.as_str()) {
+              self.cache_module(request_key.as_str(), cached_module);
+              return Ok(())
+            }
+          }
+
+          match self.run(&module_program) {
+            Ok(module) => {
+              self.cache_module(request_key.as_str(), module.clone());
+              if let Some(resolved_key) = module_resolved_cache_key(&module_program) {
+                self.cache_module(resolved_key.as_str(), module.clone());
+              }
+              Ok(module)
+            },
           Err(err) => Err(ModuleLoadError::RuntimeError(Rc::new(err))),
+          }
         },
         Err(err) => Err(ModuleLoadError::ResolveError(err)),
       }?;
-
-      // Cache the module
-      if let Some(RantValue::Map(module_cache_ref)) = self.get_global(MODULES_CACHE_KEY) {
-        module_cache_ref.borrow_mut().raw_set(&module_name, module);
-      } else {
-        let mut cache = RantMap::new();
-        cache.raw_set(&module_name, module);
-        self.set_global(MODULES_CACHE_KEY, cache.into_rant());
-      }
 
       Ok(())
     } else {
@@ -419,13 +460,24 @@ impl Rant {
   }
 
   #[inline]
-  pub(crate) fn get_cached_module(&self, module_name: &str) -> Option<RantValue> {
+  pub(crate) fn get_cached_module(&self, cache_key: &str) -> Option<RantValue> {
     if let Some(RantValue::Map(module_cache_ref)) = self.get_global(MODULES_CACHE_KEY) {
-      if let Some(module @ RantValue::Map(..)) = module_cache_ref.borrow().raw_get(module_name) {
+      if let Some(module) = module_cache_ref.borrow().raw_get(cache_key) {
         return Some(module.clone())
       }
     }
     None
+  }
+
+  #[inline]
+  pub(crate) fn cache_module(&mut self, cache_key: &str, module: RantValue) {
+    if let Some(RantValue::Map(module_cache_ref)) = self.get_global(MODULES_CACHE_KEY) {
+      module_cache_ref.borrow_mut().raw_set(cache_key, module);
+    } else {
+      let mut cache = RantMap::new();
+      cache.raw_set(cache_key, module);
+      self.set_global(MODULES_CACHE_KEY, cache.into_rant());
+    }
   }
 }
 
@@ -436,6 +488,10 @@ pub struct RantOptions {
   pub use_stdlib: bool,
   /// Enables debug mode, which includes additional debug information in compiled programs and more detailed runtime error data.
   pub debug_mode: bool,
+  /// Promotes definitions in a program's root scope to globals instead of discarding them with the root frame.
+  ///
+  /// This is primarily useful for REPL-style execution where each input should persist definitions for later inputs.
+  pub top_level_defs_are_globals: bool,
   /// The initial seed to pass to the RNG. Defaults to 0.
   pub seed: u64,
 }
@@ -445,6 +501,7 @@ impl Default for RantOptions {
     Self {
       use_stdlib: true,
       debug_mode: false,
+      top_level_defs_are_globals: false,
       seed: 0,
     }
   }

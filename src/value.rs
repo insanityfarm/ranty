@@ -213,7 +213,7 @@ impl RantValue {
   /// Types are converted as follows:
   /// 1. `bool` returns itself.
   /// 2. `int` returns `true` for any non-zero value; otherwise, `false`.
-  /// 3. `float` returns `true` for any [normal](https://en.wikipedia.org/wiki/Normal_number_(computing)) value; otherwise, `false`.
+  /// 3. `float` returns `true` for any nonzero, non-NaN value; otherwise, `false`.
   /// 4. `empty` returns `false`.
   /// 5. Collections that can be zero-length (`string`, `list`, `map`, `range`) return `true` if their length is nonzero; otherwise, `false`.
   /// 6. All other types return `true`.
@@ -222,7 +222,7 @@ impl RantValue {
     match self {
       Self::Boolean(b) => *b,
       Self::String(s) => !s.is_empty(),
-      Self::Float(n) => n.is_normal(),
+      Self::Float(n) => !n.is_nan() && *n != 0.0,
       Self::Int(n) => *n != 0,
       Self::Function(_) => true,
       Self::List(l) => !l.borrow().is_empty(),
@@ -577,7 +577,6 @@ impl RantValue {
     match self {
       Self::Map(map) => {
         let map = map.borrow();
-        // TODO: Use prototype getter here
         if let Some(val) = map.raw_get(key) {
           Ok(val.clone())
         } else {
@@ -593,7 +592,6 @@ impl RantValue {
     match self {
       Self::Map(map) => {
         let mut map = map.borrow_mut();
-        // TODO: use prototype setter here
         map.raw_set(key, val);
         Ok(())
       },

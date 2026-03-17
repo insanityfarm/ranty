@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Data Types - Rant Reference</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <div class="layout">
+      <nav class="sidebar" aria-label="Table of contents">
+        <div class="brand"><a href="../intro.html">Rant Reference</a></div>
+        <ol><li class=""><a href="../intro.html">Introduction</a></li><li class=""><a href="../getting-started.html">Getting Started</a></li><li class=""><a href="../language.html">Language</a><ol><li class=""><a href="text.html">Text</a></li><li class=""><a href="blocks.html">Blocks</a></li><li class=""><a href="functions.html">Functions</a></li><li class="active"><a href="data-types.html">Data Types</a></li><li class=""><a href="accessors.html">Accessors</a></li><li class=""><a href="keywords.html">Keywords</a><ol><li class=""><a href="keywords/require.html">@require</a></li><li class=""><a href="keywords/return.html">@return</a></li><li class=""><a href="keywords/continue.html">@continue</a></li><li class=""><a href="keywords/break.html">@break</a></li><li class=""><a href="keywords/weight.html">@weight</a></li><li class=""><a href="keywords/text.html">@text</a></li></ol></li><li class=""><a href="operators.html">Operators</a></li><li class=""><a href="conditional-expressions.html">Conditional Expressions</a></li><li class=""><a href="output-modifiers.html">Output Modifiers</a></li></ol></li><li class=""><a href="../runtime.html">Runtime Features</a><ol><li class=""><a href="../runtime/attributes.html">Attributes</a></li><li class=""><a href="../runtime/formatters.html">Formatters</a></li><li class=""><a href="../modules.html">Modules</a></li><li class=""><a href="../cli.html">CLI And REPL</a></li></ol></li><li class=""><a href="../stdlib.html">Standard Library</a><ol><li class=""><a href="../stdlib/general.html">General</a></li><li class=""><a href="../stdlib/control-flow.html">Attributes And Control Flow</a></li><li class=""><a href="../stdlib/collections.html">Collections</a></li><li class=""><a href="../stdlib/generators.html">Generators</a></li><li class=""><a href="../stdlib/formatting.html">Formatting</a></li><li class=""><a href="../stdlib/strings.html">Strings</a></li><li class=""><a href="../stdlib/boolean.html">Boolean</a></li><li class=""><a href="../stdlib/comparison.html">Comparison</a></li><li class=""><a href="../stdlib/math.html">Math</a></li><li class=""><a href="../stdlib/conversion.html">Conversion</a></li><li class=""><a href="../stdlib/verification.html">Verification</a></li><li class=""><a href="../stdlib/assertion.html">Assertion</a></li><li class=""><a href="../stdlib/constants.html">Constants</a></li></ol></li><li class=""><a href="../compiler-messages.html">Diagnostics</a></li><li class=""><a href="../glossary.html">Glossary</a></li></ol>
+      </nav>
+      <main class="content">
+        <div class="topbar">
+          <div>Stable 4.0 Reference</div>
+          <div><a href="https://github.com/rant-lang/rant">Repository</a></div>
+        </div>
+        <h1 id="data-types"><a class="header" href="#data-types">Data Types</a></h1><p>Rant programs operate on a small set of runtime value types. Collections and functions are first-class values, so a script can generate structured output as well as text.</p><table><thead><tr><th>Type</th><th>Description</th><th>Truthiness</th></tr></thead><tbody><tr><td><code>string</code></td><td>Text data.</td><td>Truthy when non-empty.</td></tr><tr><td><code>int</code></td><td>64-bit signed integer.</td><td>Truthy when nonzero.</td></tr><tr><td><code>float</code></td><td>64-bit floating-point value.</td><td>Truthy when nonzero and not NaN.</td></tr><tr><td><code>bool</code></td><td>Boolean value.</td><td>Uses its own value.</td></tr><tr><td><code>list</code></td><td>Ordered mutable collection.</td><td>Truthy when non-empty.</td></tr><tr><td><code>tuple</code></td><td>Ordered immutable collection.</td><td>Always truthy.</td></tr><tr><td><code>map</code></td><td>Keyed mutable collection.</td><td>Truthy when non-empty.</td></tr><tr><td><code>range</code></td><td>Lazy integer range.</td><td>Truthy when non-empty.</td></tr><tr><td><code>function</code></td><td>Callable value.</td><td>Always truthy.</td></tr><tr><td><code>selector</code></td><td>Selection strategy object.</td><td>Always truthy.</td></tr><tr><td><code>nothing</code></td><td>Unit-like empty value.</td><td>Always falsy.</td></tr></tbody></table>
+      </main>
+    </div>
+  </body>
+</html>
