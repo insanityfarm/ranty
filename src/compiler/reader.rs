@@ -3,6 +3,7 @@ use crate::InternalString;
 use logos::*;
 use std::ops::Range;
 
+#[derive(Clone)]
 pub struct RantTokenReader<'source> {
     lexer: Lexer<'source, RantToken>,
     peeked: Option<(RantToken, Range<usize>)>,

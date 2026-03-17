@@ -189,9 +189,10 @@
 </code></pre>
 <p>Marks the next block as the fallback branch after a previous conditional block.</p>
 <h2 id="mksel"><a class="header" href="#mksel">mksel</a></h2>
-<pre><code class="language-rant">[%mksel: selector-mode]
+<pre><code class="language-rant">[%mksel: selector-mode; match-value?]
 </code></pre>
-<p>Creates and returns a selector with the specified mode.</p>
+<p>Creates and returns a selector with the specified mode. <code>match</code> mode requires a match value;
+all other modes reject one.</p>
 <h3 id="options-for-selector-mode"><a class="header" href="#options-for-selector-mode">Options for <code>selector-mode</code></a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Mode</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>random</code></td><td>Select a random element each time. <em>(default)</em></td></tr>
@@ -209,6 +210,7 @@
 <tr><td><code>ping</code></td><td>Select from first to last, switching directions when a boundary element is reached.</td></tr>
 <tr><td><code>pong</code></td><td>Select from last to first, switching directions when a boundary element is reached.</td></tr>
 <tr><td><code>no-double</code></td><td>Select a random element each time, ensuring the same element never occurs twice in a row.</td></tr>
+<tr><td><code>match</code></td><td>Select from elements whose <code>@on</code> trigger equals the selector's stored value; otherwise, use untagged fallback elements. Cursor operations are unsupported.</td></tr>
 </tbody></table>
 </div>
 <h2 id="rep"><a class="header" href="#rep">rep</a></h2>
@@ -219,6 +221,10 @@
 <pre><code class="language-rant">[%sel: selector?]
 </code></pre>
 <p>Sets the active selector for the next block. With no argument, prints the current selector or <code>nothing</code>.</p>
+<h2 id="match"><a class="header" href="#match">match</a></h2>
+<pre><code class="language-rant">[%match: value]
+</code></pre>
+<p>Sets the active selector for the next block to a <code>match</code> selector bound to <code>value</code>.</p>
 <h2 id="sep"><a class="header" href="#sep">sep</a></h2>
 <pre><code class="language-rant">[%sep: separator]
 </code></pre>
@@ -230,15 +236,15 @@
 <h2 id="sel-skip"><a class="header" href="#sel-skip">sel-skip</a></h2>
 <pre><code class="language-rant">[%sel-skip: selector; n?]
 </code></pre>
-<p>Advances <code>selector</code> without printing any selected value.</p>
+<p>Advances <code>selector</code> without printing any selected value. This is unsupported for <code>match</code> selectors.</p>
 <h2 id="sel-freeze"><a class="header" href="#sel-freeze">sel-freeze</a></h2>
 <pre><code class="language-rant">[%sel-freeze: selector; frozen?]
 </code></pre>
-<p>Sets the frozen state of <code>selector</code>. Omitting <code>frozen</code> freezes it.</p>
+<p>Sets the frozen state of <code>selector</code>. Omitting <code>frozen</code> freezes it. This is unsupported for <code>match</code> selectors.</p>
 <h2 id="sel-frozen"><a class="header" href="#sel-frozen">sel-frozen</a></h2>
 <pre><code class="language-rant">[%sel-frozen: selector]
 </code></pre>
-<p>Prints whether <code>selector</code> is currently frozen.</p>
+<p>Prints whether <code>selector</code> is currently frozen. This is unsupported for <code>match</code> selectors.</p>
 <h2 id="reset-attrs"><a class="header" href="#reset-attrs">reset-attrs</a></h2>
 <pre><code class="language-rant">[%reset-attrs]
 </code></pre>
@@ -246,7 +252,7 @@
 <h2 id="step"><a class="header" href="#step">step</a></h2>
 <pre><code class="language-rant">[%step]
 </code></pre>
-<p>Prints the current repeater step value.</p>
+<p>Prints the current repeater step value using a 1-based index.</p>
 <h2 id="step-index"><a class="header" href="#step-index">step-index</a></h2>
 <pre><code class="language-rant">[%step-index]
 </code></pre>
@@ -254,7 +260,7 @@
 <h2 id="step-count"><a class="header" href="#step-count">step-count</a></h2>
 <pre><code class="language-rant">[%step-count]
 </code></pre>
-<p>Prints the total number of iterations scheduled for the active repeater.</p>
+<p>Prints the total number of iterations scheduled for the active repeater. Infinite repeaters report <code>0</code>.</p>
 
                     </main>
 

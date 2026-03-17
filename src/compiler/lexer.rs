@@ -9,9 +9,16 @@ pub const KW_RETURN: &str = "return";
 pub const KW_BREAK: &str = "break";
 pub const KW_CONTINUE: &str = "continue";
 pub const KW_WEIGHT: &str = "weight";
+pub const KW_ON: &str = "on";
 pub const KW_IF: &str = "if";
 pub const KW_ELSEIF: &str = "elseif";
 pub const KW_ELSE: &str = "else";
+pub const KW_REP: &str = "rep";
+pub const KW_SEP: &str = "sep";
+pub const KW_SEL: &str = "sel";
+pub const KW_MUT: &str = "mut";
+pub const KW_STEP: &str = "step";
+pub const KW_TOTAL: &str = "total";
 
 // Value constant keywords
 pub const KW_TRUE: &str = "true";
@@ -41,9 +48,16 @@ pub fn is_valid_keyword_name(kw_name: &str) -> bool {
             | KW_BREAK
             | KW_CONTINUE
             | KW_WEIGHT
+            | KW_ON
             | KW_IF
             | KW_ELSEIF
             | KW_ELSE
+            | KW_REP
+            | KW_SEP
+            | KW_SEL
+            | KW_MUT
+            | KW_STEP
+            | KW_TOTAL
             | KW_TRUE
             | KW_FALSE
             | KW_TEXT
@@ -59,35 +73,35 @@ pub fn is_valid_keyword_name(kw_name: &str) -> bool {
     )
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct KeywordInfo {
     pub name: InternalString,
     pub is_valid: bool,
 }
 
 /// Represents the contents of a positive float literal token.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum PositiveFloatToken {
     Value(f64),
     OutOfRange,
 }
 
 /// Represents the contents of a positive integer literal token.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum PositiveIntegerToken {
     Value(u64),
     OutOfRange,
 }
 
 /// Represents an escape sequence output.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum ParsedEscape {
     Char(char),
     InvalidChar(char),
     InvalidUnicode(String),
 }
 
-#[derive(Logos, Debug, PartialEq)]
+#[derive(Clone, Logos, Debug, PartialEq)]
 pub enum RantToken {
     /// Sequence of printable non-whitespace characters that isn't a number
     /// This regex is so crazy because simply doing [\w\-_]+ would accidentally capture negative numbers

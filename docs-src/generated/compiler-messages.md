@@ -27,6 +27,7 @@
 | `R0027` | error | `temporal assignment pipe could redefine variable '{}'` |
 | `R0028` | error | `temporal assignment pipe could redefine constant '{}'` |
 | `R0040` | error | `dynamic key blocks can't have more than one element; if branching is desired, create an inner block` |
+| `R0041` | error | `duplicate @{} modifier on block element` |
 | `R0060` | error | `can't assign a value to an expression; try assigning to a child of it instead` |
 | `R0061` | error | `identifier required but is missing` |
 | `R0062` | error | `'{}' is not a valid identifier; identifiers may only use alphanumerics, underscores, and hyphens (but cannot be only digits)` |
@@ -45,6 +46,9 @@
 | `R0202` | error | `missing argument for @require` |
 | `R0203` | error | `@require path should be a string literal` |
 | `R0204` | error | `condition cannot be empty` |
+| `R0205` | error | `attribute keyword '@{}' does not support this accessor form` |
+| `R0206` | error | `attribute keyword '@{}' is read-only` |
+| `R0207` | error | `@on is not allowed in this context` |
 | `R0250` | error | `expected operand` |
 | `R0251` | error | `expected left-hand operand` |
 | `R0252` | error | `expected right-hand operand` |

@@ -228,7 +228,9 @@ common mineral
 "unused" items, on the other hand, never appear due to their weight of 0.</p>
 <h3 id="evaluation"><a class="header" href="#evaluation">Evaluation</a></h3>
 <p>When a weighted block resolves, it evaluates all weights in the order they appear before running any elements.
-The weight values are retained until the block finishes resolving. For repeaters, all iterations use the same weights.</p>
+The weight values are retained until the block finishes resolving. For repeaters, all iterations use the same weights.
+If a block also uses <code>@on</code>, those trigger expressions are prepared in the same pass and remain fixed
+for the life of the block.</p>
 <h3 id="valid-weight-values"><a class="header" href="#valid-weight-values">Valid weight values</a></h3>
 <p>Weight values can be any number (<code>int</code> or <code>float</code>), other "weight-like" value, or an expression that evaluates to one of these;
 there are, however, special cases where some values are handled differently:</p>
@@ -239,7 +241,8 @@ there are, however, special cases where some values are handled differently:</p>
 <li><code>@true</code> and <code>@false</code> produce weights of 1 and 0, respectively.</li>
 </ul>
 <h2 id="limitations"><a class="header" href="#limitations">Limitations</a></h2>
-<p>Weights are currently only used by default block selection and will be ignored by custom selectors.</p>
+<p>Weights are used by default block selection and by <code>match</code> selectors after they have filtered down to
+their candidate pool. Other selector modes ignore them.</p>
 
                     </main>
 
@@ -249,7 +252,7 @@ there are, however, special cases where some values are handled differently:</p>
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../language/keywords/text.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../language/keywords/on.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -263,7 +266,7 @@ there are, however, special cases where some values are handled differently:</p>
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../language/keywords/text.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../language/keywords/on.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

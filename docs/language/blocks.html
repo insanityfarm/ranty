@@ -195,6 +195,26 @@ They can contain any valid Rant code—even other blocks.</p>
 {Heads|Tails}
 </code></pre>
 <p>The selection strategy can be customized if needed using a <a href="../runtime/attributes.html#selectors">selector</a>.</p>
+<h3 id="element-metadata"><a class="header" href="#element-metadata">Element metadata</a></h3>
+<p>Block elements can also carry metadata that changes how they participate in selection.</p>
+<ul>
+<li><code>@weight expr</code> changes how likely an element is to be picked in weighted selection.</li>
+<li><code>@on expr</code> tags an element for <code>match</code> selectors.</li>
+</ul>
+<p>Each block element may use at most one <code>@weight</code> and one <code>@on</code>. When both are present, they can
+appear in either order after any optional <code>@edit</code> prefix.</p>
+<pre><code class="language-rant">[match: rare] {
+    common
+    |
+    uncommon @weight 2
+    |
+    treasure @on rare @weight 0.25
+    |
+    secret @weight 1 @on rare
+}
+</code></pre>
+<p>When the active selector is <code>match</code>, all elements whose <code>@on</code> value equals the selector's match
+value form the candidate pool. If none match, untagged elements are used as the fallback pool.</p>
 <h3 id="collection-generation"><a class="header" href="#collection-generation">Collection generation</a></h3>
 <p>Blocks can be used to combine collections with conditional, repeating, or probabilistic elements.</p>
 <pre><code class="language-rant"># Evaluates to (A; B; C) or (A; D; E)

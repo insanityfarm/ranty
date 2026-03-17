@@ -3,7 +3,7 @@ use crate::{
     lang::{Block, BlockElement, BlockProtection},
     rng::RantRng,
     runtime_error, RantFunction, RantFunctionHandle, RantFunctionInterface, RantSelectorHandle,
-    RantValue, SelectorError,
+    RantValue, SelectorError, SelectorMode,
 };
 use smallvec::SmallVec;
 use std::{mem, ops::Index, rc::Rc};
@@ -102,6 +102,8 @@ pub struct BlockState {
     elements: Rc<Vec<Rc<BlockElement>>>,
     /// Element weights associated with the block
     weights: Option<Weights>,
+    /// Resolved `@on` trigger values associated with block elements.
+    match_triggers: Option<Vec<Option<RantValue>>>,
     /// Flag to short-circuit the block
     force_stop: bool,
     /// The attributes associated with the block
@@ -117,6 +119,55 @@ pub struct BlockState {
 }
 
 impl BlockState {
+    fn select_match_index(
+        &self,
+        selector: &crate::RantSelector,
+        rng: &RantRng,
+    ) -> Result<usize, SelectorError> {
+        let match_value = selector
+            .match_value()
+            .ok_or(SelectorError::UnsupportedOperation(
+                "match selector is missing a match value",
+            ))?;
+        let triggers = self.match_triggers.as_ref();
+
+        let mut tagged = vec![];
+        let mut fallback = vec![];
+
+        for index in 0..self.elements.len() {
+            match triggers
+                .and_then(|triggers| triggers.get(index))
+                .and_then(|value| value.as_ref())
+            {
+                Some(trigger) if trigger == match_value => tagged.push(index),
+                Some(_) => {}
+                None => fallback.push(index),
+            }
+        }
+
+        let candidates = if tagged.is_empty() { fallback } else { tagged };
+        if candidates.is_empty() {
+            return Err(SelectorError::NoMatchCandidates);
+        }
+
+        if let Some(weights) = &self.weights {
+            let mut candidate_weights = vec![];
+            let mut sum = 0.0;
+            for index in &candidates {
+                let weight = weights[*index];
+                candidate_weights.push(weight);
+                sum += weight;
+            }
+            if sum <= 0.0 {
+                return Err(SelectorError::NoMatchCandidates);
+            }
+            let selected = rng.next_usize_weighted(candidates.len(), &candidate_weights, sum);
+            Ok(candidates[selected])
+        } else {
+            Ok(candidates[rng.next_usize(candidates.len())])
+        }
+    }
+
     #[inline]
     pub fn next_element(&mut self, rng: &RantRng) -> Result<Option<BlockAction>, SelectorError> {
         if self.is_done()
@@ -134,22 +185,18 @@ impl BlockState {
             self.prev_step_separated = false;
             self.cur_steps += 1;
 
-            let next_index = self.attrs.selector.as_ref().map_or_else(
-                // Default block selection behavior
-                || {
-                    Ok(if let Some(weights) = &self.weights {
-                        rng.next_usize_weighted(
-                            self.elements.len(),
-                            weights.as_slice(),
-                            weights.sum,
-                        )
-                    } else {
-                        rng.next_usize(self.elements.len())
-                    })
-                },
-                // Selector behavior
-                |sel| sel.borrow_mut().select(self.elements.len(), rng),
-            )?;
+            let next_index = if let Some(sel_handle) = self.attrs.selector.as_ref() {
+                let mut selector = sel_handle.borrow_mut();
+                if selector.mode() == SelectorMode::Match {
+                    self.select_match_index(&selector, rng)?
+                } else {
+                    selector.select(self.elements.len(), rng)?
+                }
+            } else if let Some(weights) = &self.weights {
+                rng.next_usize_weighted(self.elements.len(), weights.as_slice(), weights.sum)
+            } else {
+                rng.next_usize(self.elements.len())
+            };
 
             let next_elem = Rc::clone(&self.elements[next_index]);
             let next_elem_seq = Rc::clone(&next_elem.main);
@@ -200,6 +247,11 @@ impl BlockState {
     #[inline]
     pub fn step_count(&self) -> usize {
         self.total_steps
+    }
+
+    #[inline]
+    pub fn is_infinite(&self) -> bool {
+        self.attrs.reps.is_infinite()
     }
 
     #[inline]
@@ -273,7 +325,12 @@ impl Resolver {
 impl Resolver {
     /// Adds a new block state to the block stack.
     #[inline]
-    pub fn push_block(&mut self, block: &Block, weights: Option<Weights>) -> RuntimeResult<()> {
+    pub fn push_block(
+        &mut self,
+        block: &Block,
+        weights: Option<Weights>,
+        match_triggers: Option<Vec<Option<RantValue>>>,
+    ) -> RuntimeResult<()> {
         let attrs = match block.protection {
             Some(protection) => match protection {
                 BlockProtection::Outer => {
@@ -287,6 +344,7 @@ impl Resolver {
         let state = BlockState {
             elements: Rc::clone(&block.elements),
             weights,
+            match_triggers,
             cur_steps: 0,
             total_steps: attrs.reps.get_rep_count_for(block),
             attrs,

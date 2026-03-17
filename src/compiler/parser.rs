@@ -185,11 +185,16 @@ enum SequenceParseMode {
     ///
     /// Breaks on `Colon`.
     Condition,
+    /// Parses the value portion of an attribute keyword block-sugar expression.
+    ///
+    /// Breaks on `Colon`.
+    AttributeValue,
     /// Infix right-hand side
     InfixRhs,
 }
 
 /// Indicates what kind of token terminated a sequence read.
+#[derive(PartialEq)]
 enum SequenceEndType {
     /// Top-level program sequence was terminated by end-of-file.
     ProgramEnd,
@@ -231,9 +236,12 @@ enum SequenceEndType {
     Operator,
     /// Condition was terminated by `Colon`.
     ConditionEnd,
+    /// Attribute value was terminated by `Colon`.
+    AttributeValueEnd,
 }
 
 /// Used to track variable usages during compilation.
+#[derive(Clone)]
 struct VarStats {
     def_span: Range<usize>,
     writes: usize,
@@ -313,9 +321,57 @@ fn super_range(a: &Range<usize>, b: &Range<usize>) -> Range<usize> {
     a.start.min(b.start)..a.end.max(b.end)
 }
 
-#[derive(Debug)]
-enum ParsedSequenceExtras {
-    WeightedBlockElement { weight_expr: Rc<Sequence> },
+fn attribute_keyword_from_name(name: &str) -> Option<AttributeKeyword> {
+    Some(match name {
+        KW_REP => AttributeKeyword::Rep,
+        KW_SEP => AttributeKeyword::Sep,
+        KW_SEL => AttributeKeyword::Sel,
+        KW_MUT => AttributeKeyword::Mut,
+        KW_STEP => AttributeKeyword::Step,
+        KW_TOTAL => AttributeKeyword::Total,
+        _ => return None,
+    })
+}
+
+#[derive(Debug, Default)]
+struct ParsedBlockElementMetadata {
+    weight_expr: Option<Rc<Sequence>>,
+    match_trigger_expr: Option<Rc<Sequence>>,
+    order: Vec<BlockElementMetadataKind>,
+}
+
+impl ParsedBlockElementMetadata {
+    fn add_weight(&mut self, weight_expr: Rc<Sequence>) -> Result<(), &'static str> {
+        if self.weight_expr.is_some() {
+            return Err(KW_WEIGHT);
+        }
+        self.weight_expr = Some(weight_expr);
+        self.order.push(BlockElementMetadataKind::Weight);
+        Ok(())
+    }
+
+    fn add_match_trigger(&mut self, trigger_expr: Rc<Sequence>) -> Result<(), &'static str> {
+        if self.match_trigger_expr.is_some() {
+            return Err(KW_ON);
+        }
+        self.match_trigger_expr = Some(trigger_expr);
+        self.order.push(BlockElementMetadataKind::MatchTrigger);
+        Ok(())
+    }
+
+    fn append(&mut self, mut other: Self) -> Result<(), &'static str> {
+        for kind in other.order {
+            match kind {
+                BlockElementMetadataKind::Weight => {
+                    self.add_weight(other.weight_expr.take().unwrap())?;
+                }
+                BlockElementMetadataKind::MatchTrigger => {
+                    self.add_match_trigger(other.match_trigger_expr.take().unwrap())?;
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 /// Contains information about a successfully parsed sequence and its context.
@@ -323,7 +379,7 @@ struct ParsedSequence {
     sequence: Sequence,
     end_type: SequenceEndType,
     is_auto_hinted: bool,
-    extras: Option<ParsedSequenceExtras>,
+    extras: Option<ParsedBlockElementMetadata>,
     next_infix_op: Option<Op>,
 }
 
@@ -426,6 +482,27 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
             // Err on hard syntax error
             Err(()) => Err(()),
         }
+    }
+
+    fn lookahead_attribute_block_sugar(&self) -> bool {
+        let mut reporter = ();
+        let mut parser =
+            RantParser::new(self.source, &mut reporter, self.debug_enabled, &self.info);
+        parser.has_errors = self.has_errors;
+        parser.reader = self.reader.clone();
+        parser.var_stack = self.var_stack.clone();
+        parser.capture_stack = self.capture_stack.clone();
+
+        let parsed_value = match parser.parse_sequence(SequenceParseMode::AttributeValue) {
+            Ok(parsed) => parsed,
+            Err(()) => return false,
+        };
+
+        if parsed_value.end_type != SequenceEndType::AttributeValueEnd {
+            return false;
+        }
+
+        parser.parse_block(BlockParseMode::NeedsStart).is_ok()
     }
 
     /// Reports a syntax error, allowing parsing to continue but causing the final compilation to fail.
@@ -781,8 +858,8 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                             }
                         }),
 
-                        // Control flow
-                        KW_RETURN | KW_CONTINUE | KW_BREAK | KW_WEIGHT => {
+                        // Control flow and block metadata
+                        KW_RETURN | KW_CONTINUE | KW_BREAK | KW_WEIGHT | KW_ON => {
                             whitespace!(ignore both);
                             let ParsedSequence {
                                 sequence: charm_sequence,
@@ -800,14 +877,39 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                                 KW_BREAK => emit!(Expression::Break(charm_sequence)),
                                 KW_WEIGHT => {
                                     if mode == SequenceParseMode::BlockElement {
-                                        charm_extras =
-                                            Some(ParsedSequenceExtras::WeightedBlockElement {
-                                                weight_expr: charm_sequence.unwrap_or_else(|| {
-                                                    Rc::new(Sequence::empty(&self.info))
-                                                }),
-                                            });
+                                        let mut metadata = charm_extras.unwrap_or_default();
+                                        if let Err(name) =
+                                            metadata.add_weight(charm_sequence.unwrap_or_else(
+                                                || Rc::new(Sequence::empty(&self.info)),
+                                            ))
+                                        {
+                                            self.report_error(
+                                                Problem::DuplicateBlockMetadata(name),
+                                                &span,
+                                            );
+                                        }
+                                        charm_extras = Some(metadata);
                                     } else {
                                         self.report_error(Problem::WeightNotAllowed, &span);
+                                    }
+                                }
+                                KW_ON => {
+                                    if mode == SequenceParseMode::BlockElement {
+                                        let Some(trigger_expr) = charm_sequence else {
+                                            self.report_error(Problem::MissingOperand, &span);
+                                            return Err(());
+                                        };
+                                        let mut metadata = charm_extras.unwrap_or_default();
+                                        if let Err(name) = metadata.add_match_trigger(trigger_expr)
+                                        {
+                                            self.report_error(
+                                                Problem::DuplicateBlockMetadata(name),
+                                                &span,
+                                            );
+                                        }
+                                        charm_extras = Some(metadata);
+                                    } else {
+                                        self.report_error(Problem::OnNotAllowed, &span);
                                     }
                                 }
                                 _ => unreachable!(),
@@ -824,6 +926,68 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                                 extras: charm_extras,
                                 next_infix_op: None,
                             });
+                        }
+                        KW_REP | KW_SEP | KW_SEL | KW_MUT | KW_STEP | KW_TOTAL => {
+                            let keyword = attribute_keyword_from_name(kwstr).unwrap();
+                            if self.lookahead_attribute_block_sugar() {
+                                if keyword.is_read_only() {
+                                    self.report_error(
+                                        Problem::ReadOnlyAttributeKeyword(
+                                            keyword.name().to_owned(),
+                                        ),
+                                        &span,
+                                    );
+                                    return Err(());
+                                }
+
+                                no_flags!();
+                                next_print_flag = PrintFlag::None;
+                                whitespace!(ignore both);
+
+                                let ParsedSequence {
+                                    sequence: value_sequence,
+                                    end_type,
+                                    ..
+                                } = self.parse_sequence(SequenceParseMode::AttributeValue)?;
+
+                                if value_sequence.is_empty() {
+                                    self.report_error(Problem::MissingOperand, &span);
+                                    return Err(());
+                                }
+
+                                match end_type {
+                                    SequenceEndType::AttributeValueEnd => {}
+                                    _ => unreachable!(),
+                                }
+
+                                emit!(Expression::SetAttribute {
+                                    keyword,
+                                    value: Rc::new(value_sequence),
+                                });
+
+                                let parsed_block = self.parse_block(BlockParseMode::NeedsStart)?;
+
+                                match next_print_flag {
+                                    PrintFlag::Hint => {
+                                        whitespace!(allow);
+                                        is_seq_text = true;
+                                    }
+                                    PrintFlag::Sink => whitespace!(ignore both),
+                                    PrintFlag::None => {
+                                        if parsed_block.is_auto_hinted {
+                                            whitespace!(allow);
+                                            is_seq_text = true;
+                                        } else {
+                                            whitespace!(ignore both)
+                                        }
+                                    }
+                                }
+
+                                emit!(Expression::Block(Rc::new(parsed_block.block)));
+                            } else {
+                                whitespace!(allow);
+                                emit!(Expression::GetAttribute(keyword));
+                            }
                         }
                         _ => self.report_error(
                             Problem::UnexpectedToken(self.reader.last_token_string().to_string()),
@@ -1075,10 +1239,12 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
 
                     for node in nodes {
                         match node {
-                            Expression::Get(..) => {
+                            Expression::Get(..) | Expression::GetAttribute(..) => {
                                 whitespace!(allow);
                             }
-                            Expression::Set(..) | Expression::Define(..) => {
+                            Expression::Set(..)
+                            | Expression::SetAttribute { .. }
+                            | Expression::Define(..) => {
                                 // whitespace!(ignore both);
                             }
                             _ => unreachable!(),
@@ -1261,6 +1427,15 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                             return Ok(ParsedSequence {
                                 sequence: sequence.with_name_str("condition"),
                                 end_type: SequenceEndType::ConditionEnd,
+                                is_auto_hinted: is_seq_text,
+                                extras: None,
+                                next_infix_op: None,
+                            })
+                        }
+                        SequenceParseMode::AttributeValue => {
+                            return Ok(ParsedSequence {
+                                sequence: sequence.with_name_str("attribute value"),
+                                end_type: SequenceEndType::AttributeValueEnd,
                                 is_auto_hinted: is_seq_text,
                                 extras: None,
                                 next_infix_op: None,
@@ -3002,6 +3177,8 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
         let mut auto_hint = false;
         // Is the block weighted?
         let mut is_weighted = false;
+        // Does the block contain match triggers?
+        let mut has_match_triggers = false;
         // Block content
         let mut elements = vec![];
 
@@ -3053,21 +3230,28 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
 
             let element = Rc::new(BlockElement {
                 main: Rc::new(sequence),
-                weight: if let Some(ParsedSequenceExtras::WeightedBlockElement { weight_expr }) =
-                    extras
-                {
-                    is_weighted = true;
-                    // Optimize constant weights
-                    Some(
+                weight: extras
+                    .as_ref()
+                    .and_then(|extras| extras.weight_expr.as_ref())
+                    .map(|weight_expr| {
+                        is_weighted = true;
                         match (weight_expr.len(), weight_expr.first().map(Rc::as_ref)) {
                             (1, Some(Expression::Integer(n))) => BlockWeight::Constant(*n as f64),
                             (1, Some(Expression::Float(n))) => BlockWeight::Constant(*n),
-                            _ => BlockWeight::Dynamic(weight_expr),
-                        },
-                    )
-                } else {
-                    None
-                },
+                            _ => BlockWeight::Dynamic(Rc::clone(weight_expr)),
+                        }
+                    }),
+                match_trigger: extras
+                    .as_ref()
+                    .and_then(|extras| extras.match_trigger_expr.as_ref())
+                    .map(|expr| {
+                        has_match_triggers = true;
+                        Rc::clone(expr)
+                    }),
+                metadata_order: extras
+                    .as_ref()
+                    .map(|extras| extras.order.clone())
+                    .unwrap_or_default(),
                 output_modifier: modifier,
             });
 
@@ -3090,7 +3274,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
         }
 
         Ok(ParsedBlock {
-            block: Block::new(is_weighted, protection, elements),
+            block: Block::new(is_weighted, has_match_triggers, protection, elements),
             is_auto_hinted: auto_hint,
         })
     }
@@ -3422,6 +3606,85 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
             } else {
                 // Read the path to what we're accessing
                 let mut is_auto_hinted_get = false;
+
+                if let Some(keyword) = self.reader.peek().and_then(|(token, _)| match token {
+                    Keyword(kw) if kw.is_valid => attribute_keyword_from_name(kw.name.as_str()),
+                    _ => None,
+                }) {
+                    self.reader.next_solid();
+                    self.reader.skip_ws();
+
+                    if let Some((token, cur_token_span)) = self.reader.next_solid() {
+                        match token {
+                            RightAngle => {
+                                add_accessor!(Expression::GetAttribute(keyword));
+                                break 'read;
+                            }
+                            Semicolon => {
+                                add_accessor!(Expression::GetAttribute(keyword));
+                                continue 'read;
+                            }
+                            Equals => {
+                                if keyword.is_read_only() {
+                                    self.report_error(
+                                        Problem::ReadOnlyAttributeKeyword(
+                                            keyword.name().to_owned(),
+                                        ),
+                                        &access_start_span,
+                                    );
+                                    return Err(());
+                                }
+
+                                self.reader.skip_ws();
+                                let ParsedSequence {
+                                    sequence: setter_rhs_expr,
+                                    end_type: setter_rhs_end,
+                                    ..
+                                } = self.parse_sequence(SequenceParseMode::VariableAssignment)?;
+
+                                add_accessor!(Expression::SetAttribute {
+                                    keyword,
+                                    value: Rc::new(setter_rhs_expr),
+                                });
+
+                                match setter_rhs_end {
+                                    SequenceEndType::VariableAccessEnd => break 'read,
+                                    SequenceEndType::VariableAssignDelim => continue 'read,
+                                    SequenceEndType::ProgramEnd => {
+                                        self.report_error(
+                                            Problem::UnclosedAccessor,
+                                            &self.reader.last_token_span(),
+                                        );
+                                        return Err(());
+                                    }
+                                    _ => unreachable!(),
+                                }
+                            }
+                            Question | PlusEquals | MinusEquals | StarEquals | SlashEquals
+                            | DoubleStarEquals | PercentEquals | AndEquals | VertBarEquals
+                            | CaretEquals => {
+                                self.report_error(
+                                    Problem::InvalidAttributeKeywordAccessor(
+                                        keyword.name().to_owned(),
+                                    ),
+                                    &cur_token_span,
+                                );
+                                return Err(());
+                            }
+                            _ => {
+                                self.report_unexpected_last_token_error();
+                                return Err(());
+                            }
+                        }
+                    } else {
+                        self.report_error(
+                            Problem::UnclosedAccessor,
+                            &self.reader.last_token_span(),
+                        );
+                        return Err(());
+                    }
+                }
+
                 let (var_path, var_path_span) = self.parse_access_path(true)?;
 
                 self.reader.skip_ws();

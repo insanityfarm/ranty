@@ -64,6 +64,8 @@ As you can see, "boring" and "common" items are by far the most frequently picke
 
 When a weighted block resolves, it evaluates all weights in the order they appear before running any elements.
 The weight values are retained until the block finishes resolving. For repeaters, all iterations use the same weights.
+If a block also uses `@on`, those trigger expressions are prepared in the same pass and remain fixed
+for the life of the block.
 
 ### Valid weight values
 
@@ -77,4 +79,5 @@ there are, however, special cases where some values are handled differently:
 
 ## Limitations
 
-Weights are currently only used by default block selection and will be ignored by custom selectors.
+Weights are used by default block selection and by `match` selectors after they have filtered down to
+their candidate pool. Other selector modes ignore them.

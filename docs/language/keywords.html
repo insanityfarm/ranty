@@ -178,7 +178,17 @@
                         <h1 id="keywords"><a class="header" href="#keywords">Keywords</a></h1>
 <p><strong>Keywords</strong> are reserved tokens starting with <code>@</code> that perform specialized operations,
 such as returning from a function or assigning metadata.</p>
-<p>See the subsections for details on each keyword type.</p>
+<p>Stable 4.0 uses keywords in four main roles:</p>
+<ul>
+<li>control flow: <code>@return</code>, <code>@continue</code>, <code>@break</code></li>
+<li>block metadata: <code>@weight</code>, <code>@on</code></li>
+<li>runtime attributes: <code>@rep</code>, <code>@sep</code>, <code>@sel</code>, <code>@mut</code>, <code>@step</code>, <code>@total</code></li>
+<li>auto-hinting: <code>@text</code></li>
+</ul>
+<p>The attribute keywords are additive syntax over the runtime attribute system described in
+<a href="../runtime/attributes.html">Attributes</a>. The mutable attribute keywords can be read as plain
+expressions, accessed through angle-bracket syntax, or applied directly to an immediate block
+with <code>@kw expr: { ... }</code>.</p>
 
                     </main>
 

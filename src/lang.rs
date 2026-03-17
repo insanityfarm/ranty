@@ -427,6 +427,8 @@ impl DerefMut for Sequence {
 pub struct Block {
     /// Determines whether the block uses weights.
     pub is_weighted: bool,
+    /// Determines whether the block uses match triggers.
+    pub has_match_triggers: bool,
     /// Determines the protection level of the block.
     pub protection: Option<BlockProtection>,
     /// The elements associated with the block.
@@ -437,11 +439,13 @@ impl Block {
     /// Creates a new block.
     pub fn new(
         is_weighted: bool,
+        has_match_triggers: bool,
         protection: Option<BlockProtection>,
         elements: Vec<Rc<BlockElement>>,
     ) -> Self {
         Block {
             is_weighted,
+            has_match_triggers,
             protection,
             elements: Rc::new(elements),
         }
@@ -459,6 +463,12 @@ pub enum BlockProtection {
     Outer,
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum BlockElementMetadataKind {
+    Weight,
+    MatchTrigger,
+}
+
 /// A single element of a regular block.
 #[derive(Debug)]
 pub struct BlockElement {
@@ -466,6 +476,10 @@ pub struct BlockElement {
     pub main: Rc<Sequence>,
     /// The weight of the element.
     pub weight: Option<BlockWeight>,
+    /// The `@on` trigger associated with the element.
+    pub match_trigger: Option<Rc<Sequence>>,
+    /// The source order of dynamic block metadata evaluation.
+    pub metadata_order: Vec<BlockElementMetadataKind>,
     /// Output modifier signature associated with the element sequence.
     pub output_modifier: Option<OutputModifierSig>,
 }
@@ -476,6 +490,8 @@ impl Clone for BlockElement {
         Self {
             main: Rc::clone(&self.main),
             weight: self.weight.clone(),
+            match_trigger: self.match_trigger.clone(),
+            metadata_order: self.metadata_order.clone(),
             output_modifier: self.output_modifier.clone(),
         }
     }
@@ -818,6 +834,33 @@ pub struct Definition {
     pub value: Option<Rc<Sequence>>,
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum AttributeKeyword {
+    Rep,
+    Sep,
+    Sel,
+    Mut,
+    Step,
+    Total,
+}
+
+impl AttributeKeyword {
+    pub fn name(&self) -> &'static str {
+        match self {
+            Self::Rep => "rep",
+            Self::Sep => "sep",
+            Self::Sel => "sel",
+            Self::Mut => "mut",
+            Self::Step => "step",
+            Self::Total => "total",
+        }
+    }
+
+    pub fn is_read_only(&self) -> bool {
+        matches!(self, Self::Step | Self::Total)
+    }
+}
+
 /// Defines Rant expression tree node types. These are directly executable by the VM.
 #[derive(Debug)]
 pub enum Expression {
@@ -847,6 +890,13 @@ pub enum Expression {
     Get(Getter),
     /// Setter
     Set(Setter),
+    /// Reads an attribute keyword.
+    GetAttribute(AttributeKeyword),
+    /// Sets an attribute keyword.
+    SetAttribute {
+        keyword: AttributeKeyword,
+        value: Rc<Sequence>,
+    },
     /// Pipe value
     PipeValue,
     /// Fragment
@@ -937,6 +987,8 @@ impl Expression {
             Self::Define(..) => "definition",
             Self::Get(..) => "getter",
             Self::Set(..) => "setter",
+            Self::GetAttribute(..) => "attribute getter",
+            Self::SetAttribute { .. } => "attribute setter",
             Self::PipedCall(_) => "piped call",
             Self::PipeValue => "pipeval",
             Self::Return(_) => "return",

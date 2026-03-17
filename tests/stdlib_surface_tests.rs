@@ -41,6 +41,7 @@ fn stdlib_exports_expected_public_surface() {
         "elseif",
         "else",
         "mksel",
+        "match",
         "rep",
         "sel",
         "sep",

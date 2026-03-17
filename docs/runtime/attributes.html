@@ -177,13 +177,28 @@
                     <main>
                         <h1 id="attributes"><a class="header" href="#attributes">Attributes</a></h1>
 <p><strong>Attributes</strong> are special runtime settings that modify block behavior, such as how many times a block repeats or how it selects which element to run.</p>
-<p>Attributes are set by calling the standard library's <strong>attribute functions</strong> and stored in the program's <strong>attribute stack</strong>.
+<p>Attributes are set by calling the standard library's <strong>attribute functions</strong> or by using the
+attribute keywords and are stored in the program's <strong>attribute stack</strong>.
 Each frame of the attribute stack stores a full set of attributes.</p>
 <p>When a block resolves, it consumes attributes from the topmost attribute frame and replaces them with their default values.</p>
 <p>Frames can be added to and removed from the attribute stack using <code>[push-attrs]</code> and <code>[pop-attrs]</code>.</p>
+<h2 id="working-with-attributes"><a class="header" href="#working-with-attributes">Working with attributes</a></h2>
+<p>Stable 4.0 exposes the attribute system in three complementary ways:</p>
+<ul>
+<li>standard library helpers such as <code>[rep]</code>, <code>[sep]</code>, <code>[sel]</code>, <code>[mut]</code>, and <code>[match]</code></li>
+<li>plain keyword reads such as <code>@rep</code> and <code>@step</code></li>
+<li>angle-bracket accessors such as <code>&lt;@rep = 3&gt;</code> and <code>&lt;@sel&gt;</code></li>
+</ul>
+<p>The mutable attribute keywords also support immediate-block sugar:</p>
+<pre><code class="language-rant example">@rep 3: {x}
+</code></pre>
+<pre><code class="language-text expected">xxx
+</code></pre>
+<p>The mutable forms are <code>@rep</code>, <code>@sep</code>, <code>@sel</code>, and <code>@mut</code>. The block-state keywords <code>@step</code> and
+<code>@total</code> are read-only.</p>
 <h2 id="repetitions"><a class="header" href="#repetitions">Repetitions</a></h2>
 <p>By setting the repetitions attribute, you can control how many times the next encountered block will run.
-This attribute is set with the <code>[rep]</code> function.</p>
+This attribute is set with the <code>[rep]</code> function or with <code>@rep</code>.</p>
 <h3 id="example"><a class="header" href="#example">Example</a></h3>
 <pre><code class="language-rant">[rep:10]{[step]\n}
 # Output:
@@ -200,7 +215,7 @@ This attribute is set with the <code>[rep]</code> function.</p>
 </code></pre>
 <h2 id="separator"><a class="header" href="#separator">Separator</a></h2>
 <p>The separator attribute controls what is printed between each block repetition.
-It is set using the <code>[sep]</code> function.</p>
+It is set using the <code>[sep]</code> function or <code>@sep</code>.</p>
 <h3 id="example-1"><a class="header" href="#example-1">Example</a></h3>
 <pre><code class="language-rant">[rep:4][sep:" and "]
 It just keeps {going}...
@@ -208,8 +223,14 @@ It just keeps {going}...
 # Output:
 # It just keeps going and going and going and going...
 </code></pre>
-<h2 id="selector"><a class="header" href="#selector">Selector</a></h2>
-<p>The selector attribute controls how Rant chooses which branch of a block to take. It does this using a special state machine object, which must be created separately but can be shared between blocks to coordinate their behavior.</p>
+<p>The <code>@sep</code> keyword can also be read and written through accessor syntax:</p>
+<pre><code class="language-rant example">&lt;@sep = ","&gt;[rep:3][sep:&lt;@sep&gt;]{x}
+</code></pre>
+<pre><code class="language-text expected">x,x,x
+</code></pre>
+<h2 id="selectors"><a class="header" href="#selectors">Selectors</a></h2>
+<p>The selector attribute controls how Rant chooses which branch of a block to take. It does this using a special state machine object, which must be created separately but can be shared between blocks to coordinate their behavior.
+You can set it with <code>[sel]</code>, <code>[match]</code>, <code>@sel</code>, or <code>&lt;@sel = ...&gt;</code>.</p>
 <h3 id="selector-modes"><a class="header" href="#selector-modes">Selector modes</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Mode</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>random</code></td><td>Select a random element each time. <em>(default)</em></td></tr>
@@ -227,6 +248,7 @@ It just keeps {going}...
 <tr><td><code>ping</code></td><td>Select from first to last, switching directions when a boundary element is reached.</td></tr>
 <tr><td><code>pong</code></td><td>Select from last to first, switching directions when a boundary element is reached.</td></tr>
 <tr><td><code>no-double</code></td><td>Select a random element each time, ensuring the same element never occurs twice in a row.</td></tr>
+<tr><td><code>match</code></td><td>Select from elements whose <code>@on</code> trigger equals the selector's stored value; otherwise, use untagged fallback elements. Cursor operations are unsupported.</td></tr>
 </tbody></table>
 </div>
 <h3 id="example-2"><a class="header" href="#example-2">Example</a></h3>
@@ -241,6 +263,15 @@ It just keeps {going}...
 # Output
 # F, C, E, G, B, H, D, A
 </code></pre>
+<h3 id="match-selection"><a class="header" href="#match-selection">Match selection</a></h3>
+<p>Match selectors choose from elements tagged with <code>@on</code>.</p>
+<pre><code class="language-rant example">[match: foo]{yes @on foo|no @on bar|fallback}
+</code></pre>
+<pre><code class="language-text expected">yes
+</code></pre>
+<p>If no tagged element matches, all untagged elements become the fallback pool. If there are no
+matching tagged elements and no untagged elements, the block raises a runtime selector error.
+When the block is weighted, weights are applied inside the chosen pool.</p>
 <h2 id="mutator"><a class="header" href="#mutator">Mutator</a></h2>
 <p>The mutator attribute allows the user to supply a function (known as the "mutator function") that is called in place of each iteration of the block.
 The mutator function accepts the current block element as a callback parameter, which it can then call to produce output for that iteration.</p>
@@ -270,6 +301,18 @@ The mutator function accepts the current block element as a callback parameter, 
 { the | quick | brown | fox }
 # -&gt; theeht quickkciuq brownnworb foxxof
 </code></pre>
+<p>The <code>@mut</code> keyword supports the same attribute state:</p>
+<pre><code class="language-rant example">@mut [?: elem] { [elem]! }: {foo}
+</code></pre>
+<pre><code class="language-text expected">foo!
+</code></pre>
+<h2 id="block-state"><a class="header" href="#block-state">Block state</a></h2>
+<p><code>@step</code> and <code>@total</code> expose the currently active block's iteration state.</p>
+<ul>
+<li><code>@step</code> is the current zero-based iteration index.</li>
+<li><code>@total</code> is the current total iteration count, or <code>&lt;&gt;</code> for infinite repeaters.</li>
+</ul>
+<p>These keywords are read-only. They report <code>0</code> when no repeater is active.</p>
 
                     </main>
 

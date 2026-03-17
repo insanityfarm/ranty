@@ -176,7 +176,27 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="the-selector-type"><a class="header" href="#the-selector-type">The <code>selector</code> type</a></h1>
-<p>The <code>selector</code> type is a handle to a selector. Selectors can be created using the <code>[mksel]</code> function.</p>
+<p>The <code>selector</code> type is a handle to block-selection state. Selectors can be created with
+<a href="../../stdlib/control-flow.html#mksel"><code>[mksel]</code></a> or, for match selection, by setting the active
+selector with <a href="../../stdlib/control-flow.html#match"><code>[match]</code></a>.</p>
+<h2 id="cursor-driven-selectors"><a class="header" href="#cursor-driven-selectors">Cursor-driven selectors</a></h2>
+<p>Most selector modes advance through a block using an internal cursor. Those selectors support the
+standard cursor operations:</p>
+<ul>
+<li><a href="../../stdlib/control-flow.html#sel-skip"><code>[sel-skip]</code></a></li>
+<li><a href="../../stdlib/control-flow.html#sel-freeze"><code>[sel-freeze]</code></a></li>
+<li><a href="../../stdlib/control-flow.html#sel-frozen"><code>[sel-frozen]</code></a></li>
+</ul>
+<h2 id="match-selectors"><a class="header" href="#match-selectors">Match selectors</a></h2>
+<p>The <code>match</code> mode is value-driven instead of cursor-driven. When a match selector is applied to a
+block, it compares its stored match value against each element's <a href="../keywords/on.html"><code>@on</code></a> trigger:</p>
+<ul>
+<li>matching tagged elements form the candidate pool,</li>
+<li>if none match, untagged elements become the fallback pool,</li>
+<li>if that pool is also empty, the block raises a selector error.</li>
+</ul>
+<p>Because match selectors do not advance through a cursor, <code>sel-skip</code>, <code>sel-freeze</code>, and <code>sel-frozen</code>
+are runtime errors for them.</p>
 
                     </main>
 

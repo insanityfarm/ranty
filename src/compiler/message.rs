@@ -136,6 +136,7 @@ pub enum Problem {
     ConstantReassignment(String),
     ConstantRedefinition(String),
     DuplicateParameter(String),
+    DuplicateBlockMetadata(&'static str),
     DynamicKeyBlockMultiElement,
     EmptyCondition,
     EmptyFunctionBody(String),
@@ -150,6 +151,7 @@ pub enum Problem {
     InvalidHint,
     InvalidHintOn(&'static str),
     InvalidIdentifier(String),
+    InvalidAttributeKeywordAccessor(String),
     InvalidKeyword(String),
     InvalidParameter(String),
     InvalidParamOrder(String, String),
@@ -182,7 +184,9 @@ pub enum Problem {
     UnusedFunction(String),
     UnusedParameter(String),
     UnusedVariable(String),
+    ReadOnlyAttributeKeyword(String),
     WeightNotAllowed,
+    OnNotAllowed,
 }
 
 macro_rules! rmsg {
@@ -236,6 +240,7 @@ impl Problem {
 
             // Blocks (0040 - 0059)
             Self::DynamicKeyBlockMultiElement => rcode!(0040),
+            Self::DuplicateBlockMetadata(_) => rcode!(0041),
 
             // Accessors (0060 - 0099)
             Self::AnonValueAssignment => rcode!(0060),
@@ -262,6 +267,9 @@ impl Problem {
             Self::MissingRequireArgument => rcode!(0202),
             Self::InvalidRequireArgumentToken => rcode!(0203),
             Self::EmptyCondition => rcode!(0204),
+            Self::InvalidAttributeKeywordAccessor(_) => rcode!(0205),
+            Self::ReadOnlyAttributeKeyword(_) => rcode!(0206),
+            Self::OnNotAllowed => rcode!(0207),
 
             // Operators (0250 - 0299)
             Self::MissingOperand => rcode!(0250),
@@ -289,6 +297,7 @@ impl Problem {
       Self::ConstantReassignment(cname) => rmsg!("reassignment of known constant '{}'", cname),
       Self::ConstantRedefinition(cname) => rmsg!("redefinition of known constant '{}'", cname),
       Self::DuplicateParameter(pname) => rmsg!("duplicate parameter '{}' in function signature", pname),
+      Self::DuplicateBlockMetadata(name) => rmsg!("duplicate @{} modifier on block element", name),
       Self::DynamicKeyBlockMultiElement => rmsg!("dynamic key blocks can't have more than one element; if branching is desired, create an inner block"),
       Self::EmptyCondition => rmsg!("condition cannot be empty"),
       Self::EmptyFunctionBody(fname) => rmsg!("function '{}' is empty", fname),
@@ -303,6 +312,7 @@ impl Problem {
       Self::InvalidHint => rmsg!("hint is not valid"),
       Self::InvalidHintOn(elname) => rmsg!("hint is not valid on {}", elname),
       Self::InvalidIdentifier(idname) => rmsg!("'{}' is not a valid identifier; identifiers may only use alphanumerics, underscores, and hyphens (but cannot be only digits)", idname),
+      Self::InvalidAttributeKeywordAccessor(name) => rmsg!("attribute keyword '@{}' does not support this accessor form", name),
       Self::InvalidKeyword(kw) => rmsg!("invalid keyword: '@{}'", kw),
       Self::InvalidParameter(pname) => rmsg!("invalid parameter '{}'; must be a valid identifier or '*'", pname),
       Self::InvalidParamOrder(first, second) => rmsg!("{} is not allowed after {}", second, first),
@@ -335,7 +345,9 @@ impl Problem {
       Self::UnusedFunction(fname) => rmsg!("function '{}' is defined but never used", fname),
       Self::UnusedParameter(pname) => rmsg!("parameter '{}' is never used", pname),
       Self::UnusedVariable(vname) => rmsg!("variable '{}' is defined but never used", vname),
+      Self::ReadOnlyAttributeKeyword(name) => rmsg!("attribute keyword '@{}' is read-only", name),
       Self::WeightNotAllowed => rmsg!("@weight is not allowed in this context"),
+      Self::OnNotAllowed => rmsg!("@on is not allowed in this context"),
       Self::TemporalAssignPipeRedefinesVariable(vname) => rmsg!("temporal assignment pipe could redefine variable '{}'", vname),
       Self::TemporalAssignPipeRedefinesConstant(vname) => rmsg!("temporal assignment pipe could redefine constant '{}'", vname),
     }
@@ -347,8 +359,10 @@ impl Problem {
             Self::AccessPathStartsWithSlice => rmsg!("nothing to slice"),
             Self::DuplicateParameter(_) => rmsg!("rename parameter to something unique"),
             Self::DynamicKeyBlockMultiElement => rmsg!("multiple elements not allowed here"),
+            Self::DuplicateBlockMetadata(name) => rmsg!("remove duplicate @{}", name),
             Self::ExpectedToken(token) => rmsg!("expected '{}'", token),
             Self::InvalidHint | Self::InvalidHintOn(_) => rmsg!("hint not allowed here"),
+            Self::InvalidAttributeKeywordAccessor(_) => rmsg!("invalid attribute accessor"),
             Self::InvalidIdentifier(_) => rmsg!("invalid identifier"),
             Self::InvalidParameter(_) => rmsg!("invalid parameter"),
             Self::InvalidParamOrder(_, second) => rmsg!("{} is not valid in this position", second),
@@ -358,6 +372,7 @@ impl Problem {
             Self::MultipleVariadicParams => rmsg!("remove extra variadic parameter"),
             Self::NestedFunctionDefMarkedConstant => rmsg!("use '$' here instead"),
             Self::NothingToPipe => rmsg!("no previous output to consume"),
+            Self::ReadOnlyAttributeKeyword(_) => rmsg!("remove the assignment"),
             Self::UnclosedAccessor => rmsg!("no matching '>' found"),
             Self::UnclosedBlock => rmsg!("no matching '}' found"),
             Self::UnclosedFunctionBody => rmsg!("no matching '}' found"),

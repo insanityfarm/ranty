@@ -31,6 +31,31 @@ By default, a block randomly selects one of its elements and runs the code insid
 
 The selection strategy can be customized if needed using a [selector](../runtime/attributes.md#selectors).
 
+### Element metadata
+
+Block elements can also carry metadata that changes how they participate in selection.
+
+- `@weight expr` changes how likely an element is to be picked in weighted selection.
+- `@on expr` tags an element for `match` selectors.
+
+Each block element may use at most one `@weight` and one `@on`. When both are present, they can
+appear in either order after any optional `@edit` prefix.
+
+```rant
+[match: rare] {
+    common
+    |
+    uncommon @weight 2
+    |
+    treasure @on rare @weight 0.25
+    |
+    secret @weight 1 @on rare
+}
+```
+
+When the active selector is `match`, all elements whose `@on` value equals the selector's match
+value form the candidate pool. If none match, untagged elements are used as the fallback pool.
+
 ### Collection generation
 
 Blocks can be used to combine collections with conditional, repeating, or probabilistic elements.

@@ -33,6 +33,8 @@ pub enum Intent {
         vname: Identifier,
         access_kind: VarAccessMode,
     },
+    /// Pops a value off the stack and assigns it to an attribute keyword.
+    SetAttribute { keyword: AttributeKeyword },
     /// Pops a value off the stack and assign it to a new variable.
     DefVar {
         vname: Identifier,
@@ -126,11 +128,14 @@ pub enum Intent {
         pair_index: usize,
         map: RantMap,
     },
-    /// Evaluates expressions in `weights` and then runs the block with the computed element weights.
-    BuildWeightedBlock {
+    /// Evaluates dynamic block metadata and then runs the block with the computed state.
+    BuildPreparedBlock {
         block: Rc<Block>,
-        weights: Weights,
-        pop_next_weight: bool,
+        weights: Option<Weights>,
+        match_triggers: Option<Vec<Option<RantValue>>>,
+        element_index: usize,
+        metadata_index: usize,
+        pending_metadata: Option<BlockElementMetadataKind>,
     },
     /// Calls a function that accepts a mutable reference to the current runtime. Optionally interrupts the intent loop to force another tick.
     RuntimeCall {
@@ -192,12 +197,22 @@ pub enum Intent {
     },
 }
 
+impl BlockElementMetadataKind {
+    pub fn intent_name(&self) -> &'static str {
+        match self {
+            Self::Weight => "weight",
+            Self::MatchTrigger => "match_trigger",
+        }
+    }
+}
+
 impl Intent {
     pub(crate) fn name(&self) -> &'static str {
         match self {
             Self::PrintLast => "print",
             Self::TickCurrentBlock => "check_block",
             Self::SetVar { .. } => "set_var",
+            Self::SetAttribute { .. } => "set_attribute",
             Self::DefVar { .. } => "def_var",
             Self::BuildDynamicGetter { .. } => "build_dyn_getter",
             Self::GetValue { .. } => "get_value",
@@ -217,7 +232,7 @@ impl Intent {
             Self::ReturnLast => "return_last",
             Self::ContinueLast => "continue_last",
             Self::BreakLast => "break_last",
-            Self::BuildWeightedBlock { .. } => "build_weighted_block",
+            Self::BuildPreparedBlock { .. } => "build_prepared_block",
             Self::CreateDefaultArgs { .. } => "create_default_args",
             Self::Add => "add",
             Self::Subtract => "subtract",

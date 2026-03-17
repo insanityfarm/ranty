@@ -85,10 +85,11 @@
 | `lower` | Strings | `[%lower: str]` | Converts string `str` to lowercase and returns the result. | [stdlib/strings.md#lower](stdlib/strings.md#lower) |
 | `lt` | Comparison | `[%lt: lhs; rhs]` | Returns `@true` if `lhs` is less than `rhs`. | [stdlib/comparison.md#lt](stdlib/comparison.md#lt) |
 | `map` | Collections | `[%map: list; map-func]` | Calls the supplied function on each item in a list and returns another list with the results in the same order. | [stdlib/collections.md#map](stdlib/collections.md#map) |
+| `match` | Attributes & Control Flow | `[%match: value]` | Sets the active selector for the next block to a `match` selector bound to `value`. | [stdlib/control-flow.md#match](stdlib/control-flow.md#match) |
 | `max` | Math | `[%max: values+]` | Returns the largest value in `values`. | [stdlib/math.md#max](stdlib/math.md#max) |
 | `maybe` | Generators | `[%maybe: p ? 0.5]` | Returns a `bool` value with `p` probability of being true. | [stdlib/generators.md#maybe](stdlib/generators.md#maybe) |
 | `min` | Math | `[%min: values+]` | Returns the smallest value in `values`. | [stdlib/math.md#min](stdlib/math.md#min) |
-| `mksel` | Attributes & Control Flow | `[%mksel: selector-mode]` | Creates and returns a selector with the specified mode. | [stdlib/control-flow.md#mksel](stdlib/control-flow.md#mksel) |
+| `mksel` | Attributes & Control Flow | `[%mksel: selector-mode; match-value?]` | Creates and returns a selector with the specified mode. `match` mode requires a match value; all other modes reject one. | [stdlib/control-flow.md#mksel](stdlib/control-flow.md#mksel) |
 | `mod` | Math | `[%mod: lhs; rhs]` | Gets the modulus of two values. | [stdlib/math.md#mod](stdlib/math.md#mod) |
 | `mul` | Math | `[%mul: lhs; rhs]` | Multiplies two values and prints the product. | [stdlib/math.md#mul](stdlib/math.md#mul) |
 | `mul-add` | Math | `[%mul-add: lhs; rhs; add]` | Multiplies two values, then adds another value to the result. | [stdlib/math.md#mul-add](stdlib/math.md#mul-add) |
@@ -135,9 +136,9 @@
 | `seed` | General | `[%seed]` | Prints the currently active RNG seed as an `int`. | [stdlib/general.md#seed](stdlib/general.md#seed) |
 | `seg` | Strings | `[%seg: str; size]` | Segments the input text into a list of strings of `size` length. | [stdlib/strings.md#seg](stdlib/strings.md#seg) |
 | `sel` | Attributes & Control Flow | `[%sel: selector?]` | Sets the active selector for the next block. With no argument, prints the current selector or `nothing`. | [stdlib/control-flow.md#sel](stdlib/control-flow.md#sel) |
-| `sel-freeze` | Attributes & Control Flow | `[%sel-freeze: selector; frozen?]` | Sets the frozen state of `selector`. Omitting `frozen` freezes it. | [stdlib/control-flow.md#sel-freeze](stdlib/control-flow.md#sel-freeze) |
-| `sel-frozen` | Attributes & Control Flow | `[%sel-frozen: selector]` | Prints whether `selector` is currently frozen. | [stdlib/control-flow.md#sel-frozen](stdlib/control-flow.md#sel-frozen) |
-| `sel-skip` | Attributes & Control Flow | `[%sel-skip: selector; n?]` | Advances `selector` without printing any selected value. | [stdlib/control-flow.md#sel-skip](stdlib/control-flow.md#sel-skip) |
+| `sel-freeze` | Attributes & Control Flow | `[%sel-freeze: selector; frozen?]` | Sets the frozen state of `selector`. Omitting `frozen` freezes it. This is unsupported for `match` selectors. | [stdlib/control-flow.md#sel-freeze](stdlib/control-flow.md#sel-freeze) |
+| `sel-frozen` | Attributes & Control Flow | `[%sel-frozen: selector]` | Prints whether `selector` is currently frozen. This is unsupported for `match` selectors. | [stdlib/control-flow.md#sel-frozen](stdlib/control-flow.md#sel-frozen) |
+| `sel-skip` | Attributes & Control Flow | `[%sel-skip: selector; n?]` | Advances `selector` without printing any selected value. This is unsupported for `match` selectors. | [stdlib/control-flow.md#sel-skip](stdlib/control-flow.md#sel-skip) |
 | `sep` | Attributes & Control Flow | `[%sep: separator]` | Sets the separator value for repeated block iterations. | [stdlib/control-flow.md#sep](stdlib/control-flow.md#sep) |
 | `set-proto` | General | `[%set-proto: map; proto?]` | Sets or clears the prototype map for `map`. | [stdlib/general.md#set-proto](stdlib/general.md#set-proto) |
 | `shuffle` | Collections | `[%shuffle: list]` | Creates a shuffled copy of a list. | [stdlib/collections.md#shuffle](stdlib/collections.md#shuffle) |
@@ -155,8 +156,8 @@
 | `squish` | Collections | `[%squish: list; target-size]` | Returns a copy of a list with random adjacent elements merged using addition until the number of elements in the list copy reaches `target-size`. If the number of elements in the list is less than or equal to `target-size`, this function simply returns an exact copy of the original list. | [stdlib/collections.md#squish](stdlib/collections.md#squish) |
 | `squish-self` | Collections | `[%squish-self: list; target-size]` | Merges random adjacent elements in a list using addition until the number of elements in the list reaches `target-size`. If the number of elements in the list is less than or equal to `target-size`, this function does nothing. | [stdlib/collections.md#squish-self](stdlib/collections.md#squish-self) |
 | `squish-thru` | Collections | `[%squish-thru: list; target-size]` | Merges random adjacent elements in a list using addition until the number of elements in the list reaches `target-size`, then prints the list. If the number of elements in the list is less than or equal to `target-size`, this function does nothing. | [stdlib/collections.md#squish-thru](stdlib/collections.md#squish-thru) |
-| `step` | Attributes & Control Flow | `[%step]` | Prints the current repeater step value. | [stdlib/control-flow.md#step](stdlib/control-flow.md#step) |
-| `step-count` | Attributes & Control Flow | `[%step-count]` | Prints the total number of iterations scheduled for the active repeater. | [stdlib/control-flow.md#step-count](stdlib/control-flow.md#step-count) |
+| `step` | Attributes & Control Flow | `[%step]` | Prints the current repeater step value using a 1-based index. | [stdlib/control-flow.md#step](stdlib/control-flow.md#step) |
+| `step-count` | Attributes & Control Flow | `[%step-count]` | Prints the total number of iterations scheduled for the active repeater. Infinite repeaters report `0`. | [stdlib/control-flow.md#step-count](stdlib/control-flow.md#step-count) |
 | `step-index` | Attributes & Control Flow | `[%step-index]` | Prints the zero-based iteration index of the active repeater. | [stdlib/control-flow.md#step-index](stdlib/control-flow.md#step-index) |
 | `string-replace` | Strings | `[%string-replace: input; query; replacement]` | Prints `input` with every occurrence of `query` replaced by `replacement`. | [stdlib/strings.md#string-replace](stdlib/strings.md#string-replace) |
 | `sub` | Math | `[%sub: lhs; rhs]` | Prints the difference between two values. | [stdlib/math.md#sub](stdlib/math.md#sub) |

@@ -15,3 +15,4 @@
 | `ping`           | Select from first to last, switching directions when a boundary element is reached.                    |
 | `pong`           | Select from last to first, switching directions when a boundary element is reached.                    |
 | `no-double`      | Select a random element each time, ensuring the same element never occurs twice in a row.              |
+| `match`          | Select from elements whose `@on` trigger equals the selector's stored value; otherwise, use untagged fallback elements. Cursor operations are unsupported. |

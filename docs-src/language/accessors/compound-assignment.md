@@ -30,3 +30,6 @@ Simply suffix the operation with `=` like the following:
 | Logical AND    | `&`                 | `&=`                 |
 | Logical OR     | <code>&#124;</code> | <code>&#124;=</code> |
 | Logical XOR    | `^`                 | `^=`                 |
+
+Attribute keyword accessors such as `<@rep = 3>` are not compound-assignable. Forms like
+`<@rep += 1>` are compile-time errors.

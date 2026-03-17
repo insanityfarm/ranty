@@ -211,52 +211,107 @@ impl<'rant> VM<'rant> {
                 Intent::TickCurrentBlock => {
                     self.tick_current_block()?;
                 }
-                Intent::BuildWeightedBlock {
+                Intent::BuildPreparedBlock {
                     block,
                     mut weights,
-                    mut pop_next_weight,
+                    mut match_triggers,
+                    mut element_index,
+                    mut metadata_index,
+                    pending_metadata,
                 } => {
-                    while weights.len() < block.elements.len() {
-                        if pop_next_weight {
-                            let weight_value = self.pop_val()?;
-                            weights.push(match weight_value {
-                                RantValue::Int(n) => n as f64,
-                                RantValue::Float(n) => n,
-                                other => bf64(other.to_bool()),
-                            });
-                            pop_next_weight = false;
-                            continue;
+                    if let Some(pending_metadata) = pending_metadata {
+                        let value = self.pop_val()?;
+                        match pending_metadata {
+                            BlockElementMetadataKind::Weight => {
+                                if let Some(weights) = &mut weights {
+                                    weights.push(match value {
+                                        RantValue::Int(n) => n as f64,
+                                        RantValue::Float(n) => n,
+                                        other => bf64(other.to_bool()),
+                                    });
+                                }
+                            }
+                            BlockElementMetadataKind::MatchTrigger => {
+                                if let Some(match_triggers) = &mut match_triggers {
+                                    match_triggers[element_index] = Some(value);
+                                }
+                            }
+                        }
+                        metadata_index += 1;
+                    }
+
+                    while element_index < block.elements.len() {
+                        let element = &block.elements[element_index];
+
+                        while metadata_index < element.metadata_order.len() {
+                            match element.metadata_order[metadata_index] {
+                                BlockElementMetadataKind::Weight => match &element.weight {
+                                    Some(BlockWeight::Dynamic(weight_expr)) => {
+                                        let block_for_resume = Rc::clone(&block);
+                                        self.cur_frame_mut().push_intent(
+                                            Intent::BuildPreparedBlock {
+                                                block: block_for_resume,
+                                                weights,
+                                                match_triggers,
+                                                element_index,
+                                                metadata_index,
+                                                pending_metadata: Some(
+                                                    BlockElementMetadataKind::Weight,
+                                                ),
+                                            },
+                                        );
+                                        self.push_frame(Rc::clone(weight_expr), true)?;
+                                        return Ok(true);
+                                    }
+                                    Some(BlockWeight::Constant(weight_value)) => {
+                                        if let Some(weights) = &mut weights {
+                                            weights.push(*weight_value);
+                                        }
+                                    }
+                                    None => {}
+                                },
+                                BlockElementMetadataKind::MatchTrigger => {
+                                    if let Some(trigger_expr) = &element.match_trigger {
+                                        let block_for_resume = Rc::clone(&block);
+                                        self.cur_frame_mut().push_intent(
+                                            Intent::BuildPreparedBlock {
+                                                block: block_for_resume,
+                                                weights,
+                                                match_triggers,
+                                                element_index,
+                                                metadata_index,
+                                                pending_metadata: Some(
+                                                    BlockElementMetadataKind::MatchTrigger,
+                                                ),
+                                            },
+                                        );
+                                        self.push_frame(Rc::clone(trigger_expr), true)?;
+                                        return Ok(true);
+                                    }
+                                }
+                            }
+                            metadata_index += 1;
                         }
 
-                        match &block.elements[weights.len()].weight {
-                            Some(weight) => match weight {
-                                BlockWeight::Dynamic(weight_expr) => {
-                                    let weight_expr = Rc::clone(weight_expr);
-                                    self.cur_frame_mut()
-                                        .push_intent(Intent::BuildWeightedBlock {
-                                            block,
-                                            weights,
-                                            pop_next_weight: true,
-                                        });
-                                    self.push_frame(weight_expr, true)?;
-                                    return Ok(true);
-                                }
-                                BlockWeight::Constant(weight_value) => {
-                                    weights.push(*weight_value);
-                                }
-                            },
-                            None => {
+                        if let Some(weights) = &mut weights {
+                            if weights.len() == element_index {
                                 weights.push(1.0);
                             }
                         }
+
+                        element_index += 1;
+                        metadata_index = 0;
                     }
 
-                    // Weights are finished
-                    self.push_block(block.as_ref(), Some(weights))?;
+                    self.push_block(block.as_ref(), weights, match_triggers)?;
                 }
                 Intent::SetVar { vname, access_kind } => {
                     let val = self.pop_val()?;
                     self.set_var_value(vname.as_str(), access_kind, val)?;
+                }
+                Intent::SetAttribute { keyword } => {
+                    let val = self.pop_val()?;
+                    self.set_attribute(keyword, val)?;
                 }
                 Intent::DefVar {
                     vname,
@@ -1163,6 +1218,10 @@ impl<'rant> VM<'rant> {
                         )?;
                     }
                 }
+                Expression::GetAttribute(keyword) => {
+                    let value = self.get_attribute(*keyword);
+                    self.cur_frame_mut().write(value);
+                }
                 Expression::Get(getter) => {
                     self.push_getter_intents(
                         &getter.path,
@@ -1197,6 +1256,12 @@ impl<'rant> VM<'rant> {
                                 )),
                             });
                     }
+                    return Ok(true);
+                }
+                Expression::SetAttribute { keyword, value } => {
+                    self.cur_frame_mut()
+                        .push_intent(Intent::SetAttribute { keyword: *keyword });
+                    self.push_frame(Rc::clone(value), true)?;
                     return Ok(true);
                 }
                 Expression::FuncDef(FunctionDef {
@@ -2288,28 +2353,41 @@ impl<'rant> VM<'rant> {
         Ok(())
     }
 
-    /// Performs any necessary preparation (such as pushing weight intents) before pushing a block.
+    /// Performs any necessary preparation (such as resolving dynamic weights and `@on` triggers)
+    /// before pushing a block.
     /// If the block can be pushed immediately, it will be.
     #[inline]
     pub fn pre_push_block(&mut self, block: &Rc<Block>) -> RuntimeResult<()> {
-        if block.is_weighted {
+        if block.is_weighted || block.has_match_triggers {
             self.cur_frame_mut()
-                .push_intent(Intent::BuildWeightedBlock {
+                .push_intent(Intent::BuildPreparedBlock {
                     block: Rc::clone(block),
-                    weights: Weights::new(block.elements.len()),
-                    pop_next_weight: false,
+                    weights: block
+                        .is_weighted
+                        .then(|| Weights::new(block.elements.len())),
+                    match_triggers: block
+                        .has_match_triggers
+                        .then(|| vec![None; block.elements.len()]),
+                    element_index: 0,
+                    metadata_index: 0,
+                    pending_metadata: None,
                 });
         } else {
-            self.push_block(block, None)?;
+            self.push_block(block, None, None)?;
         }
         Ok(())
     }
 
     /// Consumes attributes and pushes a block onto the resolver stack.
     #[inline]
-    pub fn push_block(&mut self, block: &Block, weights: Option<Weights>) -> RuntimeResult<()> {
+    pub fn push_block(
+        &mut self,
+        block: &Block,
+        weights: Option<Weights>,
+        match_triggers: Option<Vec<Option<RantValue>>>,
+    ) -> RuntimeResult<()> {
         // Push a new state onto the block stack
-        self.resolver.push_block(block, weights)?;
+        self.resolver.push_block(block, weights, match_triggers)?;
 
         // Check the block to make sure it actually does something.
         // If the block has some skip condition, it will automatically remove it, and this method will have no net effect.
@@ -2351,6 +2429,55 @@ impl<'rant> VM<'rant> {
     ) -> RuntimeResult<RantValue> {
         self.call_stack
             .get_var_value(self.engine, varname, access, prefer_function)
+    }
+
+    #[inline]
+    fn get_attribute(&self, keyword: AttributeKeyword) -> RantValue {
+        let attrs = self.resolver.attrs();
+        match keyword {
+            AttributeKeyword::Rep => crate::stdlib::block::get_rep_attr_value(attrs.reps),
+            AttributeKeyword::Sep => attrs.separator.clone(),
+            AttributeKeyword::Sel => {
+                crate::stdlib::block::get_selector_attr_value(attrs.selector.as_ref())
+            }
+            AttributeKeyword::Mut => {
+                crate::stdlib::block::get_mutator_attr_value(attrs.mutator.as_ref())
+            }
+            AttributeKeyword::Step => self
+                .resolver
+                .active_block()
+                .map(|block| RantValue::Int(block.step_index() as i64))
+                .unwrap_or(RantValue::Int(0)),
+            AttributeKeyword::Total => self
+                .resolver
+                .active_block()
+                .map(|block| {
+                    if block.is_infinite() {
+                        RantValue::Nothing
+                    } else {
+                        RantValue::Int(block.step_count() as i64)
+                    }
+                })
+                .unwrap_or(RantValue::Int(0)),
+        }
+    }
+
+    #[inline]
+    fn set_attribute(&mut self, keyword: AttributeKeyword, value: RantValue) -> RuntimeResult<()> {
+        let attrs = self.resolver.attrs_mut();
+        match keyword {
+            AttributeKeyword::Rep => crate::stdlib::block::set_rep_attr(attrs, value)?,
+            AttributeKeyword::Sep => attrs.separator = value,
+            AttributeKeyword::Sel => crate::stdlib::block::set_selector_attr(attrs, value)?,
+            AttributeKeyword::Mut => crate::stdlib::block::set_mutator_attr(attrs, value)?,
+            AttributeKeyword::Step | AttributeKeyword::Total => {
+                runtime_error!(
+                    RuntimeErrorType::InvalidOperation,
+                    format!("attribute keyword '@{}' is read-only", keyword.name())
+                );
+            }
+        }
+        Ok(())
     }
 
     /// Defines a new variable in the current scope.

@@ -2,17 +2,39 @@
 
 **Attributes** are special runtime settings that modify block behavior, such as how many times a block repeats or how it selects which element to run.
 
-Attributes are set by calling the standard library's **attribute functions** and stored in the program's **attribute stack**.
+Attributes are set by calling the standard library's **attribute functions** or by using the
+attribute keywords and are stored in the program's **attribute stack**.
 Each frame of the attribute stack stores a full set of attributes.
 
 When a block resolves, it consumes attributes from the topmost attribute frame and replaces them with their default values.
 
 Frames can be added to and removed from the attribute stack using `[push-attrs]` and `[pop-attrs]`.
 
+## Working with attributes
+
+Stable 4.0 exposes the attribute system in three complementary ways:
+
+- standard library helpers such as `[rep]`, `[sep]`, `[sel]`, `[mut]`, and `[match]`
+- plain keyword reads such as `@rep` and `@step`
+- angle-bracket accessors such as `<@rep = 3>` and `<@sel>`
+
+The mutable attribute keywords also support immediate-block sugar:
+
+```rant example
+@rep 3: {x}
+```
+
+```text expected
+xxx
+```
+
+The mutable forms are `@rep`, `@sep`, `@sel`, and `@mut`. The block-state keywords `@step` and
+`@total` are read-only.
+
 ## Repetitions
 
 By setting the repetitions attribute, you can control how many times the next encountered block will run.
-This attribute is set with the `[rep]` function.
+This attribute is set with the `[rep]` function or with `@rep`.
 
 ### Example
 
@@ -34,7 +56,7 @@ This attribute is set with the `[rep]` function.
 ## Separator
 
 The separator attribute controls what is printed between each block repetition.
-It is set using the `[sep]` function.
+It is set using the `[sep]` function or `@sep`.
 
 ### Example
 
@@ -46,9 +68,20 @@ It just keeps {going}...
 # It just keeps going and going and going and going...
 ```
 
-## Selector
+The `@sep` keyword can also be read and written through accessor syntax:
+
+```rant example
+<@sep = ",">[rep:3][sep:<@sep>]{x}
+```
+
+```text expected
+x,x,x
+```
+
+## Selectors
 
 The selector attribute controls how Rant chooses which branch of a block to take. It does this using a special state machine object, which must be created separately but can be shared between blocks to coordinate their behavior.
+You can set it with `[sel]`, `[match]`, `@sel`, or `<@sel = ...>`.
 
 ### Selector modes
 
@@ -68,6 +101,22 @@ The selector attribute controls how Rant chooses which branch of a block to take
 # Output
 # F, C, E, G, B, H, D, A
 ```
+
+### Match selection
+
+Match selectors choose from elements tagged with `@on`.
+
+```rant example
+[match: foo]{yes @on foo|no @on bar|fallback}
+```
+
+```text expected
+yes
+```
+
+If no tagged element matches, all untagged elements become the fallback pool. If there are no
+matching tagged elements and no untagged elements, the block raises a runtime selector error.
+When the block is weighted, weights are applied inside the chosen pool.
 
 ## Mutator
 
@@ -105,3 +154,22 @@ You can also choose how many times you want to run the element, or even not run 
 { the | quick | brown | fox }
 # -> theeht quickkciuq brownnworb foxxof
 ```
+
+The `@mut` keyword supports the same attribute state:
+
+```rant example
+@mut [?: elem] { [elem]! }: {foo}
+```
+
+```text expected
+foo!
+```
+
+## Block state
+
+`@step` and `@total` expose the currently active block's iteration state.
+
+- `@step` is the current zero-based iteration index.
+- `@total` is the current total iteration count, or `<>` for infinite repeaters.
+
+These keywords are read-only. They report `0` when no repeater is active.

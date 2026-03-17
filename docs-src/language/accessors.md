@@ -56,6 +56,16 @@ Attempting to retrieve a variable that does not exist causes a runtime error.
 My name is <name>.\n # Prints "My name is Robin."
 ```
 
+## Attribute keyword accessors
+
+Some runtime attributes also expose dedicated accessor forms:
+
+- `<@rep>`, `<@sep>`, `<@sel>`, `<@mut>`, `<@step>`, and `<@total>` read the current attribute state.
+- `<@rep = expr>`, `<@sep = expr>`, `<@sel = expr>`, and `<@mut = expr>` write the current attribute frame.
+
+These forms are specialized syntax, not general access paths. They do not support globals,
+descoping, fallbacks, or compound assignment. `@step` and `@total` are read-only and cannot be assigned.
+
 ## Multi-part accessors
 
 To aid readability, Rant also allows you to place several access operations in a single accessor block.

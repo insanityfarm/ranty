@@ -10,7 +10,7 @@ use crate::*;
 use std::rc::Rc;
 
 mod assertion;
-mod block;
+pub(crate) mod block;
 mod boolean;
 mod collections;
 mod compare;
@@ -117,6 +117,7 @@ pub fn load_stdlib(context: &mut Rant) {
         elseif,
         else_,
         mksel,
+        match_,
         rep,
         sel,
         sep,

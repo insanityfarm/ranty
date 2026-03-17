@@ -41,6 +41,8 @@ impl From<RantSelector> for RantSelectorHandle {
 pub struct RantSelector {
     /// Mode of the selector
     mode: SelectorMode,
+    /// Match value used by value-driven selectors.
+    match_value: Option<RantValue>,
     /// Current iteration of the selector
     index: usize,
     /// Element count of the selector
@@ -59,6 +61,7 @@ impl RantSelector {
     pub fn new(mode: SelectorMode) -> Self {
         Self {
             mode,
+            match_value: None,
             index: 0,
             count: 0,
             frozen: false,
@@ -73,10 +76,21 @@ impl RantSelector {
         self.into()
     }
 
+    #[inline]
+    pub fn with_match_value(mut self, value: RantValue) -> Self {
+        self.match_value = Some(value);
+        self
+    }
+
     /// The mode assigned to the selector.
     #[inline]
     pub fn mode(&self) -> SelectorMode {
         self.mode
+    }
+
+    #[inline]
+    pub fn match_value(&self) -> Option<&RantValue> {
+        self.match_value.as_ref()
     }
 
     /// The next index to be selected.
@@ -128,6 +142,11 @@ impl RantSelector {
         self.count = elem_count;
 
         match self.mode {
+            SelectorMode::Match => {
+                return Err(SelectorError::UnsupportedOperation(
+                    "match selectors are value-driven",
+                ))
+            }
             SelectorMode::Random | SelectorMode::One | SelectorMode::NoDouble => {
                 self.index = rng.next_usize(elem_count);
             }
@@ -173,6 +192,11 @@ impl RantSelector {
     /// Returns the next branch index and advances the selector state.
     pub fn select(&mut self, elem_count: usize, rng: &RantRng) -> Result<usize, SelectorError> {
         // Initialize and sanity check
+        if self.mode == SelectorMode::Match {
+            return Err(SelectorError::UnsupportedOperation(
+                "match selectors do not support cursor selection",
+            ));
+        }
         if !self.is_initialized() {
             self.init(rng, elem_count)?;
         } else if elem_count != self.count {
@@ -309,6 +333,11 @@ impl RantSelector {
                     0
                 });
             }
+            SelectorMode::Match => {
+                return Err(SelectorError::UnsupportedOperation(
+                    "match selectors do not support cursor selection",
+                ));
+            }
         }
 
         Ok(cur_index)
@@ -322,6 +351,10 @@ pub enum SelectorError {
     ElementCountMismatch { expected: usize, found: usize },
     /// The specified element count is not supported.
     InvalidElementCount(usize),
+    /// Selector operation is not supported.
+    UnsupportedOperation(&'static str),
+    /// Match selector could not find a selectable branch.
+    NoMatchCandidates,
 }
 
 impl Error for SelectorError {}
@@ -336,6 +369,10 @@ impl Display for SelectorError {
             ),
             SelectorError::InvalidElementCount(n) => {
                 write!(f, "selector does not support blocks of size {}", n)
+            }
+            SelectorError::UnsupportedOperation(message) => write!(f, "{message}"),
+            SelectorError::NoMatchCandidates => {
+                write!(f, "match selector could not find a selectable branch")
             }
         }
     }
@@ -390,6 +427,8 @@ pub enum SelectorMode {
     Pong,
     /// Ensures that no one element index is selected twice in a row.
     NoDouble,
+    /// Selects among block elements tagged with matching `@on` values.
+    Match,
 }
 
 impl TryFromRant for SelectorMode {
@@ -411,6 +450,7 @@ impl TryFromRant for SelectorMode {
                 "ping" => SelectorMode::Ping,
                 "pong" => SelectorMode::Pong,
                 "no-double" => SelectorMode::NoDouble,
+                "match" => SelectorMode::Match,
                 invalid => {
                     return Err(ValueError::InvalidConversion {
                         from: val.type_name(),
