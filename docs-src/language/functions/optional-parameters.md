@@ -8,7 +8,7 @@ To prevent this from happening, you need to use a [fallback expression](../acces
 > Please note that all optional parameters must appear after all required parameters, and before any variadic parameter;
 > breaking this order will cause a compiler error.
 
-```rant
+```ranty
 # Generates a map for a pet with a name and species (defaults to "dog")
 [$gen-pet: name; species?] {
     (::

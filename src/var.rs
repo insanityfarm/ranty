@@ -1,30 +1,30 @@
 use std::{cell::RefCell, mem, ops::Deref, rc::Rc};
 
-use crate::RantValue;
+use crate::RantyValue;
 
-/// Represents a Rant variable of one of two flavors: **by-value** or **by-reference**.
+/// Represents a Ranty variable of one of two flavors: **by-value** or **by-reference**.
 ///
 /// ## Cloning
 /// The `Clone` implementation for this type does not copy any data in `ByRef*` variants; it only copies the reference.
 #[derive(Debug)]
-pub enum RantVar {
+pub enum RantyVar {
     /// By-value variable
-    ByVal(RantValue),
+    ByVal(RantyValue),
     /// By-value constant
-    ByValConst(RantValue),
+    ByValConst(RantyValue),
     /// By-ref variable
-    ByRef(Rc<RefCell<RantValue>>),
+    ByRef(Rc<RefCell<RantyValue>>),
     /// By-ref constant
-    ByRefConst(Rc<RantValue>),
+    ByRefConst(Rc<RantyValue>),
 }
 
-impl Default for RantVar {
+impl Default for RantyVar {
     fn default() -> Self {
-        Self::ByVal(RantValue::Nothing)
+        Self::ByVal(RantyValue::Nothing)
     }
 }
 
-impl Clone for RantVar {
+impl Clone for RantyVar {
     /// Creates a copy of the variable, preserving references.
     fn clone(&self) -> Self {
         match self {
@@ -36,7 +36,7 @@ impl Clone for RantVar {
     }
 }
 
-impl RantVar {
+impl RantyVar {
     /// Returns `true` if the variable is a constant.
     #[inline]
     pub fn is_const(&self) -> bool {
@@ -71,7 +71,7 @@ impl RantVar {
     /// Attempts to write the specified value to the variable.
     /// If the variable is a constant, returns `false`; otherwise, returns `true`.
     #[inline]
-    pub fn write(&mut self, value: RantValue) -> bool {
+    pub fn write(&mut self, value: RantyValue) -> bool {
         match self {
             Self::ByVal(val) => *val = value,
             Self::ByRef(val_ref) => {
@@ -84,7 +84,7 @@ impl RantVar {
 
     /// Returns an immutable reference to the contained value.
     #[inline]
-    pub fn value_ref(&self) -> impl Deref<Target = RantValue> + '_ {
+    pub fn value_ref(&self) -> impl Deref<Target = RantyValue> + '_ {
         match self {
             Self::ByVal(val) | Self::ByValConst(val) => cervine::Cow::Borrowed(val),
             Self::ByRef(val_ref) => cervine::Cow::Owned(val_ref.borrow()),
@@ -94,11 +94,11 @@ impl RantVar {
 
     /// Returns a copy of the variable value.
     #[inline]
-    pub fn value_cloned(&self) -> RantValue {
+    pub fn value_cloned(&self) -> RantyValue {
         match self {
-            RantVar::ByVal(val) | RantVar::ByValConst(val) => val.clone(),
-            RantVar::ByRef(val_ref) => val_ref.borrow().clone(),
-            RantVar::ByRefConst(val_ref) => val_ref.as_ref().clone(),
+            RantyVar::ByVal(val) | RantyVar::ByValConst(val) => val.clone(),
+            RantyVar::ByRef(val_ref) => val_ref.borrow().clone(),
+            RantyVar::ByRefConst(val_ref) => val_ref.as_ref().clone(),
         }
     }
 }

@@ -8,7 +8,7 @@ use std::process::{Command, Output, Stdio};
 use common::TempWorkspace;
 
 fn cli_bin() -> &'static str {
-    env!("CARGO_BIN_EXE_rant")
+    env!("CARGO_BIN_EXE_ranty")
 }
 
 fn run_cli(args: &[&str], stdin: Option<&str>) -> Output {
@@ -45,12 +45,12 @@ fn stderr_text(output: &Output) -> String {
 }
 
 #[test]
-fn cli_help_mentions_stable_4_0_and_supported_flags() {
+fn cli_help_mentions_ranty_and_supported_flags() {
     let output = run_cli(&["--help"], None);
     let stdout = stdout_text(&output);
 
     assert_eq!(output.status.code(), Some(0));
-    assert!(stdout.contains("Command-line interface for Rant 4.0"));
+    assert!(stdout.contains("Command-line interface for Ranty"));
     assert!(stdout.contains("--bench-mode"));
     assert!(stdout.contains("--no-debug"));
 }
@@ -67,7 +67,7 @@ fn cli_version_reports_the_current_build_version() {
 #[test]
 fn cli_runs_a_file() {
     let workspace = TempWorkspace::new();
-    let program = workspace.write("hello.rant", r#""hello from file""#);
+    let program = workspace.write("hello.ranty", r#""hello from file""#);
 
     let output = run_cli(&[program.to_str().unwrap()], None);
 
@@ -78,7 +78,7 @@ fn cli_runs_a_file() {
 #[test]
 fn eval_takes_precedence_over_file_input() {
     let workspace = TempWorkspace::new();
-    let bad_program = workspace.write("bad.rant", "@if : {}");
+    let bad_program = workspace.write("bad.ranty", "@if : {}");
 
     let output = run_cli(
         &["--eval", r#""from eval""#, bad_program.to_str().unwrap()],

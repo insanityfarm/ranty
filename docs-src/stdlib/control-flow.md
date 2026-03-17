@@ -2,7 +2,7 @@
 
 ## if
 
-```rant
+```ranty
 [%if: condition]
 ```
 
@@ -10,7 +10,7 @@ Marks the next block as conditional and resolves it only when `condition` is tru
 
 ## elseif
 
-```rant
+```ranty
 [%elseif: condition]
 ```
 
@@ -18,7 +18,7 @@ Marks the next block as an `else if` branch following a previous conditional blo
 
 ## else
 
-```rant
+```ranty
 [%else]
 ```
 
@@ -26,7 +26,7 @@ Marks the next block as the fallback branch after a previous conditional block.
 
 ## mksel
 
-```rant
+```ranty
 [%mksel: selector-mode; match-value?]
 ```
 
@@ -39,7 +39,7 @@ all other modes reject one.
 
 ## rep
 
-```rant
+```ranty
 [%rep: reps]
 ```
 
@@ -47,7 +47,7 @@ Sets the repetition count or repetition mode for the next block.
 
 ## sel
 
-```rant
+```ranty
 [%sel: selector?]
 ```
 
@@ -55,7 +55,7 @@ Sets the active selector for the next block. With no argument, prints the curren
 
 ## match
 
-```rant
+```ranty
 [%match: value]
 ```
 
@@ -63,7 +63,7 @@ Sets the active selector for the next block to a `match` selector bound to `valu
 
 ## sep
 
-```rant
+```ranty
 [%sep: separator]
 ```
 
@@ -71,7 +71,7 @@ Sets the separator value for repeated block iterations.
 
 ## mut
 
-```rant
+```ranty
 [%mut: mutator?]
 ```
 
@@ -79,7 +79,7 @@ Sets the mutator function for the next block, or clears it when passed `nothing`
 
 ## sel-skip
 
-```rant
+```ranty
 [%sel-skip: selector; n?]
 ```
 
@@ -87,7 +87,7 @@ Advances `selector` without printing any selected value. This is unsupported for
 
 ## sel-freeze
 
-```rant
+```ranty
 [%sel-freeze: selector; frozen?]
 ```
 
@@ -95,7 +95,7 @@ Sets the frozen state of `selector`. Omitting `frozen` freezes it. This is unsup
 
 ## sel-frozen
 
-```rant
+```ranty
 [%sel-frozen: selector]
 ```
 
@@ -103,7 +103,7 @@ Prints whether `selector` is currently frozen. This is unsupported for `match` s
 
 ## reset-attrs
 
-```rant
+```ranty
 [%reset-attrs]
 ```
 
@@ -111,7 +111,7 @@ Resets the current attribute state back to the runtime defaults.
 
 ## step
 
-```rant
+```ranty
 [%step]
 ```
 
@@ -119,7 +119,7 @@ Prints the current repeater step value using a 1-based index.
 
 ## step-index
 
-```rant
+```ranty
 [%step-index]
 ```
 
@@ -127,7 +127,7 @@ Prints the zero-based iteration index of the active repeater.
 
 ## step-count
 
-```rant
+```ranty
 [%step-count]
 ```
 

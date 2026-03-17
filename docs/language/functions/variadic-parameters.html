@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Variadic parameters - Rant Reference</title>
+        <title>Variadic parameters - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -179,7 +179,7 @@
 <p>Functions support variadic parameters with the special symbols <code>*</code> and <code>+</code>.</p>
 <p>A <code>*</code> parameter is optional and defaults to an empty list, while a <code>+</code> parameter is required and must contain at least one element.</p>
 <p>Functions may only have up to one variadic parameter, and it must appear last in the signature.</p>
-<pre><code class="language-rant">[$how-many: items*] {
+<pre><code class="language-ranty">[$how-many: items*] {
     [len: &lt;items&gt;]
 }
 

@@ -4,14 +4,14 @@ Accessors support two ways of explicitly accessing variables in parent scopes: *
 
 ## Explicitly accessing globals
 
-The top level of a Rant program implicitly defines a local variable scope; 
+The top level of a Ranty program implicitly defines a local variable scope; 
 because of this, top-level variables will only persist for the duration of the program.
 
 To explicitly access a variable in the global scope, prefix the path with the `/` character.
 
 Similarly to the descope operator, this method also allows you to override shadowing on globals.
 
-```rant
+```ranty
 <$foo = Hello from program scope!>
 <$/foo = Hello from global scope!>
 
@@ -32,7 +32,7 @@ If a child scope shadows a parent variable and you want to access the parent var
 
 To do this, prefix the variable name with a `^` character.
 
-```rant
+```ranty
 <$a = foo>
 {
     <$a = bar>
@@ -52,7 +52,7 @@ Adding more than one `^` character in a row will skip up to that many scopes.
 These operations are called "_n_-descopes", where _n_ is the number of scopes skipped:
 For example, `<^^foo>` is a 2-descope, `<^^^foo>` is a 3-descope, and so on.
 
-```rant
+```ranty
 # Define `test`
 <$test = foo>
 {
@@ -69,7 +69,7 @@ For example, `<^^foo>` is a 2-descope, `<^^^foo>` is a 3-descope, and so on.
 
 While the compiler imposes no explicit limit on descope depth, use cases for large descope depths are rare and it is recommended to avoid them when possible.
 
-```rant
+```ranty
 # A 360-descope.
 < ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

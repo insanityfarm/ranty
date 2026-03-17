@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Lambdas - Rant Reference</title>
+        <title>Lambdas - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -176,17 +176,17 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="lambdas"><a class="header" href="#lambdas">Lambdas</a></h1>
-<p>Rant implements anonymous (nameless) functions as <strong>lambda expressions</strong>, commonly referred to as simply <strong>lambdas</strong>.
+<p>Ranty implements anonymous (nameless) functions as <strong>lambda expressions</strong>, commonly referred to as simply <strong>lambdas</strong>.
 The body of a lambda can also capture variables from its environment, just like regular named functions.</p>
 <p>Basic lambda expression syntax with no parameters consists of a <code>?</code> symbol inside brackets preceding the function body.</p>
-<pre><code class="language-rant"># Creates a function and places it on the output
+<pre><code class="language-ranty"># Creates a function and places it on the output
 [?] { Hello from lambda expression! }
 </code></pre>
 <blockquote>
 <p><strong>Note:</strong></p>
 <p>If your lambda body contains a block at the root level, you will need to enclose it in another block to differentiate it from a function body block.</p>
 <p>Example:</p>
-<pre><code class="language-rant"># Compiler error
+<pre><code class="language-ranty"># Compiler error
 [?] { foo | bar }
 
 # Correct syntax
@@ -195,11 +195,11 @@ The body of a lambda can also capture variables from its environment, just like 
 </blockquote>
 <h2 id="parameterization"><a class="header" href="#parameterization">Parameterization</a></h2>
 <p>If you want to add parameters to a lambda, just specify the parameters after the colon as you would with a normal function definition:</p>
-<pre><code class="language-rant">[?: param1; param2] { ... }
+<pre><code class="language-ranty">[?: param1; param2] { ... }
 </code></pre>
 <h2 id="calling-an-anonymous-function"><a class="header" href="#calling-an-anonymous-function">Calling an anonymous function</a></h2>
 <p>Since lambdas produce <code>function</code> objects just like named functions, the call syntax is very similar. Simple use an anonymous access path to supply the function in the call.</p>
-<pre><code class="language-rant"># Define a function that returns a parameterless function
+<pre><code class="language-ranty"># Define a function that returns a parameterless function
 [$get-anon-func] {
     [?]{Hello from anonymous function}
 }
@@ -211,11 +211,11 @@ The body of a lambda can also capture variables from its environment, just like 
     [?:name]{Hello, &lt;name&gt;!}
 }
 
-[([get-greet-func]): Rant]  # "Hello, Rant!"
+[([get-greet-func]): Ranty]  # "Hello, Ranty!"
 </code></pre>
 <h3 id="using-piping-to-call-an-anonymous-function-produced-by-another-function"><a class="header" href="#using-piping-to-call-an-anonymous-function-produced-by-another-function">Using piping to call an anonymous function produced by another function</a></h3>
 <p>The above example could be simplified with <a href="./piping.html">piping</a>: just call <code>[get-anon-func]</code>, then call <code>[]</code> directly.</p>
-<pre><code class="language-rant">[get-anon-func |&gt; []: ## args... ##]
+<pre><code class="language-ranty">[get-anon-func |&gt; []: ## args... ##]
 </code></pre>
 
                     </main>

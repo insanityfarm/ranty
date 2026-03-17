@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Accessors - Rant Reference</title>
+        <title>Accessors - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -176,7 +176,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="accessors"><a class="header" href="#accessors">Accessors</a></h1>
-<p><strong>Accessors</strong> are the central means of reading and writing variable data in Rant.
+<p><strong>Accessors</strong> are the central means of reading and writing variable data in Ranty.
 Accessors are contained within a pair of angle brackets (<code>&lt; &gt;</code>).</p>
 <p>They have several uses:</p>
 <ul>
@@ -190,7 +190,7 @@ Accessors are contained within a pair of angle brackets (<code>&lt; &gt;</code>)
 They are denoted by placing a <code>$</code> symbol before the variable name.</p>
 <p>It is optional to assign a value in a definition.
 You can leave the assignment part out and it will be initialized to nothing.</p>
-<pre><code class="language-rant"># Define a variable `name` but initialize it to &lt;&gt;
+<pre><code class="language-ranty"># Define a variable `name` but initialize it to &lt;&gt;
 &lt;$name&gt;
 
 # Define a variable `name` and assign it the string "Nick"
@@ -198,7 +198,7 @@ You can leave the assignment part out and it will be initialized to nothing.</p>
 </code></pre>
 <h2 id="setters"><a class="header" href="#setters">Setters</a></h2>
 <p>A <strong>setter</strong> modifies an existing variable or value.</p>
-<pre><code class="language-rant"># Define a variable
+<pre><code class="language-ranty"># Define a variable
 &lt;$name = Bob&gt;
 # Overwrite value on existing variable `name`
 &lt;name = Susan&gt;
@@ -206,13 +206,13 @@ You can leave the assignment part out and it will be initialized to nothing.</p>
 <p>When a setter targets a map key, it always writes to that map directly.
 If the same key also exists on a prototype, the setter creates or updates a local key instead of mutating the prototype.</p>
 <p>Along with setting variables, setters can also write to specific elements of collections.</p>
-<pre><code class="language-rant">&lt;$numbers = (: 1; 2; 3)&gt;
+<pre><code class="language-ranty">&lt;$numbers = (: 1; 2; 3)&gt;
 &lt;numbers/0 = 4&gt; # list is now (: 4; 2; 3)
 </code></pre>
 <h2 id="getters"><a class="header" href="#getters">Getters</a></h2>
 <p>A <strong>getter</strong> retrieves some value and prints it to the output.</p>
 <p>Attempting to retrieve a variable that does not exist causes a runtime error.</p>
-<pre><code class="language-rant"># Get value of `name` (note the lack of '$')
+<pre><code class="language-ranty"># Get value of `name` (note the lack of '$')
 &lt;$name = Robin&gt;
 My name is &lt;name&gt;.\n # Prints "My name is Robin."
 </code></pre>
@@ -227,9 +227,9 @@ For the detailed rules, see <a href="./data-types/map-prototypes.html">Map Proto
 <p>These forms are specialized syntax, not general access paths. They do not support globals,
 descoping, fallbacks, or compound assignment. <code>@step</code> and <code>@total</code> are read-only and cannot be assigned.</p>
 <h2 id="multi-part-accessors"><a class="header" href="#multi-part-accessors">Multi-part accessors</a></h2>
-<p>To aid readability, Rant also allows you to place several access operations in a single accessor block.
+<p>To aid readability, Ranty also allows you to place several access operations in a single accessor block.
 Simply end each operation with a semicolon; the final semicolon is optional and may be omitted.</p>
-<pre><code class="language-rant">&lt;$first-name = John; $last-name = Smith; $full-name = &lt;first-name&gt;\s&lt;last-name&gt;;&gt;
+<pre><code class="language-ranty">&lt;$first-name = John; $last-name = Smith; $full-name = &lt;first-name&gt;\s&lt;last-name&gt;;&gt;
 </code></pre>
 <h2 id="variable-scope"><a class="header" href="#variable-scope">Variable scope</a></h2>
 <p>Variables only live as long as the expression or block in which they are defined.</p>
@@ -237,7 +237,7 @@ Simply end each operation with a semicolon; the final semicolon is optional and 
 As soon as a scope is finished running, all variables defined within it are discarded.</p>
 <h3 id="child-scopes"><a class="header" href="#child-scopes">Child scopes</a></h3>
 <p>Child scopes inherit variables from parent scopes. In addition, they may define their own variables.</p>
-<pre><code class="language-rant">{
+<pre><code class="language-ranty">{
     &lt;$a = 1&gt;
     {
         &lt;$b = 2&gt;
@@ -248,7 +248,7 @@ As soon as a scope is finished running, all variables defined within it are disc
 <h3 id="shadowing"><a class="header" href="#shadowing">Shadowing</a></h3>
 <p>Variables in a parent scope can be temporarily hidden ("shadowed") by defining a variable of the same name in a child scope.</p>
 <p>When the child variable goes out of scope, the shadowed parent variable will once again become accessible.</p>
-<pre><code class="language-rant"># Define variable `a` in parent scope
+<pre><code class="language-ranty"># Define variable `a` in parent scope
 &lt;$a = foo&gt;
 a is &lt;a&gt;\n
 {
@@ -272,7 +272,7 @@ a is &lt;a&gt;
 <p>Constants are much like variables in that they are scoped the same way and store a value.
 Unlike variables, however, constants are immutable: they can only be assigned within a definition, and cannot be redefined.</p>
 <p>The syntax to define a constant is simple: where variable definitions use <code>$</code>, constant definitions use <code>%</code>:</p>
-<pre><code class="language-rant"># Variable definition
+<pre><code class="language-ranty"># Variable definition
 &lt;$mutable-value = 123&gt;
 
 # Constant definition
@@ -283,7 +283,7 @@ Unlike variables, however, constants are immutable: they can only be assigned wi
 &lt;constant-value = 456&gt;  # error
 </code></pre>
 <p>Constants can still be shadowed by child scopes.</p>
-<pre><code class="language-rant">&lt;%foo = 123&gt;
+<pre><code class="language-ranty">&lt;%foo = 123&gt;
 {
     &lt;$foo = 456&gt;    # this is valid since we're not reassigning ^foo
 }
@@ -291,7 +291,7 @@ Unlike variables, however, constants are immutable: they can only be assigned wi
 <h3 id="by-ref-constants-have-interior-mutability"><a class="header" href="#by-ref-constants-have-interior-mutability">By-ref constants have interior mutability</a></h3>
 <p>Storing a by-ref type, such as a list or map, in a constant does not prevent its contents from being changed;
 it only guarantees that the reference stored by the constant cannot change.</p>
-<pre><code class="language-rant"># Create a constant list
+<pre><code class="language-ranty"># Create a constant list
 &lt;%special-list = (: 1; 2; 3)&gt;
 
 # Modifying the contents is still allowed

@@ -10,7 +10,7 @@ They behave differently than regular blocks in the following ways:
 
 Prefix a block with `@` to protect it.
 
-```rant
+```ranty
 [rep: 3]
 @{ A{B} }
 {C}

@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Data Types - Rant Reference</title>
+        <title>Data Types - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -176,9 +176,9 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="data-types"><a class="header" href="#data-types">Data Types</a></h1>
-<p>Rant has a dynamic type system, which means that variables also don't have to contain a specific type;
+<p>Ranty has a dynamic type system, which means that variables also don't have to contain a specific type;
 for example, you can initialize a variable with an integer, and later change it to a string (and vice versa).</p>
-<p>Rant's type system supports the following data types:</p>
+<p>Ranty's type system supports the following data types:</p>
 <div class="table-wrapper"><table><thead><tr><th>Type name</th><th>Description</th><th>Pass type</th></tr></thead><tbody>
 <tr><td><code>string</code></td><td>Sequence of UTF-8 characters</td><td>by-value</td></tr>
 <tr><td><code>int</code></td><td>64-bit signed integer</td><td>by-value</td></tr>
@@ -196,15 +196,15 @@ for example, you can initialize a variable with an integer, and later change it 
 <h2 id="integer-literals"><a class="header" href="#integer-literals">Integer literals</a></h2>
 <p>Any number literal without a decimal place is known as an <strong>integer literal</strong>.</p>
 <p>An integer literal produces a value of type <code>int</code>.</p>
-<pre><code class="language-rant">[type: 123]  # int
+<pre><code class="language-ranty">[type: 123]  # int
 </code></pre>
 <h2 id="real-literals"><a class="header" href="#real-literals">Real literals</a></h2>
 <p>Any number literal with a decimal place is known as a <strong>real literal</strong>.</p>
 <p>A real literal produces a value of type <code>float</code>.</p>
-<pre><code class="language-rant">[type: 123.0]  # float
+<pre><code class="language-ranty">[type: 123.0]  # float
 </code></pre>
 <h2 id="collections"><a class="header" href="#collections">Collections</a></h2>
-<p>Rant's variable system has five collection types: <code>list</code>, <code>tuple</code>, <code>map</code>, <code>string</code>, and <code>range</code>.</p>
+<p>Ranty's variable system has five collection types: <code>list</code>, <code>tuple</code>, <code>map</code>, <code>string</code>, and <code>range</code>.</p>
 <p>Some collections can be mutated (modified), while others are read-only. Some can be sliced but not spliced.
 Below is a breakdown of which operations each collection type supports:</p>
 <div class="table-wrapper"><table><thead><tr><th style="text-align: center">Type</th><th style="text-align: center">Read</th><th style="text-align: center">Write</th><th style="text-align: center">Slice</th><th style="text-align: center">Splice</th></tr></thead><tbody>
@@ -220,16 +220,16 @@ Below is a breakdown of which operations each collection type supports:</p>
 </tbody></table>
 </div>
 <h2 id="type-inference-for-multi-part-expressions"><a class="header" href="#type-inference-for-multi-part-expressions">Type inference for multi-part expressions</a></h2>
-<p>At the end of an expression, Rant adds each printed value together from left to right into a single value that is printed to the caller.</p>
-<p>In order to resolve type ambiguities, Rant follows a few rules when concatenating various types:</p>
+<p>At the end of an expression, Ranty adds each printed value together from left to right into a single value that is printed to the caller.</p>
+<p>In order to resolve type ambiguities, Ranty follows a few rules when concatenating various types:</p>
 <h3 id="expressions-with-strings"><a class="header" href="#expressions-with-strings">Expressions with strings</a></h3>
 <p>If an expression contains a string, fragment, or hinted element, the combined value from the left as well as every value on the right will be coerced to a string.</p>
-<pre><code class="language-rant"># Since there are fragments and whitespace, it's a string
+<pre><code class="language-ranty"># Since there are fragments and whitespace, it's a string
 [type: 99 bottles of beer]  # string
 </code></pre>
 <h3 id="multiple-numbers"><a class="header" href="#multiple-numbers">Multiple numbers</a></h3>
 <p>If the start of an expression is a series of numbers, they will be added together:</p>
-<pre><code class="language-rant">3
+<pre><code class="language-ranty">3
 0.14
 # -&gt; 3.14
 </code></pre>
@@ -241,32 +241,32 @@ Below is a breakdown of which operations each collection type supports:</p>
 <li>An expression that prints one or more tuples and one or more lists will return a single list containing the elements of all the original tuples and lists in the same order.</li>
 </ul>
 <p><strong>Multiple lists in an expression</strong></p>
-<pre><code class="language-rant">(: 1; 2) (: 3; 4) 
+<pre><code class="language-ranty">(: 1; 2) (: 3; 4) 
 # -&gt; (: 1; 2; 3; 4)
 </code></pre>
 <p><strong>Multiple tuples in an expression</strong></p>
-<pre><code class="language-rant">(1; 2) (3; 4) 
+<pre><code class="language-ranty">(1; 2) (3; 4) 
 # -&gt; (1; 2; 3; 4)
 </code></pre>
 <p><strong>Mixed tuples and lists in an expression</strong></p>
-<pre><code class="language-rant">(1; 2) (: 3; 4) (5; 6) (: 7; 8)
+<pre><code class="language-ranty">(1; 2) (: 3; 4) (5; 6) (: 7; 8)
 # -&gt; (: 1; 2; 3; 4; 5; 6; 7; 8)
 </code></pre>
 <p><strong>Joining lists with a repeater</strong></p>
-<pre><code class="language-rant">[rep:10] {
+<pre><code class="language-ranty">[rep:10] {
     (: [step])
 }
 # -&gt; (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10)
 </code></pre>
 <p><strong>Joining tuples with a repeater</strong></p>
-<pre><code class="language-rant">[rep:10] {
+<pre><code class="language-ranty">[rep:10] {
     ([step];)
 }
 # -&gt; (1; 2; 3; 4; 5; 6; 7; 8; 9; 10)
 </code></pre>
 <h3 id="nothings"><a class="header" href="#nothings">Nothings</a></h3>
 <p>Printing nothing does nothing. Empty expressions return nothing.</p>
-<pre><code class="language-rant">[type:&lt;&gt;&lt;&gt;]     # nothing
+<pre><code class="language-ranty">[type:&lt;&gt;&lt;&gt;]     # nothing
 [type:&lt;&gt;]       # nothing
 [type:]         # nothing
 </code></pre>

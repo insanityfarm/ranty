@@ -2,7 +2,7 @@ mod common;
 
 use assert_matches::assert_matches;
 use common::{run, run_str};
-use rant::runtime::RuntimeErrorType;
+use ranty::runtime::RuntimeErrorType;
 
 #[test]
 fn continue_requires_a_repeater() {

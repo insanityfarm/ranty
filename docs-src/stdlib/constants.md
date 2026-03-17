@@ -1,16 +1,16 @@
 # Standard Library: Constants
 
-## RANT_VERSION
+## RANTY_VERSION
 
 `string`
 
-The version of the Rant language currently being used.
+The version of the Ranty language currently being used.
 
 ## BUILD_VERSION
 
 `string`
 
-The build version of the Rant library being used.
+The build version of the Ranty library being used.
 
 ## EPSILON
 

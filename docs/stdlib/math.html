@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Math - Rant Reference</title>
+        <title>Math - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -177,7 +177,7 @@
                     <main>
                         <h1 id="standard-library-math-functions"><a class="header" href="#standard-library-math-functions">Standard Library: Math functions</a></h1>
 <h2 id="abs"><a class="header" href="#abs">abs</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%abs: num]
 
 </code></pre>
@@ -189,7 +189,7 @@ The input number.</p>
 <h3 id="errors"><a class="header" href="#errors">Errors</a></h3>
 <p>Raises an error if <code>num</code> is an integer and the absolute value overflows.</p>
 <h2 id="add"><a class="header" href="#add">add</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%add: lhs; rhs]
 
 </code></pre>
@@ -201,13 +201,13 @@ The left-hand operand of the addition.</p>
 <p><strong><code>rhs</code></strong> ← <code>any</code> <br/>
 The right-hand operand of the addition.</p>
 <h2 id="clamp"><a class="header" href="#clamp">clamp</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%clamp: value; a; b]
 
 </code></pre>
 <p>Prints <code>value</code> clamped to the inclusive range between <code>a</code> and <code>b</code>.</p>
 <h2 id="ceil"><a class="header" href="#ceil">ceil</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%ceil: val]
 
 </code></pre>
@@ -217,7 +217,7 @@ The right-hand operand of the addition.</p>
 <p><strong><code>val</code></strong> ← <code>float</code> <br/>
 The input number.</p>
 <h2 id="div"><a class="header" href="#div">div</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%div: lhs; rhs]
 
 </code></pre>
@@ -229,7 +229,7 @@ The left-hand operand (dividend).</p>
 <p><strong><code>rhs</code></strong> ← <code>any</code> <br/>
 The right-hand operand (divisor).</p>
 <h2 id="floor"><a class="header" href="#floor">floor</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%floor: val]
 
 </code></pre>
@@ -239,7 +239,7 @@ The right-hand operand (divisor).</p>
 <p><strong><code>val</code></strong> ← <code>float</code> <br/>
 The input number.</p>
 <h2 id="frac"><a class="header" href="#frac">frac</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%frac: val]
 
 </code></pre>
@@ -249,7 +249,7 @@ The input number.</p>
 <p><strong><code>val</code></strong> ← <code>float</code> <br/>
 The input number.</p>
 <h2 id="max"><a class="header" href="#max">max</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%max: values+]
 
 </code></pre>
@@ -261,7 +261,7 @@ before the maximum value is calculated.</p>
 <p><strong><code>values</code></strong> ← <code>any+</code> <br/>
 The input values.</p>
 <h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
-<pre><code class="language-rant"># Arguments can be single values
+<pre><code class="language-ranty"># Arguments can be single values
 [max: 3; 2 |&gt; assert-eq: 3]
 
 # Lists are treated as their individual elements
@@ -271,7 +271,7 @@ The input values.</p>
 [max: 3; (4; -2; 0; 10); 6 |&gt; assert-eq: 10]
 </code></pre>
 <h2 id="min"><a class="header" href="#min">min</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%min: values+]
 
 </code></pre>
@@ -283,7 +283,7 @@ before the minimum value is calculated.</p>
 <p><strong><code>values</code></strong> ← <code>any+</code> <br/>
 The input values.</p>
 <h3 id="examples-1"><a class="header" href="#examples-1">Examples</a></h3>
-<pre><code class="language-rant"># Arguments can be single values
+<pre><code class="language-ranty"># Arguments can be single values
 [min: 3; 2 |&gt; assert-eq: 2]
 
 # Lists are treated as their individual elements
@@ -293,7 +293,7 @@ The input values.</p>
 [min: 3; (4; -2; 0; 10); 6 |&gt; assert-eq: -2]
 </code></pre>
 <h2 id="mod"><a class="header" href="#mod">mod</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%mod: lhs; rhs]
 
 </code></pre>
@@ -305,7 +305,7 @@ The left-hand operand (dividend).</p>
 <p><strong><code>rhs</code></strong> ← <code>any</code> <br/>
 The right-hand operand (divisor).</p>
 <h2 id="mul"><a class="header" href="#mul">mul</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%mul: lhs; rhs]
 
 </code></pre>
@@ -317,7 +317,7 @@ The left-hand operand.</p>
 <p><strong><code>rhs</code></strong> ← <code>any</code> &lt;br.&gt;
 The right-hand operand.</p>
 <h2 id="mul-add"><a class="header" href="#mul-add">mul-add</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%mul-add: lhs; rhs; add]
 
 </code></pre>
@@ -331,7 +331,7 @@ The right-hand operand of the multiplication.</p>
 <p><strong><code>add</code></strong> ← <code>any</code> <br/>
 The value to add to the product.</p>
 <h2 id="neg"><a class="header" href="#neg">neg</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%neg: val]
 
 </code></pre>
@@ -341,14 +341,14 @@ The value to add to the product.</p>
 <p><strong><code>val</code></strong> ← <code>any</code> <br/>
 The input value.</p>
 <h2 id="recip"><a class="header" href="#recip">recip</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%recip: n]
 
 </code></pre>
 <p>→ <code>any</code></p>
 <p>Gets the reciprocal of a value.</p>
 <h2 id="sub"><a class="header" href="#sub">sub</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%sub: lhs; rhs]
 
 </code></pre>
@@ -360,7 +360,7 @@ The left-hand operand of the subtraction.</p>
 <p><strong><code>rhs</code></strong> ← <code>any</code> <br/>
 The right-hand side of the subtraction.</p>
 <h2 id="sin"><a class="header" href="#sin">sin</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%sin: x]
 
 </code></pre>
@@ -370,7 +370,7 @@ The right-hand side of the subtraction.</p>
 <p><strong><code>x</code></strong> ← <code>float</code> <br/>
 The input value, in radians.</p>
 <h2 id="cos"><a class="header" href="#cos">cos</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%cos: x]
 
 </code></pre>
@@ -380,7 +380,7 @@ The input value, in radians.</p>
 <p><strong><code>x</code></strong> ← <code>float</code> <br/>
 The input value, in radians.</p>
 <h2 id="tan"><a class="header" href="#tan">tan</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%tan: x]
 
 </code></pre>
@@ -390,7 +390,7 @@ The input value, in radians.</p>
 <p><strong><code>x</code></strong> ← <code>float</code> <br/>
 The input value, in radians.</p>
 <h2 id="asin"><a class="header" href="#asin">asin</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%asin: x]
 
 </code></pre>
@@ -400,7 +400,7 @@ The input value, in radians.</p>
 <p><strong><code>x</code></strong> ← <code>float</code> <br/>
 The input sine value.</p>
 <h2 id="acos"><a class="header" href="#acos">acos</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%acos: x]
 
 </code></pre>
@@ -410,7 +410,7 @@ The input sine value.</p>
 <p><strong><code>x</code></strong> ← <code>float</code> <br/>
 The input cosine value.</p>
 <h2 id="atan"><a class="header" href="#atan">atan</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%atan: x]
 
 </code></pre>
@@ -420,7 +420,7 @@ The input cosine value.</p>
 <p><strong><code>x</code></strong> ← <code>float</code> <br/>
 The input tangent value.</p>
 <h2 id="atan2"><a class="header" href="#atan2">atan2</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%atan2: y; x]
 
 </code></pre>
@@ -433,7 +433,7 @@ The input tangent's numerator.</p>
 <p><strong><code>x</code></strong> ← <code>float</code> <br/>
 The input tangent's denominator.</p>
 <h2 id="sqrt"><a class="header" href="#sqrt">sqrt</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%sqrt: x]
 
 </code></pre>
@@ -443,7 +443,7 @@ The input tangent's denominator.</p>
 <p><strong><code>x</code></strong> ← <code>int | float</code> <br/>
 The input value.</p>
 <h2 id="pow"><a class="header" href="#pow">pow</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%pow: x; y]
 
 </code></pre>

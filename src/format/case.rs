@@ -1,4 +1,4 @@
-use crate::{InternalString, RantString, RantValue, TryFromRant, ValueError};
+use crate::{InternalString, RantyString, RantyValue, TryFromRanty, ValueError};
 
 #[derive(Debug, Clone, Default)]
 pub struct CasingFormat {
@@ -19,7 +19,7 @@ pub enum CasingLocale {
 
 impl CasingLocale {
     #[inline]
-    pub fn convert_upper(&self, input: &RantString) -> RantString {
+    pub fn convert_upper(&self, input: &RantyString) -> RantyString {
         transform_str(
             input.as_str(),
             match self {
@@ -31,7 +31,7 @@ impl CasingLocale {
     }
 
     #[inline]
-    pub fn convert_lower(&self, input: &RantString) -> RantString {
+    pub fn convert_lower(&self, input: &RantyString) -> RantyString {
         transform_str(
             input.as_str(),
             match self {
@@ -43,10 +43,10 @@ impl CasingLocale {
     }
 }
 
-impl TryFromRant for CasingLocale {
-    fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
+impl TryFromRanty for CasingLocale {
+    fn try_from_ranty(val: RantyValue) -> Result<Self, ValueError> {
         Ok(match val {
-            RantValue::String(s) => match s.as_str() {
+            RantyValue::String(s) => match s.as_str() {
                 "invariant" => Self::Invariant,
                 "turkic" => Self::Turkic,
                 other => {
@@ -94,10 +94,10 @@ impl Default for CasingStyle {
     }
 }
 
-impl TryFromRant for CasingStyle {
-    fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
+impl TryFromRanty for CasingStyle {
+    fn try_from_ranty(val: RantyValue) -> Result<Self, ValueError> {
         Ok(match val {
-            RantValue::String(s) => match s.as_str() {
+            RantyValue::String(s) => match s.as_str() {
                 "normal" => Self::Normal,
                 "upper" => Self::Upper,
                 "lower" => Self::Lower,

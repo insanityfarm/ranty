@@ -2,7 +2,7 @@
 
 ## assert
 
-```rant
+```ranty
 
 [%assert: condition; message?]
 
@@ -24,7 +24,7 @@ The error message to display if the condition is not satisfied.
 
 ### Examples
 
-```rant
+```ranty
 # does absolutely nothing
 [assert: @true]
 
@@ -37,7 +37,7 @@ The error message to display if the condition is not satisfied.
 
 ## assert-not
 
-```rant
+```ranty
 
 [%assert-not: condition; message?]
 
@@ -49,7 +49,7 @@ Like `[assert]`, a custom error message can be provided.
 
 ## assert-eq
 
-```rant
+```ranty
 
 [%assert-eq: actual; expected; message?]
 
@@ -73,7 +73,7 @@ The error message to display if the condition is not satisfied.
 
 ## assert-neq
 
-```rant
+```ranty
 
 [%assert-neq: actual; unexpected; message?]
 

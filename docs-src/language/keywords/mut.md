@@ -11,7 +11,7 @@ The `@mut` keyword reads or writes the mutator attribute for the next block.
 
 The assigned value must be a function or `<>` to clear the mutator.
 
-```rant example
+```ranty example
 @mut [?: elem] { [elem]! }: {foo}
 ```
 

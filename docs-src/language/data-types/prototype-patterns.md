@@ -8,7 +8,7 @@ If you have not read the core semantics yet, start with [Map Prototypes](./map-p
 
 One of the simplest uses for prototypes is shared default data.
 
-```rant
+```ranty
 <$default-npc = (::
   role = villager;
   mood = calm;
@@ -38,7 +38,7 @@ This keeps common fields in one place while still allowing each object to overri
 
 A prototype can also serve as a behavior bundle:
 
-```rant
+```ranty
 <$describable = (::
   describe = [?: obj] {
     <obj/name> the <obj/species>
@@ -52,14 +52,14 @@ A prototype can also serve as a behavior bundle:
 # -> Poppy the cat
 ```
 
-Because Rant does not inject a receiver automatically, the pattern is to pass the object explicitly.
+Because Ranty does not inject a receiver automatically, the pattern is to pass the object explicitly.
 
 ## Object factories
 
 Factories pair naturally with prototypes.
 The factory creates a fresh map, then attaches the shared prototype:
 
-```rant
+```ranty
 <$counter-proto = (::
   inc = [?: counter] {
     <counter/value = [add: <counter/value>; 1]>
@@ -93,7 +93,7 @@ This pattern is a good fit when you want many small objects that share the same 
 Instead of mutating a shared prototype, create a new prototype that inherits from the shared one.
 This lets you extend behavior safely for one family of objects without affecting the base layer.
 
-```rant
+```ranty
 <$weapon = (::
   describe = [?: obj] { <obj/name> deals <obj/damage> damage. };
 )>
@@ -122,7 +122,7 @@ This layering approach is usually safer than editing a widely shared prototype i
 Remember that maps are by-reference values.
 If multiple objects point at the same prototype map, changing that prototype changes what all of them inherit:
 
-```rant
+```ranty
 <$proto = (:: flavor = vanilla)>
 <$a = (::)>
 <$b = (::)>
@@ -144,7 +144,7 @@ If you want a safer extension point, prefer the layered specialization pattern a
 
 Prototype lookup does not change `[keys]`, `[values]`, or `[has]`:
 
-```rant
+```ranty
 <$obj = (:: own = 1)>
 <$proto = (:: inherited = 2)>
 [set-proto: <obj>; <proto>]
@@ -159,7 +159,7 @@ If you need a merged view of the whole chain, build it explicitly in your own co
 
 Assigning to an inherited key writes locally:
 
-```rant
+```ranty
 <$defaults = (:: mood = calm)>
 <$npc = (::)>
 [set-proto: <npc>; <defaults>]
@@ -175,13 +175,13 @@ If you actually want to update the shared default, write to the prototype map it
 
 Prototype methods do not receive a hidden receiver:
 
-```rant
+```ranty
 <$proto = (:: greet = [?: name] { Hello,\s<name>! })>
-<$obj = (:: name = Rant)>
+<$obj = (:: name = Ranty)>
 [set-proto: <obj>; <proto>]
 
 [obj/greet: <obj/name>]
-# -> Hello, Rant!
+# -> Hello, Ranty!
 ```
 
 When a method needs object state, pass the object explicitly.

@@ -9,7 +9,7 @@ The `@sep` keyword reads or writes the separator attribute used between repeated
 - `<@sep = expr>` writes the current attribute frame.
 - `@sep expr: { ... }` applies a separator to the block that follows immediately.
 
-```rant example
+```ranty example
 <@sep = ",">[rep:3][sep:<@sep>]{x}
 ```
 

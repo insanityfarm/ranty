@@ -12,7 +12,7 @@ is a compile-time error.
 
 If no repeater is active, `@total` reads as `0`.
 
-```rant example
+```ranty example
 [rep:3]{[eq: @total; 3] @break}
 ```
 
@@ -20,7 +20,7 @@ If no repeater is active, `@total` reads as `0`.
 @true
 ```
 
-```rant example
+```ranty example
 [rep: forever]{[eq: @total; <>] @break}
 ```
 

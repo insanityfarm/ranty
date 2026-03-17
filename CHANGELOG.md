@@ -1,6 +1,6 @@
 # Changelog
 
-## 4.0.0
+## 1.0.0
 
 Stable release highlights:
 
@@ -10,4 +10,4 @@ Stable release highlights:
 * Stabilized `@edit`, hinting, sinking, and whitespace normalization semantics
 * Hardened the CLI and REPL contract, including deterministic seed parsing and exit codes
 * Added integration coverage for modules, control flow, output behavior, conditionals, the CLI, and the exported standard-library surface
-* Rebuilt the in-repo documentation set for the stable 4.0 language and toolchain
+* Rebuilt the in-repo documentation set for the stable Ranty language and toolchain

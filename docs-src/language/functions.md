@@ -3,13 +3,13 @@
 A function is a reusable block of code that runs when something calls it. 
 Functions can optionally accept inputs and print output back to the caller.
 
-In addition to Rant's built-in functions, you can also define your own and use them however you see fit.
+In addition to Ranty's built-in functions, you can also define your own and use them however you see fit.
 
 ## Calling functions
 
 To call a function, place the function's name inside a pair of square brackets:
 
-```rant
+```ranty
 [dig]
 ```
 This calls the `[dig]` function from the standard library, which prints a random decimal digit.
@@ -25,7 +25,7 @@ When a function requires arguments, we first add a colon `:` after the function'
 
 Here are a few examples of how this works: 
 
-```rant
+```ranty
 # Function with no arguments
 [func-name]
 
@@ -48,7 +48,7 @@ To define a function, we need the following:
     * A list of parameters to accept
 * The **function body**, enclosed by curly braces `{ }`.
 
-```rant
+```ranty
 # Defines a parameterless function named `say-hello` that prints "Hello"
 [$say-hello] {
     Hello
@@ -68,7 +68,7 @@ To define a function, we need the following:
 
 Like other variables, functions can also be made constant by using `%` in place of `$` when defining them:
 
-```rant
+```ranty
 # Regular functions can be overwritten
 [$foo] { hello! }
 [$foo] { goodbye! }
@@ -86,16 +86,16 @@ Like other variables, functions can also be made constant by using `%` in place 
 
 > **Note:**
 >
-> All of Rant's standard library functions are constants, and thus can't be modified&mdash;but they can still be shadowed in child scopes.
+> All of Ranty's standard library functions are constants, and thus can't be modified&mdash;but they can still be shadowed in child scopes.
 
 
 #### Default arguments
 
 You can also specify a custom default value for an optional parameter by adding an expression after the `?` modifier.
 
-Each time the function is called without that parameter, Rant will run its default value expression and use its output as the argument.
+Each time the function is called without that parameter, Ranty will run its default value expression and use its output as the argument.
 
-```rant
+```ranty
 # Modification of the previous [gen-pet] to use a default value instead of calling [alt]
 [$gen-pet: name; species ? "dog"] { 
     (::
@@ -121,7 +121,7 @@ Functions that capture variables are called **closures**.
 Variable capturing can also be used to maintain a persistent state within a closure instance:
 even if the original variable falls out of scope, the closure still keeps it alive.
 
-```rant
+```ranty
 # Create a function with a persistent state
 {
     <$foo-num = 1>
@@ -158,7 +158,7 @@ The situation may occasionally arise where you accidentally (or intentionally)
 define a non-function variable with the same name as a function from a parent scope (e.g. a stdlib function) 
 and then try to call it: 
 
-```rant
+```ranty
 <$rep = "not a function">
 [rep:10] # Wait a sec...
 [sep:\n]
@@ -169,7 +169,7 @@ and then try to call it:
 
 Some might (understandably) assume that this would crash the program, but this code actually still works!
 
-When this happens, Rant will perform what is known as **function percolation**:
+When this happens, Ranty will perform what is known as **function percolation**:
 the runtime will search each parent scope up to the global scope until it finds a function with the same name, and then call it as normal.
 
 Function percolation only applies to function calls, so getters will still correctly retrieve the new variable instead of the function.

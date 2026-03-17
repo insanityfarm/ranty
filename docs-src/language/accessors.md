@@ -1,6 +1,6 @@
 # Accessors
 
-**Accessors** are the central means of reading and writing variable data in Rant.
+**Accessors** are the central means of reading and writing variable data in Ranty.
 Accessors are contained within a pair of angle brackets (`< >`).
 
 They have several uses:
@@ -18,7 +18,7 @@ They are denoted by placing a `$` symbol before the variable name.
 It is optional to assign a value in a definition.
 You can leave the assignment part out and it will be initialized to nothing.
 
-```rant
+```ranty
 # Define a variable `name` but initialize it to <>
 <$name>
 
@@ -30,7 +30,7 @@ You can leave the assignment part out and it will be initialized to nothing.
 
 A **setter** modifies an existing variable or value.
 
-```rant
+```ranty
 # Define a variable
 <$name = Bob>
 # Overwrite value on existing variable `name`
@@ -42,7 +42,7 @@ If the same key also exists on a prototype, the setter creates or updates a loca
 
 Along with setting variables, setters can also write to specific elements of collections.
 
-```rant
+```ranty
 <$numbers = (: 1; 2; 3)>
 <numbers/0 = 4> # list is now (: 4; 2; 3)
 ```
@@ -53,7 +53,7 @@ A **getter** retrieves some value and prints it to the output.
 
 Attempting to retrieve a variable that does not exist causes a runtime error.
 
-```rant
+```ranty
 # Get value of `name` (note the lack of '$')
 <$name = Robin>
 My name is <name>.\n # Prints "My name is Robin."
@@ -74,10 +74,10 @@ descoping, fallbacks, or compound assignment. `@step` and `@total` are read-only
 
 ## Multi-part accessors
 
-To aid readability, Rant also allows you to place several access operations in a single accessor block.
+To aid readability, Ranty also allows you to place several access operations in a single accessor block.
 Simply end each operation with a semicolon; the final semicolon is optional and may be omitted.
 
-```rant
+```ranty
 <$first-name = John; $last-name = Smith; $full-name = <first-name>\s<last-name>;>
 ```
 
@@ -92,7 +92,7 @@ As soon as a scope is finished running, all variables defined within it are disc
 
 Child scopes inherit variables from parent scopes. In addition, they may define their own variables.
 
-```rant
+```ranty
 {
     <$a = 1>
     {
@@ -108,7 +108,7 @@ Variables in a parent scope can be temporarily hidden ("shadowed") by defining a
 
 When the child variable goes out of scope, the shadowed parent variable will once again become accessible.
 
-```rant
+```ranty
 # Define variable `a` in parent scope
 <$a = foo>
 a is <a>\n
@@ -137,7 +137,7 @@ Unlike variables, however, constants are immutable: they can only be assigned wi
 
 The syntax to define a constant is simple: where variable definitions use `$`, constant definitions use `%`:
 
-```rant
+```ranty
 # Variable definition
 <$mutable-value = 123>
 
@@ -151,7 +151,7 @@ The syntax to define a constant is simple: where variable definitions use `$`, c
 
 Constants can still be shadowed by child scopes.
 
-```rant
+```ranty
 <%foo = 123>
 {
     <$foo = 456>    # this is valid since we're not reassigning ^foo
@@ -163,7 +163,7 @@ Constants can still be shadowed by child scopes.
 Storing a by-ref type, such as a list or map, in a constant does not prevent its contents from being changed; 
 it only guarantees that the reference stored by the constant cannot change.
 
-```rant
+```ranty
 # Create a constant list
 <%special-list = (: 1; 2; 3)>
 

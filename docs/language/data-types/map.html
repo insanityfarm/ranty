@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>map - Rant Reference</title>
+        <title>map - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -184,7 +184,7 @@
 <li><strong>Static keys:</strong> Evaluated at compile-time. They must be identifiers or string literals.</li>
 <li><strong>Dynamic keys:</strong> Evaluated at run-time. They must be blocks.</li>
 </ul>
-<pre><code class="language-rant"># Create an empty map
+<pre><code class="language-ranty"># Create an empty map
 &lt;$empty-map = (::)&gt;
 
 # Create a map with various value types
@@ -211,18 +211,18 @@
 <p>Prototype lookup is fallback-based:</p>
 <ul>
 <li>getters check the map's own keys first</li>
-<li>if the key is missing, Rant walks the prototype chain</li>
+<li>if the key is missing, Ranty walks the prototype chain</li>
 <li>setters still write only to the target map</li>
 </ul>
 <p>Use <code>[set-proto]</code> to attach or clear a prototype and <code>[proto]</code> to inspect the current one.</p>
-<pre><code class="language-rant">&lt;$obj = (::)&gt;
+<pre><code class="language-ranty">&lt;$obj = (::)&gt;
 &lt;$proto = (:: flavor = vanilla)&gt;
 [set-proto: &lt;obj&gt;; &lt;proto&gt;]
 
 &lt;obj/flavor&gt;   # -&gt; vanilla
 [proto: &lt;obj&gt;] # -&gt; (:: flavor = vanilla)
 </code></pre>
-<p>Prototype inheritance in Rant is intentionally small:</p>
+<p>Prototype inheritance in Ranty is intentionally small:</p>
 <ul>
 <li>own keys shadow inherited keys</li>
 <li>inherited functions are ordinary functions, not bound methods</li>

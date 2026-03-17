@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>@return - Rant Reference</title>
+        <title>@return - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -178,21 +178,21 @@
                         <h1 id="return"><a class="header" href="#return">@return</a></h1>
 <p>The <code>@return</code> charm exits the currently running function and optionally overwrites the function's output with another value.</p>
 <p>When <code>@return</code> is used without any expression to its right, it returns the current output:</p>
-<pre><code class="language-rant">[%return-output] {
+<pre><code class="language-ranty">[%return-output] {
     {foo @return} bar
 }
 
 [return-output] # -&gt; foo
 </code></pre>
 <p>When an expression comes after <code>@return</code> in the same scope, only the value of that expression is returned:</p>
-<pre><code class="language-rant">[%return-value] {
+<pre><code class="language-ranty">[%return-value] {
     foo @return bar
 }
 
 [return-value] # -&gt; bar
 </code></pre>
 <p>Additionally, you can also return from the program scope itself:</p>
-<pre><code class="language-rant">@return foo # -&gt; foo
+<pre><code class="language-ranty">@return foo # -&gt; foo
 </code></pre>
 
                     </main>

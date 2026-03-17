@@ -200,7 +200,7 @@ macro_rules! rmsg {
 
 impl Problem {
     fn code(&self) -> &'static str {
-        /// Formats Rant error code constants.
+        /// Formats Ranty error code constants.
         macro_rules! rcode {
             ($code:literal) => {
                 concat!("R", stringify!($code))

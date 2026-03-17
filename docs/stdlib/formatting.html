@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Formatting - Rant Reference</title>
+        <title>Formatting - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -177,14 +177,14 @@
                     <main>
                         <h1 id="standard-library-formatting-functions"><a class="header" href="#standard-library-formatting-functions">Standard Library: Formatting functions</a></h1>
 <h2 id="ws-fmt"><a class="header" href="#ws-fmt">ws-fmt</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%ws-fmt: mode?; custom?]
 
 </code></pre>
 <p>→ <code>string | any</code></p>
 <p>Gets or sets the whitespace normalization mode for the current scope. <code>custom</code> is only used when <code>mode</code> is <code>custom</code>.</p>
 <h2 id="num-fmt"><a class="header" href="#num-fmt">num-fmt</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%num-fmt: options?; depth ? 0]
 
 </code></pre>
@@ -215,7 +215,7 @@ Defaults to 0 (the calling scope).</p>
 </div>
 <h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
 <p><strong>Getting the current number format</strong></p>
-<pre><code class="language-rant"># Print current number format
+<pre><code class="language-ranty"># Print current number format
 [num-fmt]
 ## -&gt; 
 (::
@@ -233,7 +233,7 @@ Defaults to 0 (the calling scope).</p>
 ##
 </code></pre>
 <p><strong>Setting the current number format</strong></p>
-<pre><code class="language-rant"># Set format to big-endian 64-bit uppercase hex with prefix
+<pre><code class="language-ranty"># Set format to big-endian 64-bit uppercase hex with prefix
 [num-fmt: (:: system = hex; upper = @true; alt = @true; padding = 16)]
 
 1000000000\n
@@ -241,7 +241,7 @@ Defaults to 0 (the calling scope).</p>
 # -&gt; 0x000000003B9ACA00
 </code></pre>
 <h2 id="num-fmt-system"><a class="header" href="#num-fmt-system">num-fmt-system</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%num-fmt-system: system?; depth ? 0]
 </code></pre>
 <p>→ <code>string | nothing</code></p>
@@ -269,7 +269,7 @@ Defaults to 0 (the calling scope).</p>
 </tbody></table>
 </div>
 <h2 id="num-fmt-alt"><a class="header" href="#num-fmt-alt">num-fmt-alt</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%num-fmt-alt: flag?; depth ? 0]
 
 </code></pre>
@@ -284,7 +284,7 @@ If omitted, the function prints the current value.</p>
 The depth of the scope whose number format to access. Value must be positive. Saturates to main program scope. <br/>
 Defaults to 0 (the calling scope).</p>
 <h2 id="num-fmt-precision"><a class="header" href="#num-fmt-precision">num-fmt-precision</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%num-fmt-precision: precision?; depth ? 0]
 
 </code></pre>
@@ -300,7 +300,7 @@ Set to -1 to allow unbounded precision.</p>
 The depth of the scope whose number format to access. Value must be positive. Saturates to main program scope. <br/>
 Defaults to 0 (the calling scope).</p>
 <h2 id="num-fmt-padding"><a class="header" href="#num-fmt-padding">num-fmt-padding</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%num-fmt-padding: padding?; depth ? 0]
 
 </code></pre>
@@ -314,7 +314,7 @@ The padding size to set. If omitted, the function prints the current value.</p>
 The depth of the scope whose number format to access. Value must be positive. Saturates to main program scope. <br/>
 Defaults to 0 (the calling scope).</p>
 <h2 id="num-fmt-upper"><a class="header" href="#num-fmt-upper">num-fmt-upper</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%num-fmt-upper: flag?; depth ? 0]
 
 </code></pre>
@@ -329,7 +329,7 @@ If omitted, the function prints the current value.</p>
 The depth of the scope whose number format to access. Value must be positive. Saturates to main program scope. <br/>
 Defaults to 0 (the calling scope).</p>
 <h2 id="num-fmt-sign"><a class="header" href="#num-fmt-sign">num-fmt-sign</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%num-fmt-sign: sign?; depth ? 0]
 
 </code></pre>
@@ -352,7 +352,7 @@ Defaults to 0 (the calling scope).</p>
 </tbody></table>
 </div>
 <h2 id="num-fmt-endian"><a class="header" href="#num-fmt-endian">num-fmt-endian</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%num-fmt-endian: endianness?; depth ? 0]
 
 </code></pre>
@@ -374,7 +374,7 @@ Defaults to 0 (the calling scope).</p>
 </tbody></table>
 </div>
 <h2 id="num-fmt-infinity"><a class="header" href="#num-fmt-infinity">num-fmt-infinity</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%num-fmt-infinity: infinity?; depth ? 0]
 
 </code></pre>
@@ -396,7 +396,7 @@ Defaults to 0 (the calling scope).</p>
 </tbody></table>
 </div>
 <h2 id="num-fmt-group-sep"><a class="header" href="#num-fmt-group-sep">num-fmt-group-sep</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%num-fmt-group-sep: group-sep?; depth ? 0]
 
 </code></pre>
@@ -410,7 +410,7 @@ The group separator to use. If omitted, the function prints the current value.</
 The depth of the scope whose number format to access. Value must be positive. Saturates to main program scope. <br/>
 Defaults to 0 (the calling scope).</p>
 <h2 id="num-fmt-decimal-sep"><a class="header" href="#num-fmt-decimal-sep">num-fmt-decimal-sep</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%num-fmt-decimal-sep: decimal-sep?; depth ? 0]
 
 </code></pre>

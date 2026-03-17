@@ -1,12 +1,12 @@
-use rant::Rant;
+use ranty::Ranty;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // Create a Rant context and load the standard library
-    let mut rant = Rant::with_random_seed();
+    // Create a Ranty context and load the standard library
+    let mut ranty = Ranty::with_random_seed();
 
     // Compile a simple program
-    let program = rant.compile_quiet(
+    let program = ranty.compile_quiet(
         r#"
   [$greet:name] {
     {Hello|Hi|Hey} <name>!
@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     )?;
 
     // Run the program and fetch the result string
-    let output = rant.run(&program)?;
+    let output = ranty.run(&program)?;
     println!("{}", output);
     Ok(())
 }

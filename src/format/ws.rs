@@ -1,4 +1,4 @@
-use crate::RantValue;
+use crate::RantyValue;
 
 #[derive(Debug, Clone)]
 pub enum WhitespaceNormalizationMode {
@@ -9,7 +9,7 @@ pub enum WhitespaceNormalizationMode {
     /// Prints all non-breaking whitespace verbatim.
     Verbatim,
     /// Normalizes all whitespace to a custom value.
-    Custom(RantValue),
+    Custom(RantyValue),
 }
 
 impl Default for WhitespaceNormalizationMode {

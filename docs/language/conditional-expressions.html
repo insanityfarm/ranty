@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Conditional expressions - Rant Reference</title>
+        <title>Conditional expressions - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -177,7 +177,7 @@
                     <main>
                         <h1 id="conditional-expressions"><a class="header" href="#conditional-expressions">Conditional expressions</a></h1>
 <p>Conditional expressions are built from <code>@if</code>, <code>@elseif</code>, and <code>@else</code>. Conditions are evaluated from left to right until the first truthy branch succeeds.</p>
-<pre><code class="language-rant example">@if 0: {
+<pre><code class="language-ranty example">@if 0: {
   zero
 } @else: {
   nonzero
@@ -197,7 +197,7 @@
 </div>
 <h2 id="short-circuiting"><a class="header" href="#short-circuiting">Short-circuiting</a></h2>
 <p>Once a branch succeeds, later conditions are not evaluated and their bodies are not run.</p>
-<pre><code class="language-rant example">@if @true: {
+<pre><code class="language-ranty example">@if @true: {
   pass
 } @elseif [error: "should not run"]: {
   fail

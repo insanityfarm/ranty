@@ -5,14 +5,14 @@ use rand_xoshiro::rand_core::SeedableRng;
 use rand_xoshiro::Xoshiro256PlusPlus;
 use std::{cell::RefCell, hash::Hasher};
 
-/// Rant's random number generator, which is a thin wrapper around a xoshiro256++ PRNG.
+/// Ranty's random number generator, which is a thin wrapper around a xoshiro256++ PRNG.
 #[derive(Debug)]
-pub struct RantRng {
+pub struct RantyRng {
     seed: u64,
     rng: RefCell<Xoshiro256PlusPlus>,
 }
 
-impl RantRng {
+impl RantyRng {
     /// Creates a new RNG with the supplied seed.
     pub fn new(seed: u64) -> Self {
         Self {
@@ -27,7 +27,7 @@ impl RantRng {
         let mut hasher = FnvHasher::default();
         hasher.write_u64(self.seed);
         hasher.write_u64(seed);
-        RantRng::new(hasher.finish())
+        RantyRng::new(hasher.finish())
     }
 
     /// Creates a new RNG by hashing the parent seed with the supplied `i64` to produce a new seed.
@@ -36,7 +36,7 @@ impl RantRng {
         let mut hasher = FnvHasher::default();
         hasher.write_u64(self.seed);
         hasher.write_i64(seed);
-        RantRng::new(hasher.finish())
+        RantyRng::new(hasher.finish())
     }
 
     /// Creates a new RNG by hashing the parent seed with the supplied string to produce a new seed.
@@ -45,7 +45,7 @@ impl RantRng {
         let mut hasher = FnvHasher::default();
         hasher.write_u64(self.seed);
         hasher.write(seed.as_bytes());
-        RantRng::new(hasher.finish())
+        RantyRng::new(hasher.finish())
     }
 
     /// Creates a new RNG by hashing the parent seed and with the current generation to produce a new seed.
@@ -54,11 +54,11 @@ impl RantRng {
         let mut hasher = FnvHasher::default();
         hasher.write_u64(self.seed);
         hasher.write_u64(self.rng.borrow_mut().gen());
-        RantRng::new(hasher.finish())
+        RantyRng::new(hasher.finish())
     }
 }
 
-impl RantRng {
+impl RantyRng {
     /// Gets the current seed of the RNG.
     pub fn seed(&self) -> u64 {
         self.seed

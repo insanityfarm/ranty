@@ -1,5 +1,5 @@
-use self::parser::RantParser;
-use crate::{RantProgram, RantProgramInfo};
+use self::parser::RantyParser;
+use crate::{RantyProgram, RantyProgramInfo};
 use std::io::ErrorKind as IOErrorKind;
 use std::{error::Error, fs};
 use std::{fmt::Display, path::Path, rc::Rc};
@@ -11,8 +11,8 @@ pub(crate) mod reader;
 
 pub use message::*;
 
-/// Type alias for `Result<RantProgram, CompilerErrorKind>`
-pub type CompileResult = Result<RantProgram, CompilerError>;
+/// Type alias for `Result<RantyProgram, CompilerErrorKind>`
+pub type CompileResult = Result<RantyProgram, CompilerError>;
 
 /// Describes why a compilation failed.
 #[derive(Debug)]
@@ -61,15 +61,15 @@ pub(crate) fn compile_string<R: Reporter>(
     source: &str,
     reporter: &mut R,
     debug_enabled: bool,
-    info: RantProgramInfo,
+    info: RantyProgramInfo,
 ) -> CompileResult {
     let info = Rc::new(info);
 
-    let mut parser = RantParser::new(source, reporter, debug_enabled, &info);
+    let mut parser = RantyParser::new(source, reporter, debug_enabled, &info);
 
     // Return compilation result
     match parser.parse() {
-        Ok(seq) => Ok(RantProgram::new(seq, info)),
+        Ok(seq) => Ok(RantyProgram::new(seq, info)),
         Err(()) => Err(CompilerError::SyntaxError),
     }
 }
@@ -91,7 +91,7 @@ pub(crate) fn compile_file<P: AsRef<Path>, R: Reporter>(
             &source,
             reporter,
             debug_enabled,
-            RantProgramInfo {
+            RantyProgramInfo {
                 name: None,
                 path: Some(source_name),
             },

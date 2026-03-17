@@ -1,19 +1,19 @@
 use super::*;
-use std::{env, fmt::Debug, io::ErrorKind, path::PathBuf};
+use std::{env, ffi::OsStr, fmt::Debug, io::ErrorKind, path::PathBuf};
 
 /// Result type used by the module loader.
-pub type ModuleResolveResult = Result<RantProgram, ModuleResolveError>;
+pub type ModuleResolveResult = Result<RantyProgram, ModuleResolveError>;
 
 /// Represents the features required for a module resolver.
 ///
-/// A module resolver only resolves the `RantProgram` that the final module object is loaded from.
+/// A module resolver only resolves the `RantyProgram` that the final module object is loaded from.
 /// This is designed as such to ensure that module loading is limited to the maximum call stack size of the requesting program.
 pub trait ModuleResolver: Debug {
     fn try_resolve(
         &self,
-        context: &mut Rant,
+        context: &mut Ranty,
         module_path: &str,
-        dependant: Option<&RantProgramInfo>,
+        dependant: Option<&RantyProgramInfo>,
     ) -> ModuleResolveResult;
 }
 
@@ -26,7 +26,7 @@ pub trait ModuleResolver: Debug {
 /// 1. If `enable_global_modules` is set to `true`, the global modules path is searched.
 #[derive(Debug)]
 pub struct DefaultModuleResolver {
-    /// Enables loading modules from RANT_MODULES_PATH.
+    /// Enables loading modules from RANTY_MODULES_PATH.
     pub enable_global_modules: bool,
     /// Specifies a preferred module loading path with higher precedence than the global module path.
     /// If not specified, looks in the current working directory.
@@ -35,7 +35,7 @@ pub struct DefaultModuleResolver {
 
 impl DefaultModuleResolver {
     /// The name of the environment variable that used to provide the global modules path.
-    pub const ENV_MODULES_PATH_KEY: &'static str = "RANT_MODULES_PATH";
+    pub const ENV_MODULES_PATH_KEY: &'static str = "RANTY_MODULES_PATH";
 }
 
 impl Default for DefaultModuleResolver {
@@ -50,9 +50,9 @@ impl Default for DefaultModuleResolver {
 impl ModuleResolver for DefaultModuleResolver {
     fn try_resolve(
         &self,
-        context: &mut Rant,
+        context: &mut Ranty,
         module_path: &str,
-        dependant: Option<&RantProgramInfo>,
+        dependant: Option<&RantyProgramInfo>,
     ) -> ModuleResolveResult {
         // Try to find module path that exists
         if let Some(full_module_path) = self.find_module_path(module_path, dependant) {
@@ -83,24 +83,38 @@ impl ModuleResolver for DefaultModuleResolver {
 }
 
 impl DefaultModuleResolver {
+    fn module_candidates(module_path: &str) -> Vec<PathBuf> {
+        let module_path =
+            PathBuf::from(module_path.replace("/", &String::from(std::path::MAIN_SEPARATOR)));
+
+        if module_path.extension().and_then(OsStr::to_str).is_some() {
+            vec![module_path]
+        } else {
+            RANTY_SUPPORTED_FILE_EXTENSIONS
+                .iter()
+                .map(|extension| module_path.with_extension(extension))
+                .collect()
+        }
+    }
+
     #[inline]
     fn find_module_path(
         &self,
         module_path: &str,
-        dependant: Option<&RantProgramInfo>,
+        dependant: Option<&RantyProgramInfo>,
     ) -> Option<PathBuf> {
-        let module_path =
-            PathBuf::from(module_path.replace("/", &String::from(std::path::MAIN_SEPARATOR)))
-                .with_extension(RANT_FILE_EXTENSION);
+        let module_candidates = Self::module_candidates(module_path);
 
         macro_rules! search_for_module {
             ($path:expr) => {
                 let path = $path;
-                // Construct full path to module
-                if let Ok(full_module_path) = path.join(&module_path).canonicalize() {
-                    // Verify file is still in modules directory and it exists
-                    if full_module_path.starts_with(path) && full_module_path.exists() {
-                        return Some(full_module_path);
+                for module_candidate in &module_candidates {
+                    // Construct full path to module
+                    if let Ok(full_module_path) = path.join(module_candidate).canonicalize() {
+                        // Verify file is still in modules directory and it exists
+                        if full_module_path.starts_with(&path) && full_module_path.exists() {
+                            return Some(full_module_path);
+                        }
                     }
                 }
             };
@@ -151,9 +165,9 @@ pub struct NoModuleResolver;
 impl ModuleResolver for NoModuleResolver {
     fn try_resolve(
         &self,
-        _context: &mut Rant,
+        _context: &mut Ranty,
         module_path: &str,
-        _dependant: Option<&RantProgramInfo>,
+        _dependant: Option<&RantyProgramInfo>,
     ) -> ModuleResolveResult {
         Err(ModuleResolveError {
             name: module_path.to_owned(),
@@ -162,7 +176,7 @@ impl ModuleResolver for NoModuleResolver {
     }
 }
 
-/// Represents an error that occurred when attempting to load a Rant module.
+/// Represents an error that occurred when attempting to load a Ranty module.
 #[derive(Debug)]
 pub struct ModuleResolveError {
     pub name: String,
@@ -185,7 +199,7 @@ impl ModuleResolveError {
     }
 }
 
-/// Represents the reason for which a Rant module failed to load.
+/// Represents the reason for which a Ranty module failed to load.
 #[derive(Debug)]
 pub enum ModuleResolveErrorReason {
     /// The module was not found.
@@ -216,8 +230,8 @@ impl Display for ModuleResolveError {
     }
 }
 
-impl IntoRuntimeResult<RantProgram> for ModuleResolveResult {
-    fn into_runtime_result(self) -> RuntimeResult<RantProgram> {
+impl IntoRuntimeResult<RantyProgram> for ModuleResolveResult {
+    fn into_runtime_result(self) -> RuntimeResult<RantyProgram> {
         self.map_err(|err| RuntimeError {
             error_type: RuntimeErrorType::ModuleError(err),
             description: None,

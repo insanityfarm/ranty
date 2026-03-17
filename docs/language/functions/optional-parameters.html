@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Optional parameters - Rant Reference</title>
+        <title>Optional parameters - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -183,7 +183,7 @@ To prevent this from happening, you need to use a <a href="../accessors/fallback
 <p>Please note that all optional parameters must appear after all required parameters, and before any variadic parameter;
 breaking this order will cause a compiler error.</p>
 </blockquote>
-<pre><code class="language-rant"># Generates a map for a pet with a name and species (defaults to "dog")
+<pre><code class="language-ranty"># Generates a map for a pet with a name and species (defaults to "dog")
 [$gen-pet: name; species?] {
     (::
         name = &lt;name&gt;;

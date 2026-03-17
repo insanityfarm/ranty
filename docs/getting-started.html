@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Getting Started - Rant Reference</title>
+        <title>Getting Started - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -176,16 +176,17 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
-<p>Rant can be used through the CLI or embedded as a Rust library.</p>
+<p>Ranty can be used through the CLI or embedded as a Rust library.</p>
 <h2 id="install-the-cli"><a class="header" href="#install-the-cli">Install the CLI</a></h2>
-<pre><code class="language-sh">cargo install rant --version 4.0.0 --features cli
+<pre><code class="language-sh">cargo install ranty --version 1.0.0 --features cli
 </code></pre>
+<p>Ranty source files and modules should normally use the <code>.ranty</code> file extension. For compatibility, legacy <code>.rant</code> files and modules are also supported.</p>
 <p>From a checkout, you can also run the CLI directly:</p>
 <pre><code class="language-sh">cargo run --features cli -- --help
 </code></pre>
 <h2 id="your-first-program"><a class="header" href="#your-first-program">Your first program</a></h2>
-<pre><code class="language-rant example">[$greet:name] {
-  Hello, `&lt;name&gt;!
+<pre><code class="language-ranty example">[$greet:name] {
+  Hello, &lt;name&gt;!
 }
 
 [greet:world]
@@ -194,13 +195,13 @@
 </code></pre>
 <h2 id="cli-quickstart"><a class="header" href="#cli-quickstart">CLI quickstart</a></h2>
 <pre><code class="language-sh"># Start the REPL
-rant
+ranty
 
 # Run inline code
-rant --eval '[rep:3][sep:\s]{beep}'
+ranty --eval '[rep:3][sep:\s]{beep}'
 
 # Run a file
-rant examples/helloworld.rant
+ranty examples/helloworld.ranty
 </code></pre>
 <p>Execution priority is:</p>
 <ol>
@@ -212,11 +213,11 @@ rant examples/helloworld.rant
 <h2 id="embed-in-rust"><a class="header" href="#embed-in-rust">Embed in Rust</a></h2>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use rant::Rant;
+</span>use ranty::Ranty;
 
-let mut rant = Rant::new();
-let program = rant.compile_quiet("Hello, world!")?;
-let output = rant.run(&amp;program)?;
+let mut ranty = Ranty::new();
+let program = ranty.compile_quiet("Hello, world!")?;
+let output = ranty.run(&amp;program)?;
 assert_eq!(output.to_string(), "Hello, world!");
 <span class="boring">Ok::&lt;(), Box&lt;dyn std::error::Error&gt;&gt;(())
 </span><span class="boring">}</span></code></pre></pre>

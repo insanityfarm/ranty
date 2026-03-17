@@ -8,12 +8,12 @@ In simple terms, a map can have:
 * an optional **prototype**
 * a prototype whose prototype points at another map, and so on
 
-When Rant reads a map key, it checks the map's own keys first.
+When Ranty reads a map key, it checks the map's own keys first.
 If the key is missing, it walks up the prototype chain until it finds a match or runs out of prototypes.
 
 ## Mental model
 
-Prototype inheritance in Rant is intentionally small and predictable:
+Prototype inheritance in Ranty is intentionally small and predictable:
 
 * **Own keys win.** A key stored directly on the map shadows the same key on any prototype.
 * **Reads inherit.** Getters and method-like calls can resolve inherited members.
@@ -27,7 +27,7 @@ This means prototypes are best thought of as a lookup fallback mechanism, not as
 
 Use `[set-proto]` to attach or clear a prototype, and `[proto]` to read the current prototype:
 
-```rant
+```ranty
 <$obj = (::)>
 <$proto = (:: flavor = vanilla)>
 
@@ -42,7 +42,7 @@ Use `[set-proto]` to attach or clear a prototype, and `[proto]` to read the curr
 
 If a key is not stored directly on the map, the getter continues through the prototype chain:
 
-```rant
+```ranty
 <$obj = (::)>
 <$proto = (:: flavor = vanilla; color = blue)>
 [set-proto: <obj>; <proto>]
@@ -62,7 +62,7 @@ If a key is not stored directly on the map, the getter continues through the pro
 
 Own keys always beat inherited keys:
 
-```rant
+```ranty
 <$obj = (:: flavor = chocolate)>
 <$proto = (:: flavor = vanilla; color = blue)>
 [set-proto: <obj>; <proto>]
@@ -80,9 +80,9 @@ Own keys always beat inherited keys:
 
 ## Local writes do not mutate the prototype
 
-If you assign to an inherited key, Rant creates or updates a local key on the receiver map:
+If you assign to an inherited key, Ranty creates or updates a local key on the receiver map:
 
-```rant
+```ranty
 <$obj = (::)>
 <$proto = (:: flavor = vanilla)>
 [set-proto: <obj>; <proto>]
@@ -106,7 +106,7 @@ This is one of the most important rules to remember: inheritance affects lookup,
 
 Maps can store functions, so a prototype can also provide shared behavior:
 
-```rant
+```ranty
 <$animal = (:: speak = [?: name] { <name> says hello. })>
 <$cat = (:: name = Miso)>
 [set-proto: <cat>; <animal>]
@@ -116,10 +116,10 @@ Maps can store functions, so a prototype can also provide shared behavior:
 ```
 
 The function above is just an ordinary function found through prototype lookup.
-Rant does **not** inject the receiver map automatically.
+Ranty does **not** inject the receiver map automatically.
 If a method needs the map, pass it explicitly:
 
-```rant
+```ranty
 <$animal = (:: rename = [?: obj; new-name] { <obj/name = <new-name>> })>
 <$cat = (:: name = Miso)>
 [set-proto: <cat>; <animal>]
@@ -133,7 +133,7 @@ If a method needs the map, pass it explicitly:
 
 Prototype lookup continues across multiple links:
 
-```rant
+```ranty
 <$base = (:: category = dessert)>
 <$proto = (:: flavor = vanilla)>
 <$obj = (:: name = custard)>
@@ -168,7 +168,7 @@ This includes:
 
 Example:
 
-```rant
+```ranty
 <$obj = (:: own = 1)>
 <$proto = (:: inherited = 2)>
 [set-proto: <obj>; <proto>]
@@ -198,9 +198,9 @@ Prototype inheritance changes how map lookups work, but it does not turn a map i
 ## Cycle rejection
 
 Prototype chains cannot contain cycles.
-Rant rejects any `[set-proto]` call that would make a map eventually inherit from itself:
+Ranty rejects any `[set-proto]` call that would make a map eventually inherit from itself:
 
-```rant
+```ranty
 <$a = (::)>
 <$b = (::)>
 

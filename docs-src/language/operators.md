@@ -1,6 +1,6 @@
 # Operators
 
-Rant has several built-in arithmetic, logic, and comparison operators.
+Ranty has several built-in arithmetic, logic, and comparison operators.
 
 Throughout this page, the abbreviations RHS (right-hand side) and LHS (left-hand side) will be used to refer to binary operands.
 
@@ -12,7 +12,7 @@ Throughout this page, the abbreviations RHS (right-hand side) and LHS (left-hand
 
 Returns the sum of the operands.
 
-```rant
+```ranty
 2 + 2
 # -> 4
 ```
@@ -23,7 +23,7 @@ Returns the sum of the operands.
 
 Subtracts RHS from LHS and returns the result.
 
-```rant
+```ranty
 10 - 1
 # -> 9
 ```
@@ -34,7 +34,7 @@ Subtracts RHS from LHS and returns the result.
 
 Returns the product of the operands.
 
-```rant
+```ranty
 5 * 5
 # -> 25
 ```
@@ -45,7 +45,7 @@ Returns the product of the operands.
 
 Divides LHS by RHS and returns the result.
 
-```rant
+```ranty
 48 / 16
 # -> 3
 ```
@@ -56,7 +56,7 @@ Divides LHS by RHS and returns the result.
 
 Gets the remainder from dividing LHS by RHS and returns the result.
 
-```rant
+```ranty
 10 % 4
 # -> 2
 ```
@@ -67,7 +67,7 @@ Gets the remainder from dividing LHS by RHS and returns the result.
 
 Raises LHS to the RHS power and returns the result.
 
-```rant
+```ranty
 2 ** 16
 # -> 65536
 ```
@@ -78,7 +78,7 @@ Raises LHS to the RHS power and returns the result.
 
 Gets the negated value of the operand and returns the result.
 
-```rant
+```ranty
 <$x = 123>
 @neg <x>
 # -> -123
@@ -99,7 +99,7 @@ More generally: returns RHS if both LHS and RHS are truthy; otherwise, returns t
 
 This operator is short-circuiting: if LHS is falsy, RHS will not be evaluated.
 
-```rant
+```ranty
 # Logical AND using booleans
 @true & @true    # -> @true
 @true & @false   # -> @false
@@ -126,7 +126,7 @@ More generally: returns LHS if LHS is truthy; otherwise, returns RHS.
 
 This operator is short-circuiting: if LHS is truthy, RHS will not be evaluated.
 
-```rant
+```ranty
 # Logical OR using booleans
 @true | @true     # -> @true
 @true | @false    # -> @true
@@ -146,7 +146,7 @@ This operator is short-circuiting: if LHS is truthy, RHS will not be evaluated.
 >
 > In a block context, `|` will be treated as an element separator.
 > To use it as an OR operator, enclose your expression in parentheses first.
-> ```rant
+> ```ranty
 > foo | bar         # Logical OR
 > {foo | bar}       # Separates two block elements
 > {(foo | bar)}     # Logical OR
@@ -158,7 +158,7 @@ This operator is short-circuiting: if LHS is truthy, RHS will not be evaluated.
 
 Returns `@false` if the operand is truthy; otherwise, returns `@true`.
 
-```rant
+```ranty
 # Logical NOT using booleans
 @not @true  # -> @false
 @not @false # -> @true
@@ -174,7 +174,7 @@ Returns `@false` if the operand is truthy; otherwise, returns `@true`.
 
 Returns `@true` if exactly *one* of the two operands is truthy; otherwise, returns `@false`. 
 
-```rant
+```ranty
 # Logical XOR using booleans
 @true ^ @true    # -> @true
 @true ^ @false   # -> @true
@@ -198,7 +198,7 @@ Returns `@true` if exactly *one* of the two operands is truthy; otherwise, retur
 
 Returns `@true` if LHS is equal to RHS; otherwise, returns `@false`.
 
-```rant
+```ranty
 1 @eq 1     # -> @true
 1 @eq 1.0   # -> @true
 0 @eq 1     # -> @false
@@ -211,7 +211,7 @@ Returns `@true` if LHS is equal to RHS; otherwise, returns `@false`.
 
 Returns `@true` if LHS is not equal to RHS; otherwise, returns `@false`.
 
-```rant
+```ranty
 1 @neq 1    # -> @false
 1 @neq 1.0  # -> @false
 0 @neq 1    # -> @true
@@ -224,7 +224,7 @@ Returns `@true` if LHS is not equal to RHS; otherwise, returns `@false`.
 
 Returns `@true` if LHS is greater than RHS; otherwise, returns `@false`.
 
-```rant
+```ranty
 1 @gt 1     # -> @false
 1 @gt 2     # -> @false
 2 @gt 1     # -> @true
@@ -236,7 +236,7 @@ Returns `@true` if LHS is greater than RHS; otherwise, returns `@false`.
 
 Returns `@true` if LHS is less than RHS; otherwise, returns `@false`.
 
-```rant
+```ranty
 1 @gt 1     # -> @false
 1 @gt 2     # -> @true
 2 @gt 1     # -> @false
@@ -248,7 +248,7 @@ Returns `@true` if LHS is less than RHS; otherwise, returns `@false`.
 
 Returns `@true` if LHS is greater than or equal to RHS; otherwise, returns `@false`.
 
-```rant
+```ranty
 1 @gt 1     # -> @true
 1 @gt 2     # -> @false
 2 @gt 1     # -> @true
@@ -260,7 +260,7 @@ Returns `@true` if LHS is greater than or equal to RHS; otherwise, returns `@fal
 
 Returns `@true` if LHS is less than or equal to RHS; otherwise, returns `@false`.
 
-```rant
+```ranty
 1 @gt 1     # -> @true
 1 @gt 2     # -> @true
 2 @gt 1     # -> @false

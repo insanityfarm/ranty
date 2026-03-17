@@ -12,7 +12,7 @@ The `@rep` keyword reads or writes the repetitions attribute.
 `@rep` accepts the same values as `[rep]`: nonnegative integers or the repetition mode strings
 `"once"`, `"all"`, and `"forever"`.
 
-```rant example
+```ranty example
 @rep 3: {x}
 ```
 

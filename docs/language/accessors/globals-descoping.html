@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Globals &amp; Descoping - Rant Reference</title>
+        <title>Globals &amp; Descoping - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -178,11 +178,11 @@
                         <h1 id="globals--descoping"><a class="header" href="#globals--descoping">Globals &amp; Descoping</a></h1>
 <p>Accessors support two ways of explicitly accessing variables in parent scopes: <strong>global accessors</strong> and <strong>descoping</strong>.</p>
 <h2 id="explicitly-accessing-globals"><a class="header" href="#explicitly-accessing-globals">Explicitly accessing globals</a></h2>
-<p>The top level of a Rant program implicitly defines a local variable scope;
+<p>The top level of a Ranty program implicitly defines a local variable scope;
 because of this, top-level variables will only persist for the duration of the program.</p>
 <p>To explicitly access a variable in the global scope, prefix the path with the <code>/</code> character.</p>
 <p>Similarly to the descope operator, this method also allows you to override shadowing on globals.</p>
-<pre><code class="language-rant">&lt;$foo = Hello from program scope!&gt;
+<pre><code class="language-ranty">&lt;$foo = Hello from program scope!&gt;
 &lt;$/foo = Hello from global scope!&gt;
 
 Local: &lt;foo&gt;\n
@@ -198,7 +198,7 @@ Global: &lt;/foo&gt;\n
 <h2 id="the-descope-operator"><a class="header" href="#the-descope-operator">The 'descope' operator</a></h2>
 <p>If a child scope shadows a parent variable and you want to access the parent variable explicitly, you can use the <strong>descope operator</strong>.</p>
 <p>To do this, prefix the variable name with a <code>^</code> character.</p>
-<pre><code class="language-rant">&lt;$a = foo&gt;
+<pre><code class="language-ranty">&lt;$a = foo&gt;
 {
     &lt;$a = bar&gt;
     Shadowed: &lt;a&gt;\n
@@ -215,7 +215,7 @@ Global: &lt;/foo&gt;\n
 <p>Adding more than one <code>^</code> character in a row will skip up to that many scopes.
 These operations are called "<em>n</em>-descopes", where <em>n</em> is the number of scopes skipped:
 For example, <code>&lt;^^foo&gt;</code> is a 2-descope, <code>&lt;^^^foo&gt;</code> is a 3-descope, and so on.</p>
-<pre><code class="language-rant"># Define `test`
+<pre><code class="language-ranty"># Define `test`
 &lt;$test = foo&gt;
 {
     # Shadow `test`
@@ -229,7 +229,7 @@ For example, <code>&lt;^^foo&gt;</code> is a 2-descope, <code>&lt;^^^foo&gt;</co
 ## Output: "foo bar baz"
 </code></pre>
 <p>While the compiler imposes no explicit limit on descope depth, use cases for large descope depths are rare and it is recommended to avoid them when possible.</p>
-<pre><code class="language-rant"># A 360-descope.
+<pre><code class="language-ranty"># A 360-descope.
 &lt; ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

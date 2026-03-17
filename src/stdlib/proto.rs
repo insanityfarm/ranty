@@ -1,18 +1,18 @@
 use super::*;
 
-pub fn proto(vm: &mut VM, map: RantMapHandle) -> RantStdResult {
+pub fn proto(vm: &mut VM, map: RantyMapHandle) -> RantyStdResult {
     vm.cur_frame_mut().write(
         map.borrow()
             .proto()
-            .map_or(RantValue::Nothing, RantValue::Map),
+            .map_or(RantyValue::Nothing, RantyValue::Map),
     );
     Ok(())
 }
 
 pub fn set_proto(
     vm: &mut VM,
-    (map, proto): (RantMapHandle, Option<RantMapHandle>),
-) -> RantStdResult {
+    (map, proto): (RantyMapHandle, Option<RantyMapHandle>),
+) -> RantyStdResult {
     if let Some(proto) = proto.as_ref() {
         if map.would_create_proto_cycle(proto) {
             runtime_error!(

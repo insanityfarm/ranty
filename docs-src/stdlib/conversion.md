@@ -2,7 +2,7 @@
 
 ## to-float
 
-```rant
+```ranty
 
 [%to-float: value]
 
@@ -20,7 +20,7 @@ The input value to convert.
 
 ## to-int
 
-```rant
+```ranty
 
 [%to-int: value]
 
@@ -38,7 +38,7 @@ The input value to convert.
 
 ## to-string
 
-```rant
+```ranty
 
 [%to-string: value]
 
@@ -55,19 +55,19 @@ The input value to convert.
 
 ## to-bool
 
-```rant
+```ranty
 
 [%to-bool: value]
 
 ```
 &rarr; `bool`
 
-Converts `value` to a boolean using Rant's runtime truthiness rules.
+Converts `value` to a boolean using Ranty's runtime truthiness rules.
 
 
 ## to-list
 
-```rant
+```ranty
 
 [%to-list: value]
 
@@ -88,7 +88,7 @@ The input value to convert.
 
 Passing a `string` value into this function returns a `list` of the string's graphemes.
 
-```rant
+```ranty
 <%letters = [to-list: "hello"]>
 [assert-eq: <letters>; (: h; e; l; l; o)]
 ```
@@ -102,14 +102,14 @@ This is equivalent to calling `[copy]` on the list.
 
 Passing a `range` value into this function prints a list of the range's elements in order.
 
-```rant
+```ranty
 <%seq = [range: 0; 5 |> to-list]>
 [assert-eq: <seq>; (: 0; 1; 2; 3; 4)]
 ```
 
 ## to-tuple
 
-```rant
+```ranty
 
 [%to-tuple: value]
 

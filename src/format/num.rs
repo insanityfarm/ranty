@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::{InternalString, RantValue, TryFromRant, TryIntoRant, ValueError};
+use crate::{InternalString, RantyValue, TryFromRanty, TryIntoRanty, ValueError};
 
 const DEFAULT_SIGN_POSITIVE: &str = "+";
 const DEFAULT_SIGN_NEGATIVE: &str = "-";
@@ -102,11 +102,11 @@ pub enum SignStyle {
 }
 
 impl SignStyle {
-    /// Alias for the `NegativeOnly` variant used by Rant.
+    /// Alias for the `NegativeOnly` variant used by Ranty.
     pub const ALIAS_NEGATIVE_ONLY: &'static str = "negative-only";
-    /// Alias for the `Explicit` variant used by Rant.
+    /// Alias for the `Explicit` variant used by Ranty.
     pub const ALIAS_EXPLICIT: &'static str = "explicit";
-    /// Alias for the `ExplicitNonZero` variant used by Rant.
+    /// Alias for the `ExplicitNonZero` variant used by Ranty.
     pub const ALIAS_EXPLICIT_NON_ZERO: &'static str = "explicit-non-zero";
 }
 
@@ -116,8 +116,8 @@ impl Default for SignStyle {
     }
 }
 
-impl TryFromRant for SignStyle {
-    fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
+impl TryFromRanty for SignStyle {
+    fn try_from_ranty(val: RantyValue) -> Result<Self, ValueError> {
         let mut s = val.to_string();
         s.make_ascii_lowercase();
         Ok(match s.as_str() {
@@ -139,14 +139,14 @@ impl TryFromRant for SignStyle {
     }
 }
 
-impl TryIntoRant for SignStyle {
-    fn try_into_rant(self) -> Result<RantValue, ValueError> {
+impl TryIntoRanty for SignStyle {
+    fn try_into_ranty(self) -> Result<RantyValue, ValueError> {
         match self {
             Self::Explicit => Self::ALIAS_EXPLICIT,
             Self::ExplicitNonZero => Self::ALIAS_EXPLICIT_NON_ZERO,
             Self::NegativeOnly => Self::ALIAS_NEGATIVE_ONLY,
         }
-        .try_into_rant()
+        .try_into_ranty()
     }
 }
 
@@ -161,9 +161,9 @@ pub enum InfinityStyle {
 }
 
 impl InfinityStyle {
-    /// Alias for the `Keyword` variant used by Rant.
+    /// Alias for the `Keyword` variant used by Ranty.
     pub const ALIAS_KEYWORD: &'static str = "keyword";
-    /// Alias for the `Symbol` variant used by Rant.
+    /// Alias for the `Symbol` variant used by Ranty.
     pub const ALIAS_SYMBOL: &'static str = "symbol";
 }
 
@@ -173,8 +173,8 @@ impl Default for InfinityStyle {
     }
 }
 
-impl TryFromRant for InfinityStyle {
-    fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
+impl TryFromRanty for InfinityStyle {
+    fn try_from_ranty(val: RantyValue) -> Result<Self, ValueError> {
         let mut s = val.to_string();
         s.make_ascii_lowercase();
         Ok(match s.as_str() {
@@ -195,13 +195,13 @@ impl TryFromRant for InfinityStyle {
     }
 }
 
-impl TryIntoRant for InfinityStyle {
-    fn try_into_rant(self) -> Result<RantValue, ValueError> {
+impl TryIntoRanty for InfinityStyle {
+    fn try_into_ranty(self) -> Result<RantyValue, ValueError> {
         match self {
             Self::Keyword => Self::ALIAS_KEYWORD,
             Self::Symbol => Self::ALIAS_SYMBOL,
         }
-        .try_into_rant()
+        .try_into_ranty()
     }
 }
 
@@ -230,23 +230,23 @@ pub enum NumeralSystem {
 }
 
 impl NumeralSystem {
-    /// Alias for the `WestArabic` variant used by Rant.
+    /// Alias for the `WestArabic` variant used by Ranty.
     pub const ALIAS_WEST_ARABIC: &'static str = "west-arabic";
-    /// Alias for the `EastArabic` variant used by Rant.
+    /// Alias for the `EastArabic` variant used by Ranty.
     pub const ALIAS_EAST_ARABIC: &'static str = "east-arabic";
-    /// Alias for the `Persian` variant used by Rant.
+    /// Alias for the `Persian` variant used by Ranty.
     pub const ALIAS_PERSIAN: &'static str = "persian";
-    /// Alias for the `Roman` variant used by Rant.
+    /// Alias for the `Roman` variant used by Ranty.
     pub const ALIAS_ROMAN: &'static str = "roman";
-    /// Alias for the `Babylonian` variant used by Rant.
+    /// Alias for the `Babylonian` variant used by Ranty.
     pub const ALIAS_BABYLONIAN: &'static str = "babylonian";
-    /// Alias for the `Hex` variant used by Rant.
+    /// Alias for the `Hex` variant used by Ranty.
     pub const ALIAS_HEX: &'static str = "hex";
-    /// Alias for the `Octal` variant used by Rant.
+    /// Alias for the `Octal` variant used by Ranty.
     pub const ALIAS_OCTAL: &'static str = "octal";
-    /// Alias for the `Binary` variant used by Rant.
+    /// Alias for the `Binary` variant used by Ranty.
     pub const ALIAS_BINARY: &'static str = "binary";
-    /// Alias for the `Alpha` variant used by Rant.
+    /// Alias for the `Alpha` variant used by Ranty.
     pub const ALIAS_ALPHA: &'static str = "alpha";
 }
 
@@ -256,8 +256,8 @@ impl Default for NumeralSystem {
     }
 }
 
-impl TryFromRant for NumeralSystem {
-    fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
+impl TryFromRanty for NumeralSystem {
+    fn try_from_ranty(val: RantyValue) -> Result<Self, ValueError> {
         let mut s = val.to_string();
         s.make_ascii_lowercase();
         Ok(match s.as_str() {
@@ -285,8 +285,8 @@ impl TryFromRant for NumeralSystem {
     }
 }
 
-impl TryIntoRant for NumeralSystem {
-    fn try_into_rant(self) -> Result<RantValue, ValueError> {
+impl TryIntoRanty for NumeralSystem {
+    fn try_into_ranty(self) -> Result<RantyValue, ValueError> {
         match self {
             Self::WestArabic => Self::ALIAS_WEST_ARABIC,
             Self::EastArabic => Self::ALIAS_EAST_ARABIC,
@@ -298,7 +298,7 @@ impl TryIntoRant for NumeralSystem {
             Self::Binary => Self::ALIAS_BINARY,
             Self::Alpha => Self::ALIAS_ALPHA,
         }
-        .try_into_rant()
+        .try_into_ranty()
     }
 }
 
@@ -357,8 +357,8 @@ impl Default for Endianness {
     }
 }
 
-impl TryFromRant for Endianness {
-    fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
+impl TryFromRanty for Endianness {
+    fn try_from_ranty(val: RantyValue) -> Result<Self, ValueError> {
         let mut s = val.to_string();
         s.make_ascii_lowercase();
         Ok(match s.as_str() {
@@ -379,13 +379,13 @@ impl TryFromRant for Endianness {
     }
 }
 
-impl TryIntoRant for Endianness {
-    fn try_into_rant(self) -> Result<RantValue, ValueError> {
+impl TryIntoRanty for Endianness {
+    fn try_into_ranty(self) -> Result<RantyValue, ValueError> {
         match self {
             Self::Big => "big",
             Self::Little => "little",
         }
-        .try_into_rant()
+        .try_into_ranty()
     }
 }
 

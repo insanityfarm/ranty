@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>@break - Rant Reference</title>
+        <title>@break - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -179,7 +179,7 @@
 <p><code>@break</code> exits the nearest active repeater immediately.</p>
 <p>With an expression, <code>@break value</code> becomes the repeater result. Without an expression, the current element output becomes the repeater result.</p>
 <p>It can exit through nested blocks owned by the repeater, but it does not cross function boundaries. Using it where no repeater is reachable raises a control-flow runtime error.</p>
-<pre><code class="language-rant">[rep:3]{
+<pre><code class="language-ranty">[rep:3]{
   before
   { @break stop }
   after

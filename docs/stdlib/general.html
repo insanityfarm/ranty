@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>General - Rant Reference</title>
+        <title>General - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -177,81 +177,81 @@
                     <main>
                         <h1 id="standard-library-general-functions"><a class="header" href="#standard-library-general-functions">Standard Library: General functions</a></h1>
 <h2 id="alt"><a class="header" href="#alt">alt</a></h2>
-<pre><code class="language-rant">[%alt: a; ...rest]
+<pre><code class="language-ranty">[%alt: a; ...rest]
 </code></pre>
 <p>Prints the first argument that is not <code>nothing</code>.</p>
 <h2 id="call"><a class="header" href="#call">call</a></h2>
-<pre><code class="language-rant">[%call: func; args?]
+<pre><code class="language-ranty">[%call: func; args?]
 </code></pre>
 <p>Calls <code>func</code> with an optional list of argument values.</p>
 <h2 id="cat"><a class="header" href="#cat">cat</a></h2>
-<pre><code class="language-rant">[%cat: ...values]
+<pre><code class="language-ranty">[%cat: ...values]
 </code></pre>
 <p>Prints each argument into the current scope.</p>
 <h2 id="either"><a class="header" href="#either">either</a></h2>
-<pre><code class="language-rant">[%either: condition; true-value; false-value]
+<pre><code class="language-ranty">[%either: condition; true-value; false-value]
 </code></pre>
 <p>Prints <code>true-value</code> when <code>condition</code> is true, otherwise <code>false-value</code>.</p>
 <h2 id="len"><a class="header" href="#len">len</a></h2>
-<pre><code class="language-rant">[%len: value]
+<pre><code class="language-ranty">[%len: value]
 </code></pre>
 <p>Prints the length of a string, list, map, range, or other length-aware value.</p>
 <h2 id="type"><a class="header" href="#type">type</a></h2>
-<pre><code class="language-rant">[%type: value]
+<pre><code class="language-ranty">[%type: value]
 </code></pre>
 <p>Prints the runtime type name of <code>value</code>.</p>
 <h2 id="seed"><a class="header" href="#seed">seed</a></h2>
-<pre><code class="language-rant">[%seed]
+<pre><code class="language-ranty">[%seed]
 </code></pre>
 <p>Prints the currently active RNG seed as an <code>int</code>.</p>
 <h2 id="tap"><a class="header" href="#tap">tap</a></h2>
-<pre><code class="language-rant">[%tap: ...]
+<pre><code class="language-ranty">[%tap: ...]
 </code></pre>
 <p>Consumes arguments and produces no output. This is useful as a no-op sink in pipe chains.</p>
 <h2 id="print"><a class="header" href="#print">print</a></h2>
-<pre><code class="language-rant">[%print: ...values]
+<pre><code class="language-ranty">[%print: ...values]
 </code></pre>
 <p>Prints values directly into the caller's output scope.</p>
 <h2 id="range"><a class="header" href="#range">range</a></h2>
-<pre><code class="language-rant">[%range: a; b?; step?]
+<pre><code class="language-ranty">[%range: a; b?; step?]
 </code></pre>
 <p>Builds a half-open integer range.</p>
 <h2 id="require"><a class="header" href="#require">require</a></h2>
-<pre><code class="language-rant">[%require: module-path]
+<pre><code class="language-ranty">[%require: module-path]
 </code></pre>
 <p>Imports a module through the active module resolver.</p>
 <h2 id="irange"><a class="header" href="#irange">irange</a></h2>
-<pre><code class="language-rant">[%irange: a; b?; step?]
+<pre><code class="language-ranty">[%irange: a; b?; step?]
 </code></pre>
 <p>Builds an inclusive integer range.</p>
 <h2 id="fork"><a class="header" href="#fork">fork</a></h2>
-<pre><code class="language-rant">[%fork: seed?]
+<pre><code class="language-ranty">[%fork: seed?]
 </code></pre>
 <p>Pushes a derived RNG onto the RNG stack. Integer and string seeds are both supported.</p>
 <h2 id="unfork"><a class="header" href="#unfork">unfork</a></h2>
-<pre><code class="language-rant">[%unfork]
+<pre><code class="language-ranty">[%unfork]
 </code></pre>
 <p>Pops the most recent derived RNG and resumes the previous RNG state.</p>
 <h2 id="try"><a class="header" href="#try">try</a></h2>
-<pre><code class="language-rant">[%try: context; handler?]
+<pre><code class="language-ranty">[%try: context; handler?]
 </code></pre>
 <p>Runs <code>context</code> and optionally dispatches runtime failures to <code>handler</code>.</p>
 <h2 id="ds-request"><a class="header" href="#ds-request">ds-request</a></h2>
-<pre><code class="language-rant">[%ds-request: id; ...args]
+<pre><code class="language-ranty">[%ds-request: id; ...args]
 </code></pre>
 <p>Calls a registered data source by ID and prints its result.</p>
 <h2 id="ds-query-sources"><a class="header" href="#ds-query-sources">ds-query-sources</a></h2>
-<pre><code class="language-rant">[%ds-query-sources]
+<pre><code class="language-ranty">[%ds-query-sources]
 </code></pre>
 <p>Prints the list of currently registered data-source IDs.</p>
 <h2 id="proto"><a class="header" href="#proto">proto</a></h2>
-<pre><code class="language-rant">[%proto: map]
+<pre><code class="language-ranty">[%proto: map]
 </code></pre>
 <p>Prints the prototype map of <code>map</code>, or <code>nothing</code> if no prototype is set.</p>
 <p>Prototype maps are used only as lookup fallbacks for missing keys.
 They do not merge physically into the map, and they are not treated as bound objects.</p>
 <h3 id="example"><a class="header" href="#example">Example</a></h3>
-<pre><code class="language-rant">&lt;$obj = (::)&gt;
+<pre><code class="language-ranty">&lt;$obj = (::)&gt;
 &lt;$proto = (:: flavor = vanilla)&gt;
 [set-proto: &lt;obj&gt;; &lt;proto&gt;]
 
@@ -266,21 +266,21 @@ They do not merge physically into the map, and they are not treated as bound obj
 ##
 </code></pre>
 <h2 id="set-proto"><a class="header" href="#set-proto">set-proto</a></h2>
-<pre><code class="language-rant">[%set-proto: map; proto?]
+<pre><code class="language-ranty">[%set-proto: map; proto?]
 </code></pre>
 <p>Sets or clears the prototype map for <code>map</code>.</p>
 <p>Pass <code>&lt;&gt;</code> to clear the current prototype.</p>
 <p>Prototype assignment is validated eagerly.
-If a call to <code>[set-proto]</code> would create a cycle, Rant raises a runtime error instead of allowing the assignment.</p>
+If a call to <code>[set-proto]</code> would create a cycle, Ranty raises a runtime error instead of allowing the assignment.</p>
 <h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
-<pre><code class="language-rant"># Attach a prototype
+<pre><code class="language-ranty"># Attach a prototype
 &lt;$obj = (::)&gt;
 &lt;$proto = (:: flavor = vanilla)&gt;
 [set-proto: &lt;obj&gt;; &lt;proto&gt;]
 &lt;obj/flavor&gt;
 # -&gt; vanilla
 </code></pre>
-<pre><code class="language-rant"># Clear a prototype
+<pre><code class="language-ranty"># Clear a prototype
 &lt;$obj = (::)&gt;
 &lt;$proto = (:: flavor = vanilla)&gt;
 [set-proto: &lt;obj&gt;; &lt;proto&gt;]
@@ -288,14 +288,14 @@ If a call to <code>[set-proto]</code> would create a cycle, Rant raises a runtim
 &lt;obj/flavor ? missing&gt;
 # -&gt; missing
 </code></pre>
-<pre><code class="language-rant"># Cycles are rejected
+<pre><code class="language-ranty"># Cycles are rejected
 &lt;$a = (::)&gt;
 &lt;$b = (::)&gt;
 [set-proto: &lt;a&gt;; &lt;b&gt;]
 [set-proto: &lt;b&gt;; &lt;a&gt;] # runtime error
 </code></pre>
 <h2 id="error"><a class="header" href="#error">error</a></h2>
-<pre><code class="language-rant">[%error: message?]
+<pre><code class="language-ranty">[%error: message?]
 </code></pre>
 <p>Raises a <code>USER_ERROR</code> runtime failure with an optional message.</p>
 

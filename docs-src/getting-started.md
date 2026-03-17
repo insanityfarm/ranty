@@ -1,12 +1,14 @@
 # Getting Started
 
-Rant can be used through the CLI or embedded as a Rust library.
+Ranty can be used through the CLI or embedded as a Rust library.
 
 ## Install the CLI
 
 ```sh
-cargo install rant --version 4.0.0 --features cli
+cargo install ranty --version 1.0.0 --features cli
 ```
+
+Ranty source files and modules should normally use the `.ranty` file extension. For compatibility, legacy `.rant` files and modules are also supported.
 
 From a checkout, you can also run the CLI directly:
 
@@ -16,9 +18,9 @@ cargo run --features cli -- --help
 
 ## Your first program
 
-```rant example
+```ranty example
 [$greet:name] {
-  Hello, `<name>!
+  Hello, <name>!
 }
 
 [greet:world]
@@ -32,13 +34,13 @@ Hello, world!
 
 ```sh
 # Start the REPL
-rant
+ranty
 
 # Run inline code
-rant --eval '[rep:3][sep:\s]{beep}'
+ranty --eval '[rep:3][sep:\s]{beep}'
 
 # Run a file
-rant examples/helloworld.rant
+ranty examples/helloworld.ranty
 ```
 
 Execution priority is:
@@ -51,11 +53,11 @@ Execution priority is:
 ## Embed in Rust
 
 ```rust
-use rant::Rant;
+use ranty::Ranty;
 
-let mut rant = Rant::new();
-let program = rant.compile_quiet("Hello, world!")?;
-let output = rant.run(&program)?;
+let mut ranty = Ranty::new();
+let program = ranty.compile_quiet("Hello, world!")?;
+let output = ranty.run(&program)?;
 assert_eq!(output.to_string(), "Hello, world!");
 # Ok::<(), Box<dyn std::error::Error>>(())
 ```

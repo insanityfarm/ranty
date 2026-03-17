@@ -12,7 +12,7 @@ The `@sel` keyword reads or writes the active selector attribute for the next bl
 The assigned value may be a selector handle, a selector mode string such as `"forward"`, or `<>`
 to clear the selector.
 
-```rant example
+```ranty example
 @sel "forward": {a|b}
 ```
 

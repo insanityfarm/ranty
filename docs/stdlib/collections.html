@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Collections - Rant Reference</title>
+        <title>Collections - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -177,7 +177,7 @@
                     <main>
                         <h1 id="standard-library-collection-functions"><a class="header" href="#standard-library-collection-functions">Standard Library: Collection functions</a></h1>
 <h2 id="assoc"><a class="header" href="#assoc">assoc</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%assoc: keys; values]
 
 </code></pre>
@@ -192,7 +192,7 @@ The values to associate with the keys.</p>
 <h3 id="errors"><a class="header" href="#errors">Errors</a></h3>
 <p>Raises a runtime error if the lengths of <code>keys</code> and <code>values</code> do not match.</p>
 <h3 id="example"><a class="header" href="#example">Example</a></h3>
-<pre><code class="language-rant"># Generate a map of the "Big Five" personality traits
+<pre><code class="language-ranty"># Generate a map of the "Big Five" personality traits
 # with random rating values that add up to 50
 &lt;$personality = 
   [assoc:
@@ -221,7 +221,7 @@ The values to associate with the keys.</p>
 ##
 </code></pre>
 <h2 id="augment"><a class="header" href="#augment">augment</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%augment: dst-map; src-map]
 
 </code></pre>
@@ -233,7 +233,7 @@ The map to copy and augment.</p>
 <p><strong><code>src-map</code></strong> ← <code>map</code> <br/>
 The map containing the values to add to those in <code>dst-map</code>.</p>
 <h2 id="augment-self"><a class="header" href="#augment-self">augment-self</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%augment-self: dst-map; src-map]
 
 </code></pre>
@@ -244,7 +244,7 @@ The map to augment.</p>
 <p><strong><code>src-map</code></strong> ← <code>map</code> <br/>
 The map containing the values to add to those in <code>dst-map</code>.</p>
 <h2 id="augment-thru"><a class="header" href="#augment-thru">augment-thru</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%augment-self: dst-map; src-map]
 
 </code></pre>
@@ -256,7 +256,7 @@ The map to augment.</p>
 <p><strong><code>src-map</code></strong> ← <code>map</code> <br/>
 The map containing the values to add to those in <code>dst-map</code>.</p>
 <h2 id="chunks"><a class="header" href="#chunks">chunks</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%chunks: collection; count]
 
 </code></pre>
@@ -272,7 +272,7 @@ The number of chunks to produce.</p>
 <h3 id="errors-1"><a class="header" href="#errors-1">Errors</a></h3>
 <p>Raises a runtime error if <code>collection</code> cannot be sliced.</p>
 <h2 id="clear"><a class="header" href="#clear">clear</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%clear: collection]
 
 </code></pre>
@@ -283,19 +283,19 @@ The collection to clear.</p>
 <h3 id="errors-2"><a class="header" href="#errors-2">Errors</a></h3>
 <p>Causes a runtime error if <code>collection</code> is not a list or map.</p>
 <h2 id="fill-self"><a class="header" href="#fill-self">fill-self</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%fill-self: list; value]
 
 </code></pre>
 <p>Mutates <code>list</code> in place by replacing every element with <code>value</code>.</p>
 <h2 id="fill-thru"><a class="header" href="#fill-thru">fill-thru</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%fill-thru: list; value]
 
 </code></pre>
 <p>Mutates <code>list</code> in place and then prints the same list handle.</p>
 <h2 id="list"><a class="header" href="#list">list</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%list: values*]
 
 </code></pre>
@@ -305,7 +305,7 @@ The collection to clear.</p>
 <p><strong><code>values</code></strong> ← <code>any*</code> <br/>
 The values to store in the list.</p>
 <h2 id="tuple"><a class="header" href="#tuple">tuple</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%tuple: values*]
 
 </code></pre>
@@ -315,13 +315,13 @@ The values to store in the list.</p>
 <p><strong><code>values</code></strong> ← <code>any*</code> <br/>
 The values to store in the tuple.</p>
 <h2 id="nlist"><a class="header" href="#nlist">nlist</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%nlist: values*]
 
 </code></pre>
 <p>Prints a single-element list whose only value is the list constructed from <code>values</code>.</p>
 <h2 id="filter"><a class="header" href="#filter">filter</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%filter: list; predicate]
 
 </code></pre>
@@ -339,26 +339,26 @@ The current item to be checked.</p>
 </blockquote>
 <h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
 <h4 id="filter-a-list-of-numbers-by-only-those-divisible-by-3"><a class="header" href="#filter-a-list-of-numbers-by-only-those-divisible-by-3">Filter a list of numbers by only those divisible by 3</a></h4>
-<pre><code class="language-rant">&lt;$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12)&gt;
+<pre><code class="language-ranty">&lt;$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12)&gt;
 &lt;$multiples-of-three = [filter: &lt;numbers&gt;; [?:x] { [is-factor: &lt;x&gt;; 3] }]&gt;
 [join: &lt;multiples-of-three&gt;; ,\s]
 # -&gt; 3, 6, 9, 12
 </code></pre>
 <h4 id="filter-a-list-of-numbers-by-only-odd-numbers"><a class="header" href="#filter-a-list-of-numbers-by-only-odd-numbers">Filter a list of numbers by only odd numbers</a></h4>
-<pre><code class="language-rant">&lt;$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12)&gt;
+<pre><code class="language-ranty">&lt;$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12)&gt;
 # `is-odd` is a function, so we can simply pass it in as the predicate!
 &lt;$odd-numbers = [filter: &lt;numbers&gt;; &lt;is-odd&gt;]&gt;
 [join: &lt;odd-numbers&gt;; ,\s]
 # -&gt; 1, 3, 5, 7, 9, 11
 </code></pre>
 <h4 id="filter-a-list-of-words-to-only-those-that-are-3-letters-or-less"><a class="header" href="#filter-a-list-of-words-to-only-those-that-are-3-letters-or-less">Filter a list of words to only those that are 3 letters or less</a></h4>
-<pre><code class="language-rant">&lt;$words = [split: "the quick brown fox jumps over the lazy dog";\s]&gt;
+<pre><code class="language-ranty">&lt;$words = [split: "the quick brown fox jumps over the lazy dog";\s]&gt;
 &lt;$short-words = [filter: &lt;words&gt;; [?:word] { [le: [len: &lt;word&gt;]; 3] }]&gt;
 [join: &lt;short-words&gt;; ,\s]
 # -&gt; the fox the dog
 </code></pre>
 <h2 id="has"><a class="header" href="#has">has</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%has: collection; value]
 
 </code></pre>
@@ -373,7 +373,7 @@ The collection to search.</p>
 The value to search for. <br/>
 If <code>collection</code> is of type <code>map</code>, <code>value</code> will be coerced to a string before searching (as map keys can only be strings).</p>
 <h2 id="index-of"><a class="header" href="#index-of">index-of</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%index-of: list; value]
 
 </code></pre>
@@ -386,14 +386,14 @@ The list to search.</p>
 <p><strong><code>value</code></strong> ← <code>any</code> <br/>
 The value to search for.</p>
 <h3 id="examples-1"><a class="header" href="#examples-1">Examples</a></h3>
-<pre><code class="language-rant">&lt;$letters = (: A; A; B; C; C; D; E)&gt;
+<pre><code class="language-ranty">&lt;$letters = (: A; A; B; C; C; D; E)&gt;
 [index-of: &lt;letters&gt;; A |&gt; assert-eq: 0]
 [index-of: &lt;letters&gt;; C |&gt; assert-eq: 3]
 [index-of: &lt;letters&gt;; E |&gt; assert-eq: 6]
 [index-of: &lt;letters&gt;; F |&gt; assert-eq: &lt;&gt;]
 </code></pre>
 <h2 id="join"><a class="header" href="#join">join</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%join: list; separator?]
 
 </code></pre>
@@ -405,7 +405,7 @@ The list whose elements to print.</p>
 <p><strong><code>separator</code></strong> ← <code>any</code> <em>(optional)</em> <br/>
 The separator to print between each element.</p>
 <h2 id="last-index-of"><a class="header" href="#last-index-of">last-index-of</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%last-index-of: list; value]
 
 </code></pre>
@@ -418,14 +418,14 @@ The list to search.</p>
 <p><strong><code>value</code></strong> ← <code>any</code> <br/>
 The value to search for.</p>
 <h3 id="example-1"><a class="header" href="#example-1">Example</a></h3>
-<pre><code class="language-rant">&lt;$letters = (: A; A; B; C; C; D; E)&gt;
+<pre><code class="language-ranty">&lt;$letters = (: A; A; B; C; C; D; E)&gt;
 [last-index-of: &lt;letters&gt;; A |&gt; assert-eq: 1]
 [last-index-of: &lt;letters&gt;; C |&gt; assert-eq: 4]
 [last-index-of: &lt;letters&gt;; E |&gt; assert-eq: 6]
 [last-index-of: &lt;letters&gt;; F |&gt; assert-eq: &lt;&gt;]
 </code></pre>
 <h2 id="map"><a class="header" href="#map">map</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%map: list; map-func]
 
 </code></pre>
@@ -442,14 +442,14 @@ The function to map the values with.</p>
 The current item to map.</p>
 </blockquote>
 <h3 id="example-2"><a class="header" href="#example-2">Example</a></h3>
-<pre><code class="language-rant"># Multiple each element of a list by 10
+<pre><code class="language-ranty"># Multiple each element of a list by 10
 &lt;$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10)&gt;
 &lt;$tens = [map: &lt;numbers&gt;; [?:x] { [mul: &lt;x&gt;; 10] }]&gt;
 [join: ,\s; &lt;tens&gt;]
 # -&gt; 10, 20, 30, 40, 50, 60, 70, 80, 90, 100
 </code></pre>
 <h2 id="oxford-join"><a class="header" href="#oxford-join">oxford-join</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%oxford-join: comma; conj; comma-conj; list]
 
 </code></pre>
@@ -473,7 +473,7 @@ the <a href="https://en.wikipedia.org/wiki/Serial_comma">Oxford comma</a> or the
 </ul>
 <h3 id="examples-2"><a class="header" href="#examples-2">Examples</a></h3>
 <h4 id="print-lists-with-oxford-comma"><a class="header" href="#print-lists-with-oxford-comma">Print lists with Oxford comma</a></h4>
-<pre><code class="language-rant">&lt;$numbers = (:)&gt;
+<pre><code class="language-ranty">&lt;$numbers = (:)&gt;
 [rep: 5][sep: \n]
 {
   [push: &lt;numbers&gt;; [step]]
@@ -491,7 +491,7 @@ the <a href="https://en.wikipedia.org/wiki/Serial_comma">Oxford comma</a> or the
 ##
 </code></pre>
 <h4 id="print-lists-without-oxford-comma"><a class="header" href="#print-lists-without-oxford-comma">Print lists without Oxford comma</a></h4>
-<pre><code class="language-rant">&lt;$numbers = (:)&gt;
+<pre><code class="language-ranty">&lt;$numbers = (:)&gt;
 [rep: 5][sep: \n]
 {
   [push: &lt;numbers&gt;; [step]]
@@ -509,7 +509,7 @@ the <a href="https://en.wikipedia.org/wiki/Serial_comma">Oxford comma</a> or the
 ##
 </code></pre>
 <h2 id="push"><a class="header" href="#push">push</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%push: list; value]
 
 </code></pre>
@@ -520,7 +520,7 @@ The list to modify.</p>
 <p><strong><code>value</code></strong> ← <code>any</code> <br/>
 The value to add to the end of <code>list</code>.</p>
 <h2 id="pop"><a class="header" href="#pop">pop</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%pop: list]
 
 </code></pre>
@@ -530,7 +530,7 @@ The value to add to the end of <code>list</code>.</p>
 <p><strong><code>list</code></strong> ← <code>list</code> <br/>
 The list to modify.</p>
 <h2 id="insert"><a class="header" href="#insert">insert</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%insert: collection; value; pos]
 
 </code></pre>
@@ -548,7 +548,7 @@ For lists, this is the index; for maps, this is the key.</p>
 <h3 id="errors-3"><a class="header" href="#errors-3">Errors</a></h3>
 <p>Raises an error if <code>pos</code> is out of range or not the correct type for the provided collection.</p>
 <h2 id="remove"><a class="header" href="#remove">remove</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%remove: collection; pos]
 
 </code></pre>
@@ -563,7 +563,7 @@ The location of the value to remove. Must be of type <code>int</code> for lists.
 <h3 id="errors-4"><a class="header" href="#errors-4">Errors</a></h3>
 <p>Raises an error if <code>pos</code> is an unsupported type for the provided collection.</p>
 <h2 id="rev"><a class="header" href="#rev">rev</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%rev: collection]
 
 </code></pre>
@@ -573,11 +573,11 @@ The location of the value to remove. Must be of type <code>int</code> for lists.
 <p><strong><code>collection</code></strong> ← <code>list | string | block | range</code> <br/>
 The collection to reverse.</p>
 <h3 id="example-3"><a class="header" href="#example-3">Example</a></h3>
-<pre><code class="language-rant">[rev: (foo; bar)]
+<pre><code class="language-ranty">[rev: (foo; bar)]
 # -&gt; (bar; foo)
 </code></pre>
 <h2 id="shuffle"><a class="header" href="#shuffle">shuffle</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%shuffle: list]
 
 </code></pre>
@@ -587,14 +587,14 @@ The collection to reverse.</p>
 <p><strong><code>list</code></strong> ← <code>list</code> <br/>
 The input list.</p>
 <h3 id="example-4"><a class="header" href="#example-4">Example</a></h3>
-<pre><code class="language-rant"># Shuffle the words in a string
+<pre><code class="language-ranty"># Shuffle the words in a string
 &lt;$message = "the quick brown fox jumps over he lazy dog"&gt;
 [join: \s; [shuffle: [split: &lt;message&gt;; \s]]]
 
 # ~&gt; jumps fox quick dog lazy the brown the over
 </code></pre>
 <h2 id="shuffle-self"><a class="header" href="#shuffle-self">shuffle-self</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%shuffle-self: list]
 
 </code></pre>
@@ -607,7 +607,7 @@ The input list.</p>
 <p><strong>Time complexity</strong><br/>\(O(n)\)<br/></p>
 <p><strong>RNG complexity</strong><br/>\(n - 1\)<br/></p>
 <h3 id="example-5"><a class="header" href="#example-5">Example</a></h3>
-<pre><code class="language-rant"># Shuffles a list of letters and concatenates them into a single string
+<pre><code class="language-ranty"># Shuffles a list of letters and concatenates them into a single string
 &lt;$letters = (:A;B;C;D;E;F;G;H;I;J;K;L)&gt;
 [shuffle-self: &lt;letters&gt;]
 [join: &lt;letters&gt;]
@@ -615,7 +615,7 @@ The input list.</p>
 # ~&gt; GKIBCHLEJADF
 </code></pre>
 <h2 id="shuffle-thru"><a class="header" href="#shuffle-thru">shuffle-thru</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%shuffle-thru: list]
 
 </code></pre>
@@ -629,7 +629,7 @@ The input list.</p>
 <p><strong>Time complexity</strong><br/>\(O(n)\)<br/></p>
 <p><strong>RNG complexity</strong><br/>\(n - 1\)<br/></p>
 <h2 id="sift"><a class="header" href="#sift">sift</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%sift: list; target-size]
 
 </code></pre>
@@ -642,7 +642,7 @@ The input list.</p>
 <p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
 The maximum number of elements to reduce the <code>list</code> to.</p>
 <h3 id="example-6"><a class="header" href="#example-6">Example</a></h3>
-<pre><code class="language-rant"># Create a random subset of abilities for a character
+<pre><code class="language-ranty"># Create a random subset of abilities for a character
 
 &lt;$char-traits = (:
   berserk;    xray-vision;  speaks-to-bees; 
@@ -661,7 +661,7 @@ The maximum number of elements to reduce the <code>list</code> to.</p>
 # ~&gt; Foo Bar: speaks-to-bees, many-legs
 </code></pre>
 <h2 id="sift-self"><a class="header" href="#sift-self">sift-self</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%sift-self: list; target-size]
 
 </code></pre>
@@ -673,7 +673,7 @@ The input list.</p>
 <p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
 The maximum number of elements to reduce the <code>list</code> to.</p>
 <h3 id="example-7"><a class="header" href="#example-7">Example</a></h3>
-<pre><code class="language-rant"># Remove a random element from a list and print the contents at each iteration
+<pre><code class="language-ranty"># Remove a random element from a list and print the contents at each iteration
 &lt;$list = [split: "Sphinx of black quartz, judge my vow."; \s]&gt;
 [rep: [len: &lt;list&gt;]]
 [sep: \n]
@@ -697,7 +697,7 @@ The maximum number of elements to reduce the <code>list</code> to.</p>
 ##
 </code></pre>
 <h2 id="sift-thru"><a class="header" href="#sift-thru">sift-thru</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%sift-thru: list; target-size]
 
 </code></pre>
@@ -711,7 +711,7 @@ The input list.</p>
 <p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
 The maximum number of elements to reduce the <code>list</code> to.</p>
 <h2 id="squish"><a class="header" href="#squish">squish</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%squish: list; target-size]
 
 </code></pre>
@@ -724,7 +724,7 @@ The input list.</p>
 <p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
 The maximum number of elements to reduce the list copy to.</p>
 <h2 id="squish-self"><a class="header" href="#squish-self">squish-self</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%squish-self: list; target-size]
 
 </code></pre>
@@ -736,7 +736,7 @@ The input list.</p>
 <p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
 The maximum number of elements to reduce the list to.</p>
 <h3 id="example-8"><a class="header" href="#example-8">Example</a></h3>
-<pre><code class="language-rant"># Merge random items in a number list
+<pre><code class="language-ranty"># Merge random items in a number list
 &lt;$numbers = (: 100; 100; 100; 100; 100; 100; 100; 100; 100; 100)&gt;
 
 # Print the original list
@@ -756,7 +756,7 @@ After: `[join: ,\s; &lt;numbers&gt;]\n
 ##
 </code></pre>
 <h2 id="squish-thru"><a class="header" href="#squish-thru">squish-thru</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%squish-thru: list; target-size]
 
 </code></pre>
@@ -769,7 +769,7 @@ The input list.</p>
 <p><strong><code>target-size</code></strong> ← <code>int</code> <br/>
 The maximum number of elements to reduce the list to.</p>
 <h2 id="sort"><a class="header" href="#sort">sort</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%sort: list]
 
 </code></pre>
@@ -779,7 +779,7 @@ The maximum number of elements to reduce the list to.</p>
 <p><strong><code>list</code></strong> ← <code>list</code> <br/>
 The input list.</p>
 <h2 id="sort-self"><a class="header" href="#sort-self">sort-self</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%sort-self: list]
 
 </code></pre>
@@ -788,7 +788,7 @@ The input list.</p>
 <p><strong><code>list</code></strong> ← <code>list</code> <br/>
 The input list.</p>
 <h2 id="sort-thru"><a class="header" href="#sort-thru">sort-thru</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%sort-thru: list]
 
 </code></pre>
@@ -798,14 +798,14 @@ The input list.</p>
 <p><strong><code>list</code></strong> ← <code>list</code> <br/>
 The input list.</p>
 <h2 id="sum"><a class="header" href="#sum">sum</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%sum: list]
 
 </code></pre>
 <p>→ <code>any</code></p>
 <p>Adds the elements of a list together from left to right and prints the result.</p>
 <h2 id="take"><a class="header" href="#take">take</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%take: collection; pos]
 
 </code></pre>
@@ -820,7 +820,7 @@ If <code>collection</code> is a <code>list</code>, this argument must be an <cod
 <h3 id="errors-5"><a class="header" href="#errors-5">Errors</a></h3>
 <p>Raises an error if <code>pos</code> is not a valid location in the collection.</p>
 <h2 id="translate"><a class="header" href="#translate">translate</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%translate: list; map]
 
 </code></pre>
@@ -834,7 +834,7 @@ The input list.</p>
 <p><strong><code>map</code></strong> ← <code>map</code> <br/>
 A map associating items in <code>list</code> with their replacements.</p>
 <h3 id="example-9"><a class="header" href="#example-9">Example</a></h3>
-<pre><code class="language-rant"># Constructs a substitution cipher function
+<pre><code class="language-ranty"># Constructs a substitution cipher function
 [$make-cipher: alphabet] {
   &lt;
     $letters = [split: &lt;alphabet&gt;];
@@ -873,7 +873,7 @@ Decoded: \"&lt;decoded-message&gt;\"\n
 ##
 </code></pre>
 <h2 id="keys"><a class="header" href="#keys">keys</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%keys: map]
 
 </code></pre>
@@ -881,7 +881,7 @@ Decoded: \"&lt;decoded-message&gt;\"\n
 <p>This function lists only keys physically stored in <code>map</code>.
 Inherited prototype keys are not included.</p>
 <h2 id="values"><a class="header" href="#values">values</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%values: map]
 
 </code></pre>
@@ -889,7 +889,7 @@ Inherited prototype keys are not included.</p>
 <p>This function lists only values physically stored in <code>map</code>.
 Inherited prototype values are not included.</p>
 <h2 id="zip"><a class="header" href="#zip">zip</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%zip: list-a; list-b; zip-func]
 
 </code></pre>
@@ -911,7 +911,7 @@ The current value from <code>list-a</code>.</p>
 The current value from <code>list-b</code>.</p>
 </blockquote>
 <h3 id="examples-3"><a class="header" href="#examples-3">Examples</a></h3>
-<pre><code class="language-rant"># Dot product
+<pre><code class="language-ranty"># Dot product
 [$dot: a; b] {
   [zip: &lt;a&gt;; &lt;b&gt;; &lt;mul&gt; |&gt; sum]
 }

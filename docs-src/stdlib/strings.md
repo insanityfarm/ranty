@@ -2,7 +2,7 @@
 
 ## char
 
-```rant
+```ranty
 
 [%char: code]
 
@@ -20,7 +20,7 @@ The Unicode code point representing the character to print.
 
 ## lines
 
-```rant
+```ranty
 
 [%lines: str]
 
@@ -36,7 +36,7 @@ The input string.
 
 ## indent
 
-```rant
+```ranty
 
 [%indent: text; indent]
 
@@ -47,7 +47,7 @@ Prefixes every line in `text` with the string `indent`.
 
 ## lower
 
-```rant
+```ranty
 
 [%lower: str]
 
@@ -63,7 +63,7 @@ The input string.
 
 ## string-replace
 
-```rant
+```ranty
 
 [%string-replace: input; query; replacement]
 
@@ -73,7 +73,7 @@ Prints `input` with every occurrence of `query` replaced by `replacement`.
 
 ## ord
 
-```rant
+```ranty
 
 [%ord: ch]
 
@@ -90,7 +90,7 @@ The input string that provides the character. This can be any length; the functi
 
 ### Example
 
-```rant
+```ranty
 [ord: \s]
 # -> 32
 ```
@@ -98,7 +98,7 @@ The input string that provides the character. This can be any length; the functi
 
 ## ord-all
 
-```rant
+```ranty
 
 [%ord-all: str]
 
@@ -114,7 +114,7 @@ The input string.
 
 ### Example
 
-```rant
+```ranty
 # Prints a list of hex values of each code point from the input string
 [%as-unicode-hex: str] {
   [cat: **[ord-all: <str>] 
@@ -130,7 +130,7 @@ The input string.
 
 ## split
 
-```rant
+```ranty
 
 [%split: str; sep?]
 
@@ -150,7 +150,7 @@ The delimiter to split on. If omitted, the string will be split into individual 
 
 ## seg
 
-```rant
+```ranty
 
 [%seg: str; size]
 
@@ -169,7 +169,7 @@ The size of the segments to produce.
 
 ## trim
 
-```rant
+```ranty
 
 [%trim: str]
 
@@ -180,7 +180,7 @@ Prints `str` with leading and trailing whitespace removed.
 
 ## upper
 
-```rant
+```ranty
 
 [%upper: str]
 

@@ -1,6 +1,6 @@
 # CLI / REPL
 
-The `rant` CLI runs inline code, files, or piped stdin. When no source is provided and stdin is a TTY, it starts the interactive REPL.
+The `ranty` CLI runs inline code, files, or piped stdin. When no source is provided and stdin is a TTY, it starts the interactive REPL. Direct file execution accepts both `.ranty` and `.rant` source files.
 
 ## Execution order
 
@@ -36,7 +36,7 @@ The REPL keeps top-level definitions between lines and suppresses noisy unused-v
 ## Examples
 
 ```sh
-rant --seed deadbeef --eval '[rand:1;6]'
-rant examples/hello.rant
-printf '"from stdin"' | rant
+ranty --seed deadbeef --eval '[rand:1;6]'
+ranty examples/helloworld.ranty
+printf '"from stdin"' | ranty
 ```

@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Modules - Rant Reference</title>
+        <title>Modules - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -176,10 +176,11 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="modules"><a class="header" href="#modules">Modules</a></h1>
-<p>Rant modules are ordinary <code>.rant</code> files whose top-level result becomes the imported module value. In typical use a module returns a map of functions and values.</p>
+<p>Ranty modules are <code>.ranty</code> files whose top-level result becomes the imported module value. In typical use a module returns a map of functions and values.</p>
+<p>For compatibility with Rant 4, legacy <code>.rant</code> modules are also supported.</p>
 <h2 id="writing-modules"><a class="header" href="#writing-modules">Writing modules</a></h2>
 <p>A module is just a program that returns a value, usually a map:</p>
-<pre><code class="language-rant"># seq.rant
+<pre><code class="language-ranty"># seq.ranty
 
 &lt;%module = (::)&gt;
 
@@ -191,23 +192,23 @@
 </code></pre>
 <h2 id="importing-modules"><a class="header" href="#importing-modules">Importing modules</a></h2>
 <p>Use <code>@require</code> to load a module and bind it by filename:</p>
-<pre><code class="language-rant">@require "seq"
+<pre><code class="language-ranty">@require "seq"
 
 [seq/fib: 16]
 </code></pre>
-<p>The default resolver appends <code>.rant</code> automatically and normalizes relative paths before loading.</p>
+<p>The default resolver prefers <code>.ranty</code> when no extension is supplied, falls back to <code>.rant</code>, preserves explicit <code>.ranty</code> and <code>.rant</code> paths, and normalizes relative paths before loading.</p>
 <h2 id="search-order"><a class="header" href="#search-order">Search order</a></h2>
 <p>When you use <code>@require</code>, the default resolver checks the following locations in order:</p>
 <ol>
 <li>the importing program's directory, if the caller came from a file-backed program,</li>
 <li>the resolver's local modules path, or the host working directory when no local path is configured,</li>
-<li>the global modules path from <code>RANT_MODULES_PATH</code> when global modules are enabled.</li>
+<li>the global modules path from <code>RANTY_MODULES_PATH</code> when global modules are enabled.</li>
 </ol>
 <h2 id="caching"><a class="header" href="#caching">Caching</a></h2>
-<p>Modules are cached per <code>Rant</code> context. Requiring the same module again returns the cached value instead of recompiling or re-running the module body.</p>
+<p>Modules are cached per <code>Ranty</code> context. Requiring the same module again returns the cached value instead of recompiling or re-running the module body.</p>
 <h2 id="relative-paths"><a class="header" href="#relative-paths">Relative paths</a></h2>
 <p>Relative paths are resolved relative to the active search roots:</p>
-<pre><code class="language-rant">@require "rant_modules/my-module"
+<pre><code class="language-ranty">@require "modules/my-module"
 </code></pre>
 <h2 id="failures"><a class="header" href="#failures">Failures</a></h2>
 <ul>

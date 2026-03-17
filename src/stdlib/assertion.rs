@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn assert(vm: &mut VM, (condition, message): (bool, Option<String>)) -> RantStdResult {
+pub fn assert(vm: &mut VM, (condition, message): (bool, Option<String>)) -> RantyStdResult {
     if !condition {
         runtime_error!(
             RuntimeErrorType::AssertError,
@@ -13,7 +13,7 @@ pub fn assert(vm: &mut VM, (condition, message): (bool, Option<String>)) -> Rant
     Ok(())
 }
 
-pub fn assert_not(vm: &mut VM, (condition, message): (bool, Option<String>)) -> RantStdResult {
+pub fn assert_not(vm: &mut VM, (condition, message): (bool, Option<String>)) -> RantyStdResult {
     if condition {
         runtime_error!(
             RuntimeErrorType::AssertError,
@@ -28,8 +28,8 @@ pub fn assert_not(vm: &mut VM, (condition, message): (bool, Option<String>)) -> 
 
 pub fn assert_eq(
     vm: &mut VM,
-    (actual, expected, message): (RantValue, RantValue, Option<String>),
-) -> RantStdResult {
+    (actual, expected, message): (RantyValue, RantyValue, Option<String>),
+) -> RantyStdResult {
     if expected != actual {
         runtime_error!(
             RuntimeErrorType::AssertError,
@@ -42,8 +42,8 @@ pub fn assert_eq(
 
 pub fn assert_neq(
     vm: &mut VM,
-    (actual, unexpected, message): (RantValue, RantValue, Option<String>),
-) -> RantStdResult {
+    (actual, unexpected, message): (RantyValue, RantyValue, Option<String>),
+) -> RantyStdResult {
     if unexpected == actual {
         runtime_error!(
             RuntimeErrorType::AssertError,

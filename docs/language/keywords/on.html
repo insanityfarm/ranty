@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>@on - Rant Reference</title>
+        <title>@on - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -191,7 +191,7 @@ helper.</p>
 <code>@on</code> expressions are evaluated once when the block is prepared, not once per iteration.</p>
 <p>Each block element may use at most one <code>@on</code> and one <code>@weight</code>. When both are present, they can
 appear in either order after any optional <code>@edit</code> prefix.</p>
-<pre><code class="language-rant example">[match: foo]{yes @on foo|no @on bar|fallback}
+<pre><code class="language-ranty example">[match: foo]{yes @on foo|no @on bar|fallback}
 </code></pre>
 <pre><code class="language-text expected">yes
 </code></pre>

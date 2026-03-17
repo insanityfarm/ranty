@@ -9,7 +9,7 @@ More generally, it expands `a OP= b` into `a = a OP b`, where `OP` is any suppor
 All binary arithmetic and logic operators support **compound assignment** using a second set of operators.
 Simply suffix the operation with `=` like the following:
 
-```rant
+```ranty
 <$a = 10>
 
 <a *= 10> # desugars into: <a = <a> * 10>

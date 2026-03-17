@@ -9,16 +9,16 @@ use compiler::Severity;
 use ctrlc;
 use exitcode::{self, ExitCode};
 use rand::Rng;
-use rant::compiler::{CompilerMessage, Problem, Reporter};
-use rant::runtime::VM;
-use rant::*;
+use ranty::compiler::{CompilerMessage, Problem, Reporter};
+use ranty::runtime::VM;
+use ranty::*;
 use std::io::{self, Read, Write};
 use std::ops::Deref;
 use std::process;
 use std::sync::mpsc;
 use std::{path::Path, time::Instant};
 
-struct RantCliOptions {
+struct RantyCliOptions {
     no_debug: bool,
     no_warn: bool,
     bench_mode: bool,
@@ -48,9 +48,9 @@ macro_rules! log_error {
 fn main() {
     let version_long = format!("{} [{}]", BUILD_VERSION, embedded_triple::get());
 
-    let arg_matches = App::new("Rant CLI")
+    let arg_matches = App::new("Ranty CLI")
     .version(BUILD_VERSION)
-    .about("Command-line interface for Rant 4.0")
+    .about("Command-line interface for Ranty")
     .long_version(version_long.as_str())
     .arg(Arg::with_name("seed")
       .help("Specifies the initial 64-bit hex seed (1 to 16 hex digits, optional 0x prefix)")
@@ -80,7 +80,7 @@ fn main() {
       .long("no-debug")
     )
     .arg(Arg::with_name("FILE")
-      .help("Runs a Rant file if --eval is not used")
+      .help("Runs a Ranty file if --eval is not used")
       .index(1)
     )
     .get_matches();
@@ -109,7 +109,7 @@ fn main() {
         None => None,
     };
 
-    let opts = RantCliOptions {
+    let opts = RantyCliOptions {
         bench_mode: arg_matches.is_present("bench-mode"),
         no_debug: arg_matches.is_present("no-debug"),
         no_warn: arg_matches.is_present("no-warnings"),
@@ -120,19 +120,19 @@ fn main() {
     let in_file = arg_matches.value_of("FILE");
     let stdin_is_tty = atty::is(Stream::Stdin);
 
-    let mut rant = Rant::with_options(RantOptions {
+    let mut ranty = Ranty::with_options(RantyOptions {
         use_stdlib: true,
         debug_mode: !opts.no_debug,
         top_level_defs_are_globals: false,
         seed: opts.seed.unwrap_or_else(|| rand::thread_rng().gen()),
     });
 
-    register_cli_globals(&mut rant);
+    register_cli_globals(&mut ranty);
 
     match select_launch_mode(in_str, in_file, stdin_is_tty) {
         LaunchMode::Eval => {
-            let code = run_rant(
-                &mut rant,
+            let code = run_ranty(
+                &mut ranty,
                 ProgramSource::Inline(in_str.unwrap().to_owned()),
                 &opts,
                 false,
@@ -145,8 +145,8 @@ fn main() {
                 log_error!("file not found: {}", path);
                 process::exit(exitcode::NOINPUT);
             }
-            let code = run_rant(
-                &mut rant,
+            let code = run_ranty(
+                &mut ranty,
                 ProgramSource::FilePath(path.to_owned()),
                 &opts,
                 false,
@@ -160,13 +160,13 @@ fn main() {
                 process::exit(exitcode::SOFTWARE);
             }
             let source = String::from_utf8_lossy(&buf).into_owned();
-            let code = run_rant(&mut rant, ProgramSource::Stdin(source), &opts, false);
+            let code = run_ranty(&mut ranty, ProgramSource::Stdin(source), &opts, false);
             process::exit(code);
         }
         LaunchMode::Repl => {}
     }
 
-    repl(&mut rant, &opts);
+    repl(&mut ranty, &opts);
 }
 
 fn parse_seed_arg(raw: &str) -> Result<u64, String> {
@@ -203,15 +203,10 @@ fn select_launch_mode(eval: Option<&str>, file: Option<&str>, stdin_is_tty: bool
     }
 }
 
-fn repl(rant: &mut Rant, opts: &RantCliOptions) {
+fn repl(ranty: &mut Ranty, opts: &RantyCliOptions) {
     println!(
         "{}",
-        format!(
-            "Rant {} (build {})",
-            rant::RANT_LANG_VERSION,
-            rant::BUILD_VERSION
-        )
-        .white()
+        format!("Ranty {}", ranty::BUILD_VERSION).white()
     );
     println!(
         "{}",
@@ -232,8 +227,8 @@ fn repl(rant: &mut Rant, opts: &RantCliOptions) {
 
         match io::stdin().read_line(&mut input) {
             Ok(_) => {
-                run_rant(
-                    rant,
+                run_ranty(
+                    ranty,
                     ProgramSource::Stdin(input.trim_end_matches(&['\r', '\n']).to_owned()),
                     opts,
                     true,
@@ -280,11 +275,11 @@ impl Deref for CliReporter {
     }
 }
 
-fn register_cli_globals(rant: &mut Rant) {
+fn register_cli_globals(ranty: &mut Ranty) {
     // Add [credits] function
-    rant.set_global_const(
+    ranty.set_global_const(
         "credits",
-        RantValue::from_func(|vm: &mut VM, _: ()| {
+        RantyValue::from_func(|vm: &mut VM, _: ()| {
             vm.cur_frame_mut().render_and_reset_output();
             vm.cur_frame_mut().write(include_str!("./_credits.txt"));
             Ok(())
@@ -292,9 +287,9 @@ fn register_cli_globals(rant: &mut Rant) {
     );
 
     // Add [copyright] function
-    rant.set_global_const(
+    ranty.set_global_const(
         "copyright",
-        RantValue::from_func(|vm: &mut VM, _: ()| {
+        RantyValue::from_func(|vm: &mut VM, _: ()| {
             vm.cur_frame_mut().render_and_reset_output();
             vm.cur_frame_mut().write(include_str!("./_copyright.txt"));
             Ok(())
@@ -302,10 +297,10 @@ fn register_cli_globals(rant: &mut Rant) {
     );
 }
 
-fn run_rant(
-    ctx: &mut Rant,
+fn run_ranty(
+    ctx: &mut Ranty,
     source: ProgramSource,
-    opts: &RantCliOptions,
+    opts: &RantyCliOptions,
     is_repl: bool,
 ) -> ExitCode {
     ctx.options_mut().top_level_defs_are_globals = is_repl;
@@ -450,11 +445,11 @@ mod tests {
     #[test]
     fn launch_mode_precedence_is_eval_then_file_then_stdin_then_repl() {
         assert_eq!(
-            select_launch_mode(Some("print"), Some("script.rant"), false),
+            select_launch_mode(Some("print"), Some("script.ranty"), false),
             LaunchMode::Eval
         );
         assert_eq!(
-            select_launch_mode(None, Some("script.rant"), false),
+            select_launch_mode(None, Some("script.ranty"), false),
             LaunchMode::File
         );
         assert_eq!(select_launch_mode(None, None, false), LaunchMode::Stdin);

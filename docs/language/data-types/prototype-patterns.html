@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Prototype Patterns - Rant Reference</title>
+        <title>Prototype Patterns - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -180,7 +180,7 @@
 <p>If you have not read the core semantics yet, start with <a href="./map-prototypes.html">Map Prototypes</a>.</p>
 <h2 id="shared-defaults"><a class="header" href="#shared-defaults">Shared defaults</a></h2>
 <p>One of the simplest uses for prototypes is shared default data.</p>
-<pre><code class="language-rant">&lt;$default-npc = (::
+<pre><code class="language-ranty">&lt;$default-npc = (::
   role = villager;
   mood = calm;
   hp = 10;
@@ -205,7 +205,7 @@
 <p>This keeps common fields in one place while still allowing each object to override specific values.</p>
 <h2 id="behavior-mixins"><a class="header" href="#behavior-mixins">Behavior mixins</a></h2>
 <p>A prototype can also serve as a behavior bundle:</p>
-<pre><code class="language-rant">&lt;$describable = (::
+<pre><code class="language-ranty">&lt;$describable = (::
   describe = [?: obj] {
     &lt;obj/name&gt; the &lt;obj/species&gt;
   };
@@ -217,11 +217,11 @@
 [pet/describe: &lt;pet&gt;]
 # -&gt; Poppy the cat
 </code></pre>
-<p>Because Rant does not inject a receiver automatically, the pattern is to pass the object explicitly.</p>
+<p>Because Ranty does not inject a receiver automatically, the pattern is to pass the object explicitly.</p>
 <h2 id="object-factories"><a class="header" href="#object-factories">Object factories</a></h2>
 <p>Factories pair naturally with prototypes.
 The factory creates a fresh map, then attaches the shared prototype:</p>
-<pre><code class="language-rant">&lt;$counter-proto = (::
+<pre><code class="language-ranty">&lt;$counter-proto = (::
   inc = [?: counter] {
     &lt;counter/value = [add: &lt;counter/value&gt;; 1]&gt;
   };
@@ -250,7 +250,7 @@ The factory creates a fresh map, then attaches the shared prototype:</p>
 <h2 id="layered-specialization"><a class="header" href="#layered-specialization">Layered specialization</a></h2>
 <p>Instead of mutating a shared prototype, create a new prototype that inherits from the shared one.
 This lets you extend behavior safely for one family of objects without affecting the base layer.</p>
-<pre><code class="language-rant">&lt;$weapon = (::
+<pre><code class="language-ranty">&lt;$weapon = (::
   describe = [?: obj] { &lt;obj/name&gt; deals &lt;obj/damage&gt; damage. };
 )&gt;
 
@@ -274,7 +274,7 @@ This lets you extend behavior safely for one family of objects without affecting
 <h2 id="shared-prototype-updates"><a class="header" href="#shared-prototype-updates">Shared prototype updates</a></h2>
 <p>Remember that maps are by-reference values.
 If multiple objects point at the same prototype map, changing that prototype changes what all of them inherit:</p>
-<pre><code class="language-rant">&lt;$proto = (:: flavor = vanilla)&gt;
+<pre><code class="language-ranty">&lt;$proto = (:: flavor = vanilla)&gt;
 &lt;$a = (::)&gt;
 &lt;$b = (::)&gt;
 
@@ -290,7 +290,7 @@ If you want a safer extension point, prefer the layered specialization pattern a
 <h2 id="patterns-to-avoid"><a class="header" href="#patterns-to-avoid">Patterns to avoid</a></h2>
 <h3 id="expecting-enumeration-to-inherit"><a class="header" href="#expecting-enumeration-to-inherit">Expecting enumeration to inherit</a></h3>
 <p>Prototype lookup does not change <code>[keys]</code>, <code>[values]</code>, or <code>[has]</code>:</p>
-<pre><code class="language-rant">&lt;$obj = (:: own = 1)&gt;
+<pre><code class="language-ranty">&lt;$obj = (:: own = 1)&gt;
 &lt;$proto = (:: inherited = 2)&gt;
 [set-proto: &lt;obj&gt;; &lt;proto&gt;]
 
@@ -300,7 +300,7 @@ If you want a safer extension point, prefer the layered specialization pattern a
 <p>If you need a merged view of the whole chain, build it explicitly in your own code.</p>
 <h3 id="expecting-writes-to-update-shared-defaults"><a class="header" href="#expecting-writes-to-update-shared-defaults">Expecting writes to update shared defaults</a></h3>
 <p>Assigning to an inherited key writes locally:</p>
-<pre><code class="language-rant">&lt;$defaults = (:: mood = calm)&gt;
+<pre><code class="language-ranty">&lt;$defaults = (:: mood = calm)&gt;
 &lt;$npc = (::)&gt;
 [set-proto: &lt;npc&gt;; &lt;defaults&gt;]
 
@@ -311,12 +311,12 @@ If you want a safer extension point, prefer the layered specialization pattern a
 <p>If you actually want to update the shared default, write to the prototype map itself.</p>
 <h3 id="expecting-methods-to-know-the-caller-automatically"><a class="header" href="#expecting-methods-to-know-the-caller-automatically">Expecting methods to know the caller automatically</a></h3>
 <p>Prototype methods do not receive a hidden receiver:</p>
-<pre><code class="language-rant">&lt;$proto = (:: greet = [?: name] { Hello,\s&lt;name&gt;! })&gt;
-&lt;$obj = (:: name = Rant)&gt;
+<pre><code class="language-ranty">&lt;$proto = (:: greet = [?: name] { Hello,\s&lt;name&gt;! })&gt;
+&lt;$obj = (:: name = Ranty)&gt;
 [set-proto: &lt;obj&gt;; &lt;proto&gt;]
 
 [obj/greet: &lt;obj/name&gt;]
-# -&gt; Hello, Rant!
+# -&gt; Hello, Ranty!
 </code></pre>
 <p>When a method needs object state, pass the object explicitly.</p>
 

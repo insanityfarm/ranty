@@ -1,9 +1,9 @@
 # Data Types
 
-Rant has a dynamic type system, which means that variables also don't have to contain a specific type;
+Ranty has a dynamic type system, which means that variables also don't have to contain a specific type;
 for example, you can initialize a variable with an integer, and later change it to a string (and vice versa).
 
-Rant's type system supports the following data types:
+Ranty's type system supports the following data types:
 
 | Type name  | Description                                         | Pass type |
 |------------|-----------------------------------------------------|-----------|
@@ -25,7 +25,7 @@ Any number literal without a decimal place is known as an **integer literal**.
 
 An integer literal produces a value of type `int`.
 
-```rant
+```ranty
 [type: 123]  # int
 ```
 
@@ -35,13 +35,13 @@ Any number literal with a decimal place is known as a **real literal**.
 
 A real literal produces a value of type `float`.
 
-```rant
+```ranty
 [type: 123.0]  # float
 ```
 
 ## Collections
 
-Rant's variable system has five collection types: `list`, `tuple`, `map`, `string`, and `range`.
+Ranty's variable system has five collection types: `list`, `tuple`, `map`, `string`, and `range`.
 
 Some collections can be mutated (modified), while others are read-only. Some can be sliced but not spliced. 
 Below is a breakdown of which operations each collection type supports:
@@ -63,16 +63,16 @@ Below is a breakdown of which operations each collection type supports:
 
 ## Type inference for multi-part expressions
 
-At the end of an expression, Rant adds each printed value together from left to right into a single value that is printed to the caller.
+At the end of an expression, Ranty adds each printed value together from left to right into a single value that is printed to the caller.
 
-In order to resolve type ambiguities, Rant follows a few rules when concatenating various types:
+In order to resolve type ambiguities, Ranty follows a few rules when concatenating various types:
 
 
 ### Expressions with strings
 
 If an expression contains a string, fragment, or hinted element, the combined value from the left as well as every value on the right will be coerced to a string.
 
-```rant
+```ranty
 # Since there are fragments and whitespace, it's a string
 [type: 99 bottles of beer]  # string
 ```
@@ -81,7 +81,7 @@ If an expression contains a string, fragment, or hinted element, the combined va
 
 If the start of an expression is a series of numbers, they will be added together:
 
-```rant
+```ranty
 3
 0.14
 # -> 3.14
@@ -98,25 +98,25 @@ For any expression that only contains lists and/or tuples, the following rules a
 
 
 **Multiple lists in an expression**
-```rant
+```ranty
 (: 1; 2) (: 3; 4) 
 # -> (: 1; 2; 3; 4)
 ```
 
 **Multiple tuples in an expression**
-```rant
+```ranty
 (1; 2) (3; 4) 
 # -> (1; 2; 3; 4)
 ```
 
 **Mixed tuples and lists in an expression**
-```rant
+```ranty
 (1; 2) (: 3; 4) (5; 6) (: 7; 8)
 # -> (: 1; 2; 3; 4; 5; 6; 7; 8)
 ```
 
 **Joining lists with a repeater**
-```rant
+```ranty
 [rep:10] {
     (: [step])
 }
@@ -124,7 +124,7 @@ For any expression that only contains lists and/or tuples, the following rules a
 ```
 
 **Joining tuples with a repeater**
-```rant
+```ranty
 [rep:10] {
     ([step];)
 }
@@ -135,7 +135,7 @@ For any expression that only contains lists and/or tuples, the following rules a
 
 Printing nothing does nothing. Empty expressions return nothing.
 
-```rant
+```ranty
 [type:<><>]     # nothing
 [type:<>]       # nothing
 [type:]         # nothing

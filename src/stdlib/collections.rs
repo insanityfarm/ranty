@@ -3,30 +3,30 @@ use std::cmp::Ordering;
 use super::*;
 use crate::lang::Slice;
 
-pub fn list(vm: &mut VM, items: VarArgs<RantValue>) -> RantStdResult {
+pub fn list(vm: &mut VM, items: VarArgs<RantyValue>) -> RantyStdResult {
     vm.cur_frame_mut()
-        .write(items.iter().cloned().collect::<RantList>());
+        .write(items.iter().cloned().collect::<RantyList>());
     Ok(())
 }
 
-pub fn tuple(vm: &mut VM, items: VarArgs<RantValue>) -> RantStdResult {
+pub fn tuple(vm: &mut VM, items: VarArgs<RantyValue>) -> RantyStdResult {
     vm.cur_frame_mut()
-        .write(items.iter().cloned().collect::<RantTuple>());
+        .write(items.iter().cloned().collect::<RantyTuple>());
     Ok(())
 }
 
-pub fn nlist(vm: &mut VM, items: VarArgs<RantValue>) -> RantStdResult {
-    let list = RantValue::List(items.iter().cloned().collect::<RantList>().into_handle());
+pub fn nlist(vm: &mut VM, items: VarArgs<RantyValue>) -> RantyStdResult {
+    let list = RantyValue::List(items.iter().cloned().collect::<RantyList>().into_handle());
     vm.cur_frame_mut().write(vec![list]);
     Ok(())
 }
 
-pub fn rev(vm: &mut VM, val: RantValue) -> RantStdResult {
+pub fn rev(vm: &mut VM, val: RantyValue) -> RantyStdResult {
     vm.cur_frame_mut().write(val.reversed());
     Ok(())
 }
 
-pub fn squish_self(vm: &mut VM, (list, target_size): (RantListHandle, usize)) -> RantStdResult {
+pub fn squish_self(vm: &mut VM, (list, target_size): (RantyListHandle, usize)) -> RantyStdResult {
     let mut list = list.borrow_mut();
 
     if target_size == 0 {
@@ -53,16 +53,16 @@ pub fn squish_self(vm: &mut VM, (list, target_size): (RantListHandle, usize)) ->
     Ok(())
 }
 
-pub fn squish(vm: &mut VM, (list, target_size): (RantListHandle, usize)) -> RantStdResult {
+pub fn squish(vm: &mut VM, (list, target_size): (RantyListHandle, usize)) -> RantyStdResult {
     let list = list.cloned();
-    let list_ref_clone = RantListHandle::clone(&list);
+    let list_ref_clone = RantyListHandle::clone(&list);
     squish_self(vm, (list, target_size))?;
     vm.cur_frame_mut().write(list_ref_clone);
     Ok(())
 }
 
-pub fn squish_thru(vm: &mut VM, (list, target_size): (RantListHandle, usize)) -> RantStdResult {
-    let list_ref_clone = RantListHandle::clone(&list);
+pub fn squish_thru(vm: &mut VM, (list, target_size): (RantyListHandle, usize)) -> RantyStdResult {
+    let list_ref_clone = RantyListHandle::clone(&list);
     squish_self(vm, (list, target_size))?;
     vm.cur_frame_mut().write(list_ref_clone);
     Ok(())
@@ -70,8 +70,8 @@ pub fn squish_thru(vm: &mut VM, (list, target_size): (RantListHandle, usize)) ->
 
 pub fn filter(
     vm: &mut VM,
-    (list, predicate): (RantListHandle, RantFunctionHandle),
-) -> RantStdResult {
+    (list, predicate): (RantyListHandle, RantyFunctionHandle),
+) -> RantyStdResult {
     let list_ref = list.borrow();
     if list_ref.is_empty() {
         vm.cur_frame_mut().write(list_ref.clone());
@@ -80,17 +80,17 @@ pub fn filter(
 
     fn _iterate_filter(
         vm: &mut VM,
-        src: RantListHandle,
-        mut dest: RantList,
+        src: RantyListHandle,
+        mut dest: RantyList,
         index: usize,
-        predicate: RantFunctionHandle,
+        predicate: RantyFunctionHandle,
     ) -> RuntimeResult<()> {
         let src_ref = src.borrow();
 
         // Check predicate result from last iteration
         if index > 0 {
             match vm.pop_val()? {
-                RantValue::Boolean(passed) => {
+                RantyValue::Boolean(passed) => {
                     if passed {
                         dest.push(src_ref.get(index - 1).cloned().unwrap_or_default());
                     }
@@ -109,7 +109,7 @@ pub fn filter(
             return Ok(());
         }
 
-        let src_clone = RantListHandle::clone(&src);
+        let src_clone = RantyListHandle::clone(&src);
         let predicate_arg = src_ref.get(index).cloned().unwrap_or_default();
         let predicate_clone = Rc::clone(&predicate);
 
@@ -123,7 +123,7 @@ pub fn filter(
         });
 
         // Prepare predicate call for current iteration
-        vm.push_val(RantValue::Function(predicate_clone))?;
+        vm.push_val(RantyValue::Function(predicate_clone))?;
         vm.push_val(predicate_arg)?;
         vm.cur_frame_mut().push_intent(Intent::Call {
             argc: 1,
@@ -133,10 +133,10 @@ pub fn filter(
         Ok(())
     }
 
-    let list_clone = RantListHandle::clone(&list);
+    let list_clone = RantyListHandle::clone(&list);
     vm.cur_frame_mut().push_intent(Intent::RuntimeCall {
         function: Box::new(move |vm| {
-            _iterate_filter(vm, list_clone, RantList::new(), 0, predicate)
+            _iterate_filter(vm, list_clone, RantyList::new(), 0, predicate)
         }),
         interrupt: false,
     });
@@ -144,7 +144,7 @@ pub fn filter(
     Ok(())
 }
 
-pub fn map(vm: &mut VM, (list, map_func): (RantListHandle, RantFunctionHandle)) -> RantStdResult {
+pub fn map(vm: &mut VM, (list, map_func): (RantyListHandle, RantyFunctionHandle)) -> RantyStdResult {
     let is_list_empty = list.borrow().is_empty();
     if is_list_empty {
         vm.cur_frame_mut().write(list);
@@ -155,10 +155,10 @@ pub fn map(vm: &mut VM, (list, map_func): (RantListHandle, RantFunctionHandle)) 
 
     fn _iterate_map(
         vm: &mut VM,
-        src: RantListHandle,
-        mut dest: RantList,
+        src: RantyListHandle,
+        mut dest: RantyList,
         index: usize,
-        map_func: RantFunctionHandle,
+        map_func: RantyFunctionHandle,
     ) -> RuntimeResult<()> {
         let src_ref = src.borrow();
 
@@ -173,7 +173,7 @@ pub fn map(vm: &mut VM, (list, map_func): (RantListHandle, RantFunctionHandle)) 
             return Ok(());
         }
 
-        let src_clone = RantListHandle::clone(&src);
+        let src_clone = RantyListHandle::clone(&src);
         let map_func_arg = src_ref.get(index).cloned().unwrap_or_default();
         let map_func_clone = Rc::clone(&map_func);
 
@@ -187,7 +187,7 @@ pub fn map(vm: &mut VM, (list, map_func): (RantListHandle, RantFunctionHandle)) 
         });
 
         // Prepare predicate call for current iteration
-        vm.push_val(RantValue::Function(map_func_clone))?;
+        vm.push_val(RantyValue::Function(map_func_clone))?;
         vm.push_val(map_func_arg)?;
         vm.cur_frame_mut().push_intent(Intent::Call {
             argc: 1,
@@ -197,9 +197,9 @@ pub fn map(vm: &mut VM, (list, map_func): (RantListHandle, RantFunctionHandle)) 
         Ok(())
     }
 
-    let list_clone = RantListHandle::clone(&list);
+    let list_clone = RantyListHandle::clone(&list);
     vm.cur_frame_mut().push_intent(Intent::RuntimeCall {
-        function: Box::new(move |vm| _iterate_map(vm, list_clone, RantList::new(), 0, map_func)),
+        function: Box::new(move |vm| _iterate_map(vm, list_clone, RantyList::new(), 0, map_func)),
         interrupt: false,
     });
 
@@ -208,19 +208,19 @@ pub fn map(vm: &mut VM, (list, map_func): (RantListHandle, RantFunctionHandle)) 
 
 pub fn zip(
     vm: &mut VM,
-    (list_a, list_b, zip_func): (RantListHandle, RantListHandle, RantFunctionHandle),
-) -> RantStdResult {
+    (list_a, list_b, zip_func): (RantyListHandle, RantyListHandle, RantyFunctionHandle),
+) -> RantyStdResult {
     let (list_a_ref, list_b_ref) = (list_a.borrow(), list_b.borrow());
     let max_len = list_a_ref.len().max(list_b_ref.len());
 
     fn _iterate_zip(
         vm: &mut VM,
-        src_a: RantListHandle,
-        src_b: RantListHandle,
-        mut dest: RantList,
+        src_a: RantyListHandle,
+        src_b: RantyListHandle,
+        mut dest: RantyList,
         index: usize,
         max_len: usize,
-        zip_func: RantFunctionHandle,
+        zip_func: RantyFunctionHandle,
     ) -> RuntimeResult<()> {
         let (src_a_ref, src_b_ref) = (src_a.borrow(), src_b.borrow());
 
@@ -236,7 +236,7 @@ pub fn zip(
         }
 
         let (src_a_clone, src_b_clone) =
-            (RantListHandle::clone(&src_a), RantListHandle::clone(&src_b));
+            (RantyListHandle::clone(&src_a), RantyListHandle::clone(&src_b));
         let zip_func_clone = Rc::clone(&zip_func);
 
         // Prepare next iteration
@@ -256,7 +256,7 @@ pub fn zip(
         });
 
         // Prepare predicate call for current iteration
-        vm.push_val(RantValue::Function(zip_func))?;
+        vm.push_val(RantyValue::Function(zip_func))?;
         vm.push_val(src_b_ref.get(index).cloned().unwrap_or_default())?;
         vm.push_val(src_a_ref.get(index).cloned().unwrap_or_default())?;
         vm.cur_frame_mut().push_intent(Intent::Call {
@@ -268,8 +268,8 @@ pub fn zip(
     }
 
     let (list_a_clone, list_b_clone) = (
-        RantListHandle::clone(&list_a),
-        RantListHandle::clone(&list_b),
+        RantyListHandle::clone(&list_a),
+        RantyListHandle::clone(&list_b),
     );
     vm.cur_frame_mut().push_intent(Intent::RuntimeCall {
         function: Box::new(move |vm| {
@@ -277,7 +277,7 @@ pub fn zip(
                 vm,
                 list_a_clone,
                 list_b_clone,
-                RantList::new(),
+                RantyList::new(),
                 0,
                 max_len,
                 zip_func,
@@ -289,7 +289,7 @@ pub fn zip(
     Ok(())
 }
 
-pub fn join(vm: &mut VM, (list, sep): (Vec<RantValue>, Option<RantValue>)) -> RantStdResult {
+pub fn join(vm: &mut VM, (list, sep): (Vec<RantyValue>, Option<RantyValue>)) -> RantyStdResult {
     let mut is_first = true;
     let frame = vm.cur_frame_mut();
     for val in list {
@@ -306,8 +306,8 @@ pub fn join(vm: &mut VM, (list, sep): (Vec<RantValue>, Option<RantValue>)) -> Ra
 #[allow(clippy::needless_range_loop)]
 pub fn oxford_join(
     vm: &mut VM,
-    (comma, conj, comma_conj, list): (RantValue, RantValue, RantValue, Vec<RantValue>),
-) -> RantStdResult {
+    (comma, conj, comma_conj, list): (RantyValue, RantyValue, RantyValue, Vec<RantyValue>),
+) -> RantyStdResult {
     let frame = vm.cur_frame_mut();
     let n = list.len();
     for i in 0..n {
@@ -322,12 +322,12 @@ pub fn oxford_join(
     Ok(())
 }
 
-pub fn sum(vm: &mut VM, collection: RantOrderedCollection) -> RantStdResult {
+pub fn sum(vm: &mut VM, collection: RantyOrderedCollection) -> RantyStdResult {
     if collection.is_empty() {
         return Ok(());
     }
 
-    let mut sum = RantValue::Nothing;
+    let mut sum = RantyValue::Nothing;
 
     for i in 0..collection.len() {
         sum = sum + collection.index_get(i as i64).into_runtime_result()?;
@@ -338,7 +338,7 @@ pub fn sum(vm: &mut VM, collection: RantOrderedCollection) -> RantStdResult {
     Ok(())
 }
 
-pub fn shuffle_self(vm: &mut VM, list: RantListHandle) -> RantStdResult {
+pub fn shuffle_self(vm: &mut VM, list: RantyListHandle) -> RantyStdResult {
     let mut list = list.borrow_mut();
     if list.is_empty() {
         return Ok(());
@@ -352,25 +352,25 @@ pub fn shuffle_self(vm: &mut VM, list: RantListHandle) -> RantStdResult {
     Ok(())
 }
 
-pub fn shuffle_thru(vm: &mut VM, list: RantListHandle) -> RantStdResult {
-    let list_ref_clone = RantListHandle::clone(&list);
+pub fn shuffle_thru(vm: &mut VM, list: RantyListHandle) -> RantyStdResult {
+    let list_ref_clone = RantyListHandle::clone(&list);
     shuffle_self(vm, list)?;
     vm.cur_frame_mut().write(list_ref_clone);
     Ok(())
 }
 
-pub fn shuffle(vm: &mut VM, list: RantListHandle) -> RantStdResult {
+pub fn shuffle(vm: &mut VM, list: RantyListHandle) -> RantyStdResult {
     let list = list.cloned();
-    let list_ref_clone = RantListHandle::clone(&list);
+    let list_ref_clone = RantyListHandle::clone(&list);
     shuffle_self(vm, list)?;
     vm.cur_frame_mut().write(list_ref_clone);
     Ok(())
 }
 
-pub fn clear(vm: &mut VM, collection: RantValue) -> RantStdResult {
+pub fn clear(vm: &mut VM, collection: RantyValue) -> RantyStdResult {
     match collection {
-        RantValue::List(list) => list.borrow_mut().clear(),
-        RantValue::Map(map) => map.borrow_mut().clear(),
+        RantyValue::List(list) => list.borrow_mut().clear(),
+        RantyValue::Map(map) => map.borrow_mut().clear(),
         _ => {
             runtime_error!(
                 RuntimeErrorType::ArgumentError,
@@ -381,17 +381,17 @@ pub fn clear(vm: &mut VM, collection: RantValue) -> RantStdResult {
     Ok(())
 }
 
-pub fn keys(vm: &mut VM, map: RantMapHandle) -> RantStdResult {
+pub fn keys(vm: &mut VM, map: RantyMapHandle) -> RantyStdResult {
     vm.cur_frame_mut().write(map.borrow().raw_keys());
     Ok(())
 }
 
-pub fn values(vm: &mut VM, map: RantMapHandle) -> RantStdResult {
+pub fn values(vm: &mut VM, map: RantyMapHandle) -> RantyStdResult {
     vm.cur_frame_mut().write(map.borrow().raw_values());
     Ok(())
 }
 
-pub fn assoc(vm: &mut VM, (keys, values): (RantListHandle, RantListHandle)) -> RantStdResult {
+pub fn assoc(vm: &mut VM, (keys, values): (RantyListHandle, RantyListHandle)) -> RantyStdResult {
     let keys = keys.borrow();
     let values = values.borrow();
     if keys.len() != values.len() {
@@ -401,7 +401,7 @@ pub fn assoc(vm: &mut VM, (keys, values): (RantListHandle, RantListHandle)) -> R
         );
     }
 
-    let mut map = RantMap::new();
+    let mut map = RantyMap::new();
     for (key, val) in keys.iter().zip(values.iter()) {
         map.raw_set(key.to_string().as_ref(), val.clone());
     }
@@ -413,8 +413,8 @@ pub fn assoc(vm: &mut VM, (keys, values): (RantListHandle, RantListHandle)) -> R
 
 pub fn augment_self(
     vm: &mut VM,
-    (to_map, from_map): (RantMapHandle, RantMapHandle),
-) -> RantStdResult {
+    (to_map, from_map): (RantyMapHandle, RantyMapHandle),
+) -> RantyStdResult {
     for (key, val) in from_map.borrow().raw_pairs_internal() {
         let orig_val = to_map.borrow().get(key).map(|v| v.as_ref().clone());
         if let Some(orig_val) = orig_val {
@@ -429,27 +429,27 @@ pub fn augment_self(
 
 pub fn augment_thru(
     vm: &mut VM,
-    (to_map, from_map): (RantMapHandle, RantMapHandle),
-) -> RantStdResult {
-    let map_ref_clone = RantMapHandle::clone(&to_map);
+    (to_map, from_map): (RantyMapHandle, RantyMapHandle),
+) -> RantyStdResult {
+    let map_ref_clone = RantyMapHandle::clone(&to_map);
     augment_self(vm, (to_map, from_map))?;
     vm.cur_frame_mut().write(map_ref_clone);
     Ok(())
 }
 
-pub fn augment(vm: &mut VM, (to_map, from_map): (RantMapHandle, RantMapHandle)) -> RantStdResult {
+pub fn augment(vm: &mut VM, (to_map, from_map): (RantyMapHandle, RantyMapHandle)) -> RantyStdResult {
     let to_map = to_map.cloned();
-    let to_map_ref_clone = RantMapHandle::clone(&to_map);
+    let to_map_ref_clone = RantyMapHandle::clone(&to_map);
     augment_self(vm, (to_map_ref_clone, from_map))?;
     vm.cur_frame_mut().write(to_map);
     Ok(())
 }
 
-pub fn translate(vm: &mut VM, (list, map): (RantListHandle, RantMapHandle)) -> RantStdResult {
+pub fn translate(vm: &mut VM, (list, map): (RantyListHandle, RantyMapHandle)) -> RantyStdResult {
     let list = list.borrow();
     let map = map.borrow();
 
-    let translated: RantList = list
+    let translated: RantyList = list
         .iter()
         .map(|val| {
             map.raw_get(val.to_string().as_ref())
@@ -463,18 +463,18 @@ pub fn translate(vm: &mut VM, (list, map): (RantListHandle, RantMapHandle)) -> R
     Ok(())
 }
 
-pub fn push(vm: &mut VM, (list, value): (RantListHandle, RantValue)) -> RantStdResult {
+pub fn push(vm: &mut VM, (list, value): (RantyListHandle, RantyValue)) -> RantyStdResult {
     list.borrow_mut().push(value);
     Ok(())
 }
 
-pub fn pop(vm: &mut VM, list: RantListHandle) -> RantStdResult {
-    let value = list.borrow_mut().pop().unwrap_or(RantValue::Nothing);
+pub fn pop(vm: &mut VM, list: RantyListHandle) -> RantyStdResult {
+    let value = list.borrow_mut().pop().unwrap_or(RantyValue::Nothing);
     vm.cur_frame_mut().write(value);
     Ok(())
 }
 
-pub fn sift_self(vm: &mut VM, (list, size): (RantListHandle, usize)) -> RantStdResult {
+pub fn sift_self(vm: &mut VM, (list, size): (RantyListHandle, usize)) -> RantyStdResult {
     let mut list = list.borrow_mut();
     if list.len() <= size {
         return Ok(());
@@ -489,14 +489,14 @@ pub fn sift_self(vm: &mut VM, (list, size): (RantListHandle, usize)) -> RantStdR
     Ok(())
 }
 
-pub fn sift_thru(vm: &mut VM, (list, size): (RantListHandle, usize)) -> RantStdResult {
-    let list_ref_clone = RantListHandle::clone(&list);
+pub fn sift_thru(vm: &mut VM, (list, size): (RantyListHandle, usize)) -> RantyStdResult {
+    let list_ref_clone = RantyListHandle::clone(&list);
     sift_self(vm, (list, size))?;
     vm.cur_frame_mut().write(list_ref_clone);
     Ok(())
 }
 
-pub fn sift(vm: &mut VM, (list, size): (RantListHandle, usize)) -> RantStdResult {
+pub fn sift(vm: &mut VM, (list, size): (RantyListHandle, usize)) -> RantyStdResult {
     let mut list = list.borrow().clone();
 
     let rng = vm.rng();
@@ -512,11 +512,11 @@ pub fn sift(vm: &mut VM, (list, size): (RantListHandle, usize)) -> RantStdResult
 
 pub fn insert(
     vm: &mut VM,
-    (collection, value, pos): (RantValue, RantValue, RantValue),
-) -> RantStdResult {
+    (collection, value, pos): (RantyValue, RantyValue, RantyValue),
+) -> RantyStdResult {
     match (collection, pos) {
         // Insert into list by index
-        (RantValue::List(list), RantValue::Int(index)) => {
+        (RantyValue::List(list), RantyValue::Int(index)) => {
             let mut list = list.borrow_mut();
             // Bounds check
             if index < 0 || index as usize > list.len() {
@@ -529,7 +529,7 @@ pub fn insert(
             list.insert(index, value);
         }
         // Error on non-index list access
-        (RantValue::List(_), non_index) => {
+        (RantyValue::List(_), non_index) => {
             runtime_error!(
                 RuntimeErrorType::ArgumentError,
                 "cannot insert into list by '{}' index",
@@ -537,7 +537,7 @@ pub fn insert(
             );
         }
         // Insert into map by key
-        (RantValue::Map(map), key_val) => {
+        (RantyValue::Map(map), key_val) => {
             let mut map = map.borrow_mut();
             let key = key_val.to_string();
             map.raw_set(key.as_str(), value);
@@ -552,34 +552,34 @@ pub fn insert(
     Ok(())
 }
 
-pub fn index_of(vm: &mut VM, (list, value): (RantListHandle, RantValue)) -> RantStdResult {
+pub fn index_of(vm: &mut VM, (list, value): (RantyListHandle, RantyValue)) -> RantyStdResult {
     let index = list
         .borrow()
         .iter()
         .position(|v| v == &value)
-        .map(|i| RantValue::Int(i as i64))
-        .unwrap_or(RantValue::Nothing);
+        .map(|i| RantyValue::Int(i as i64))
+        .unwrap_or(RantyValue::Nothing);
 
     vm.cur_frame_mut().write(index);
     Ok(())
 }
 
-pub fn last_index_of(vm: &mut VM, (list, value): (RantListHandle, RantValue)) -> RantStdResult {
+pub fn last_index_of(vm: &mut VM, (list, value): (RantyListHandle, RantyValue)) -> RantyStdResult {
     let index = list
         .borrow()
         .iter()
         .rposition(|v| v == &value)
-        .map(|i| RantValue::Int(i as i64))
-        .unwrap_or(RantValue::Nothing);
+        .map(|i| RantyValue::Int(i as i64))
+        .unwrap_or(RantyValue::Nothing);
 
     vm.cur_frame_mut().write(index);
     Ok(())
 }
 
-pub fn remove(vm: &mut VM, (collection, pos): (RantValue, RantValue)) -> RantStdResult {
+pub fn remove(vm: &mut VM, (collection, pos): (RantyValue, RantyValue)) -> RantyStdResult {
     match (collection, pos) {
         // Remove from list by index
-        (RantValue::List(list), RantValue::Int(index)) => {
+        (RantyValue::List(list), RantyValue::Int(index)) => {
             let mut list = list.borrow_mut();
             // Bounds check
             if index < 0 || index as usize >= list.len() {
@@ -592,7 +592,7 @@ pub fn remove(vm: &mut VM, (collection, pos): (RantValue, RantValue)) -> RantStd
             list.remove(index);
         }
         // Error on non-index list access
-        (RantValue::List(_), non_index) => {
+        (RantyValue::List(_), non_index) => {
             runtime_error!(
                 RuntimeErrorType::ArgumentError,
                 "cannot remove from list by '{}' index",
@@ -600,7 +600,7 @@ pub fn remove(vm: &mut VM, (collection, pos): (RantValue, RantValue)) -> RantStd
             );
         }
         // Remove from into map by key
-        (RantValue::Map(map), key_val) => {
+        (RantyValue::Map(map), key_val) => {
             let mut map = map.borrow_mut();
             let key = key_val.to_string();
             map.raw_remove(key.as_str());
@@ -615,10 +615,10 @@ pub fn remove(vm: &mut VM, (collection, pos): (RantValue, RantValue)) -> RantStd
     Ok(())
 }
 
-pub fn take(vm: &mut VM, (collection, pos): (RantValue, RantValue)) -> RantStdResult {
+pub fn take(vm: &mut VM, (collection, pos): (RantyValue, RantyValue)) -> RantyStdResult {
     match (collection, pos) {
         // Take from list by index
-        (RantValue::List(list), RantValue::Int(index)) => {
+        (RantyValue::List(list), RantyValue::Int(index)) => {
             let mut list = list.borrow_mut();
             // Bounds check
             if index < 0 || index as usize >= list.len() {
@@ -631,7 +631,7 @@ pub fn take(vm: &mut VM, (collection, pos): (RantValue, RantValue)) -> RantStdRe
             list.remove(index);
         }
         // Error on non-index list access
-        (RantValue::List(_), non_index) => {
+        (RantyValue::List(_), non_index) => {
             runtime_error!(
                 RuntimeErrorType::ArgumentError,
                 "cannot take from list by '{}' index",
@@ -639,7 +639,7 @@ pub fn take(vm: &mut VM, (collection, pos): (RantValue, RantValue)) -> RantStdRe
             );
         }
         // Remove from into map by key
-        (RantValue::Map(map), key_val) => {
+        (RantyValue::Map(map), key_val) => {
             let mut map = map.borrow_mut();
             let key = key_val.to_string();
             if let Some(val) = map.raw_take(key.as_str()) {
@@ -662,30 +662,30 @@ pub fn take(vm: &mut VM, (collection, pos): (RantValue, RantValue)) -> RantStdRe
     Ok(())
 }
 
-pub fn sort_self(vm: &mut VM, list: RantListHandle) -> RantStdResult {
+pub fn sort_self(vm: &mut VM, list: RantyListHandle) -> RantyStdResult {
     let mut list = list.borrow_mut();
     list.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal));
     Ok(())
 }
 
-pub fn sort_thru(vm: &mut VM, list: RantListHandle) -> RantStdResult {
+pub fn sort_thru(vm: &mut VM, list: RantyListHandle) -> RantyStdResult {
     let list_ref_clone = list.clone();
     sort_self(vm, list)?;
     vm.cur_frame_mut().write(list_ref_clone);
     Ok(())
 }
 
-pub fn sort(vm: &mut VM, list: RantListHandle) -> RantStdResult {
+pub fn sort(vm: &mut VM, list: RantyListHandle) -> RantyStdResult {
     let mut list_copy = list.borrow().clone();
     list_copy.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal));
     vm.cur_frame_mut().write(list_copy);
     Ok(())
 }
 
-pub fn has(vm: &mut VM, (value, key): (RantValue, RantValue)) -> RantStdResult {
+pub fn has(vm: &mut VM, (value, key): (RantyValue, RantyValue)) -> RantyStdResult {
     let result = match (value, key) {
-        (RantValue::Map(map), RantValue::String(key)) => map.borrow().raw_has_key(key.as_str()),
-        (RantValue::List(list), element) => list.borrow().contains(&element),
+        (RantyValue::Map(map), RantyValue::String(key)) => map.borrow().raw_has_key(key.as_str()),
+        (RantyValue::List(list), element) => list.borrow().contains(&element),
         (value, key) => {
             runtime_error!(
                 RuntimeErrorType::ArgumentError,
@@ -700,7 +700,7 @@ pub fn has(vm: &mut VM, (value, key): (RantValue, RantValue)) -> RantStdResult {
     Ok(())
 }
 
-pub fn seg(vm: &mut VM, (collection, seg_size): (RantValue, usize)) -> RantStdResult {
+pub fn seg(vm: &mut VM, (collection, seg_size): (RantyValue, usize)) -> RantyStdResult {
     if !collection.is_indexable() {
         runtime_error!(
             RuntimeErrorType::ArgumentError,
@@ -753,7 +753,7 @@ pub fn seg(vm: &mut VM, (collection, seg_size): (RantValue, usize)) -> RantStdRe
     Ok(())
 }
 
-pub fn chunks(vm: &mut VM, (collection, chunk_count): (RantValue, usize)) -> RantStdResult {
+pub fn chunks(vm: &mut VM, (collection, chunk_count): (RantyValue, usize)) -> RantyStdResult {
     if !collection.is_indexable() {
         runtime_error!(
             RuntimeErrorType::ArgumentError,
@@ -797,7 +797,7 @@ pub fn chunks(vm: &mut VM, (collection, chunk_count): (RantValue, usize)) -> Ran
     Ok(())
 }
 
-pub fn fill_self(vm: &mut VM, (list, value): (RantListHandle, RantValue)) -> RantStdResult {
+pub fn fill_self(vm: &mut VM, (list, value): (RantyListHandle, RantyValue)) -> RantyStdResult {
     let len = list.borrow().len();
     let mut list = list.borrow_mut();
     for i in 0..len {
@@ -808,7 +808,7 @@ pub fn fill_self(vm: &mut VM, (list, value): (RantListHandle, RantValue)) -> Ran
     Ok(())
 }
 
-pub fn fill_thru(vm: &mut VM, (list, value): (RantListHandle, RantValue)) -> RantStdResult {
+pub fn fill_thru(vm: &mut VM, (list, value): (RantyListHandle, RantyValue)) -> RantyStdResult {
     fill_self(vm, (list.clone(), value))?;
     vm.cur_frame_mut().write(list);
     Ok(())

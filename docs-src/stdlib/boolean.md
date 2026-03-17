@@ -2,7 +2,7 @@
 
 ## and
 
-```rant
+```ranty
 
 [%and: a; b; c*]
 
@@ -24,7 +24,7 @@ Any additional right-hand operands.
 
 ## not
 
-```rant
+```ranty
 
 [%not: a]
 
@@ -40,7 +40,7 @@ The value to invert.
 
 ## or
 
-```rant
+```ranty
 
 [%or: a; b; c*]
 
@@ -63,7 +63,7 @@ Any additional right-hand operands.
 
 ## xor
 
-```rant
+```ranty
 
 [%xor: a; b]
 

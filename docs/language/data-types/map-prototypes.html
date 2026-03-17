@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Map Prototypes - Rant Reference</title>
+        <title>Map Prototypes - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -183,10 +183,10 @@
 <li>an optional <strong>prototype</strong></li>
 <li>a prototype whose prototype points at another map, and so on</li>
 </ul>
-<p>When Rant reads a map key, it checks the map's own keys first.
+<p>When Ranty reads a map key, it checks the map's own keys first.
 If the key is missing, it walks up the prototype chain until it finds a match or runs out of prototypes.</p>
 <h2 id="mental-model"><a class="header" href="#mental-model">Mental model</a></h2>
-<p>Prototype inheritance in Rant is intentionally small and predictable:</p>
+<p>Prototype inheritance in Ranty is intentionally small and predictable:</p>
 <ul>
 <li><strong>Own keys win.</strong> A key stored directly on the map shadows the same key on any prototype.</li>
 <li><strong>Reads inherit.</strong> Getters and method-like calls can resolve inherited members.</li>
@@ -197,7 +197,7 @@ If the key is missing, it walks up the prototype chain until it finds a match or
 <p>This means prototypes are best thought of as a lookup fallback mechanism, not as a full object system.</p>
 <h2 id="creating-and-inspecting-prototypes"><a class="header" href="#creating-and-inspecting-prototypes">Creating and inspecting prototypes</a></h2>
 <p>Use <code>[set-proto]</code> to attach or clear a prototype, and <code>[proto]</code> to read the current prototype:</p>
-<pre><code class="language-rant">&lt;$obj = (::)&gt;
+<pre><code class="language-ranty">&lt;$obj = (::)&gt;
 &lt;$proto = (:: flavor = vanilla)&gt;
 
 [set-proto: &lt;obj&gt;; &lt;proto&gt;]
@@ -208,7 +208,7 @@ If the key is missing, it walks up the prototype chain until it finds a match or
 </code></pre>
 <h2 id="inherited-reads"><a class="header" href="#inherited-reads">Inherited reads</a></h2>
 <p>If a key is not stored directly on the map, the getter continues through the prototype chain:</p>
-<pre><code class="language-rant">&lt;$obj = (::)&gt;
+<pre><code class="language-ranty">&lt;$obj = (::)&gt;
 &lt;$proto = (:: flavor = vanilla; color = blue)&gt;
 [set-proto: &lt;obj&gt;; &lt;proto&gt;]
 
@@ -224,7 +224,7 @@ If the key is missing, it walks up the prototype chain until it finds a match or
 </code></pre>
 <h2 id="shadowing-inherited-members"><a class="header" href="#shadowing-inherited-members">Shadowing inherited members</a></h2>
 <p>Own keys always beat inherited keys:</p>
-<pre><code class="language-rant">&lt;$obj = (:: flavor = chocolate)&gt;
+<pre><code class="language-ranty">&lt;$obj = (:: flavor = chocolate)&gt;
 &lt;$proto = (:: flavor = vanilla; color = blue)&gt;
 [set-proto: &lt;obj&gt;; &lt;proto&gt;]
 
@@ -239,8 +239,8 @@ If the key is missing, it walks up the prototype chain until it finds a match or
 ##
 </code></pre>
 <h2 id="local-writes-do-not-mutate-the-prototype"><a class="header" href="#local-writes-do-not-mutate-the-prototype">Local writes do not mutate the prototype</a></h2>
-<p>If you assign to an inherited key, Rant creates or updates a local key on the receiver map:</p>
-<pre><code class="language-rant">&lt;$obj = (::)&gt;
+<p>If you assign to an inherited key, Ranty creates or updates a local key on the receiver map:</p>
+<pre><code class="language-ranty">&lt;$obj = (::)&gt;
 &lt;$proto = (:: flavor = vanilla)&gt;
 [set-proto: &lt;obj&gt;; &lt;proto&gt;]
 
@@ -259,7 +259,7 @@ Proto: &lt;proto/flavor&gt;
 <p>This is one of the most important rules to remember: inheritance affects lookup, not storage.</p>
 <h2 id="prototype-methods"><a class="header" href="#prototype-methods">Prototype methods</a></h2>
 <p>Maps can store functions, so a prototype can also provide shared behavior:</p>
-<pre><code class="language-rant">&lt;$animal = (:: speak = [?: name] { &lt;name&gt; says hello. })&gt;
+<pre><code class="language-ranty">&lt;$animal = (:: speak = [?: name] { &lt;name&gt; says hello. })&gt;
 &lt;$cat = (:: name = Miso)&gt;
 [set-proto: &lt;cat&gt;; &lt;animal&gt;]
 
@@ -267,9 +267,9 @@ Proto: &lt;proto/flavor&gt;
 # -&gt; Miso says hello.
 </code></pre>
 <p>The function above is just an ordinary function found through prototype lookup.
-Rant does <strong>not</strong> inject the receiver map automatically.
+Ranty does <strong>not</strong> inject the receiver map automatically.
 If a method needs the map, pass it explicitly:</p>
-<pre><code class="language-rant">&lt;$animal = (:: rename = [?: obj; new-name] { &lt;obj/name = &lt;new-name&gt;&gt; })&gt;
+<pre><code class="language-ranty">&lt;$animal = (:: rename = [?: obj; new-name] { &lt;obj/name = &lt;new-name&gt;&gt; })&gt;
 &lt;$cat = (:: name = Miso)&gt;
 [set-proto: &lt;cat&gt;; &lt;animal&gt;]
 
@@ -279,7 +279,7 @@ If a method needs the map, pass it explicitly:</p>
 </code></pre>
 <h2 id="multi-hop-chains"><a class="header" href="#multi-hop-chains">Multi-hop chains</a></h2>
 <p>Prototype lookup continues across multiple links:</p>
-<pre><code class="language-rant">&lt;$base = (:: category = dessert)&gt;
+<pre><code class="language-ranty">&lt;$base = (:: category = dessert)&gt;
 &lt;$proto = (:: flavor = vanilla)&gt;
 &lt;$obj = (:: name = custard)&gt;
 
@@ -309,7 +309,7 @@ If a method needs the map, pass it explicitly:</p>
 <li>map display formatting</li>
 </ul>
 <p>Example:</p>
-<pre><code class="language-rant">&lt;$obj = (:: own = 1)&gt;
+<pre><code class="language-ranty">&lt;$obj = (:: own = 1)&gt;
 &lt;$proto = (:: inherited = 2)&gt;
 [set-proto: &lt;obj&gt;; &lt;proto&gt;]
 
@@ -335,8 +335,8 @@ If a method needs the map, pass it explicitly:</p>
 Prototype inheritance changes how map lookups work, but it does not turn a map into a merged view of the whole chain.</p>
 <h2 id="cycle-rejection"><a class="header" href="#cycle-rejection">Cycle rejection</a></h2>
 <p>Prototype chains cannot contain cycles.
-Rant rejects any <code>[set-proto]</code> call that would make a map eventually inherit from itself:</p>
-<pre><code class="language-rant">&lt;$a = (::)&gt;
+Ranty rejects any <code>[set-proto]</code> call that would make a map eventually inherit from itself:</p>
+<pre><code class="language-ranty">&lt;$a = (::)&gt;
 &lt;$b = (::)&gt;
 
 [set-proto: &lt;a&gt;; &lt;b&gt;]

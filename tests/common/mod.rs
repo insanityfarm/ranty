@@ -8,38 +8,38 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
-use rant::compiler::{CompilerError, CompilerMessage};
-use rant::runtime::RuntimeResult;
-use rant::{Rant, RantOptions, RantProgram, RantValue};
+use ranty::compiler::{CompilerError, CompilerMessage};
+use ranty::runtime::RuntimeResult;
+use ranty::{Ranty, RantyOptions, RantyProgram, RantyValue};
 
 static NEXT_TEMP_ID: AtomicUsize = AtomicUsize::new(0);
 
-pub fn test_rant() -> Rant {
-    Rant::with_options(RantOptions {
+pub fn test_ranty() -> Ranty {
+    Ranty::with_options(RantyOptions {
         debug_mode: true,
         ..Default::default()
     })
 }
 
-pub fn compile(source: &str) -> Result<RantProgram, CompilerError> {
-    test_rant().compile_quiet(source)
+pub fn compile(source: &str) -> Result<RantyProgram, CompilerError> {
+    test_ranty().compile_quiet(source)
 }
 
 pub fn compile_with_reporter(
     source: &str,
-) -> (Result<RantProgram, CompilerError>, Vec<CompilerMessage>) {
-    let rant = test_rant();
+) -> (Result<RantyProgram, CompilerError>, Vec<CompilerMessage>) {
+    let ranty = test_ranty();
     let mut reporter = vec![];
-    let result = rant.compile(source, &mut reporter);
+    let result = ranty.compile(source, &mut reporter);
     (result, reporter)
 }
 
-pub fn run(source: &str) -> RuntimeResult<RantValue> {
-    let mut rant = test_rant();
-    let program = rant
+pub fn run(source: &str) -> RuntimeResult<RantyValue> {
+    let mut ranty = test_ranty();
+    let program = ranty
         .compile_quiet(source)
         .expect("failed to compile program");
-    rant.run(&program)
+    ranty.run(&program)
 }
 
 pub fn run_str(source: &str) -> String {
@@ -58,7 +58,7 @@ impl TempWorkspace {
             .expect("system clock error")
             .as_nanos();
         let seq = NEXT_TEMP_ID.fetch_add(1, Ordering::Relaxed);
-        root.push(format!("rant-tests-{nonce}-{seq}"));
+        root.push(format!("ranty-tests-{nonce}-{seq}"));
         fs::create_dir_all(&root).expect("failed to create temporary workspace");
         Self { root }
     }

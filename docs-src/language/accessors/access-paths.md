@@ -8,9 +8,9 @@ These are separated by the path separator token `/`.
 ## Indexing
 
 Accessing elements in ordered collections (lists, strings, and ranges) is known as **indexing**.
-All Rant collections use "zero-based indexing"; in other words, the first element starts at index 0, the second at index 1, and so on.
+All Ranty collections use "zero-based indexing"; in other words, the first element starts at index 0, the second at index 1, and so on.
 
-```rant
+```ranty
 <%numbers = (: 1; 3; 5; 7; 9)>
 
 # Set the first number to 1
@@ -22,7 +22,7 @@ All Rant collections use "zero-based indexing"; in other words, the first elemen
 
 Negative indices are relative to the end of the collection. This means `-1` represents the last element, `-2` the penultimate element, and so on.
 
-```rant
+```ranty
 <%msg = "hello">
 Last char: <msg/-1>\n # same as <msg/4> or <msg/([len: <msg>] - 1)>
 
@@ -34,7 +34,7 @@ Last char: <msg/-1>\n # same as <msg/4> or <msg/([len: <msg>] - 1)>
 Accessing elements in maps is known as **keying**. 
 Simply specify the desired map key after the `/` to access the map element with that key:
 
-```rant
+```ranty
 <%citizen = (::
     name = "Steve";
     age = 50;
@@ -51,9 +51,9 @@ Simply specify the desired map key after the `/` to access the map element with 
 
 Keys follow the same naming rules as variables, unless specified as a dynamic key (see below).
 
-If a getter cannot find the requested key on the map itself, Rant will continue searching that map's prototype chain.
+If a getter cannot find the requested key on the map itself, Ranty will continue searching that map's prototype chain.
 
-```rant
+```ranty
 <$defaults = (:: role = villager)>
 <$npc = (:: name = Tavi)>
 [set-proto: <npc>; <defaults>]
@@ -75,7 +75,7 @@ Setters are different: writing `<npc/role = merchant>` would create or update th
 
 Where an index or key must be calculated at runtime, a dynamic key may be used. Simply use an expression enclosed in `()` in place of the index or key:
 
-```rant
+```ranty
 <%fruits = (apple; orange; banana; tomato)>
 
 <fruits/( [len: <fruits> |> rand: 0; [] - 1])> # returns a random fruit
@@ -109,7 +109,7 @@ When you get a slice of a collection, the accessor returns a new copy of the col
 
 Slice notation takes the following forms:
 
-```rant
+```ranty
 # fully-bounded
 <my-list/2..5>   # get all elements between index 2 (inclusive) and index 5 (exclusive)
 
@@ -127,7 +127,7 @@ Slice notation takes the following forms:
 
 You can also set a slice on mutable collection types, an operation also known as **splicing**:
 
-```rant
+```ranty
 <$my-list = (: 1; 2; 3)>
 <my-list/1..2 = (: a; b)> # the splice value doesn't have to be the same size!
 <my-list/3..4 = (c; d)> # the splice value can also be a tuple!
@@ -138,7 +138,7 @@ You can also set a slice on mutable collection types, an operation also known as
 
 Slices also support dynamic bounds; just replace any slice bound with a dynamic key:
 
-```rant
+```ranty
 <%message = "fantastic">
 [rep: [len: <message>]]
 {
@@ -163,7 +163,7 @@ fantastic
 
 Access paths can be nested. This means if you have an array in a map and you want to access an element of that array, you most certainly can; just add another component to the path.
 
-```rant
+```ranty
 <%arrays = (::
     odd-numbers = (: 1; 3; 5; 7; 9);
     even-numbers = (: 0; 2; 4; 6; 8);

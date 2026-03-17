@@ -1,7 +1,7 @@
 use super::format::WhitespaceNormalizationMode;
 use crate::{
     format::{NumberFormat, OutputFormat},
-    InternalString, RantList, RantMap, RantTuple, RantValue,
+    InternalString, RantyList, RantyMap, RantyTuple, RantyValue,
 };
 use std::rc::Rc;
 
@@ -61,8 +61,8 @@ impl OutputWriter {
 
     /// Writes a value to the output.
     #[inline]
-    pub fn write_value(&mut self, value: RantValue) {
-        if !matches!(value, RantValue::Nothing) {
+    pub fn write_value(&mut self, value: RantyValue) {
+        if !matches!(value, RantyValue::Nothing) {
             self.write_buffer(OutputBuffer::Value(value));
         }
     }
@@ -76,13 +76,13 @@ impl OutputWriter {
                 OutputBuffer::Fragment(_) => {
                     self.mode = OutputPrintMode::Text;
                 }
-                OutputBuffer::Value(RantValue::List(_)) => {
+                OutputBuffer::Value(RantyValue::List(_)) => {
                     self.mode = OutputPrintMode::List;
                 }
-                OutputBuffer::Value(RantValue::Tuple(_)) => {
+                OutputBuffer::Value(RantyValue::Tuple(_)) => {
                     self.mode = OutputPrintMode::Tuple;
                 }
-                OutputBuffer::Value(RantValue::Map(_)) => {
+                OutputBuffer::Value(RantyValue::Map(_)) => {
                     self.mode = OutputPrintMode::Map;
                 }
                 _ => {}
@@ -91,7 +91,7 @@ impl OutputWriter {
             (_, OutputPrintMode::Single | OutputPrintMode::Concat) => match &value {
                 OutputBuffer::Fragment(_)
                 | OutputBuffer::Whitespace(_)
-                | OutputBuffer::Value(RantValue::String(_)) => {
+                | OutputBuffer::Value(RantyValue::String(_)) => {
                     self.mode = OutputPrintMode::Text;
                 }
                 _ => {
@@ -102,23 +102,23 @@ impl OutputWriter {
                 if !matches!(
                     value,
                     OutputBuffer::Whitespace(_)
-                        | OutputBuffer::Value(RantValue::List(_) | RantValue::Tuple(_))
+                        | OutputBuffer::Value(RantyValue::List(_) | RantyValue::Tuple(_))
                 ) {
                     self.mode = OutputPrintMode::Text;
                 }
             }
             (_, OutputPrintMode::Tuple) => {
                 match value {
-                    OutputBuffer::Whitespace(_) | OutputBuffer::Value(RantValue::Tuple(_)) => {}
+                    OutputBuffer::Whitespace(_) | OutputBuffer::Value(RantyValue::Tuple(_)) => {}
                     // List beats tuple
-                    OutputBuffer::Value(RantValue::List(_)) => self.mode = OutputPrintMode::List,
+                    OutputBuffer::Value(RantyValue::List(_)) => self.mode = OutputPrintMode::List,
                     _ => self.mode = OutputPrintMode::Text,
                 }
             }
             (_, OutputPrintMode::Map) => {
                 if !matches!(
                     value,
-                    OutputBuffer::Whitespace(_) | OutputBuffer::Value(RantValue::Map(_))
+                    OutputBuffer::Whitespace(_) | OutputBuffer::Value(RantyValue::Map(_))
                 ) {
                     self.mode = OutputPrintMode::Text;
                 }
@@ -162,19 +162,19 @@ impl OutputWriter {
 
     /// Consumes the output and returns the final value.
     #[inline]
-    pub fn render_value(mut self) -> RantValue {
+    pub fn render_value(mut self) -> RantyValue {
         match self.buffers.len() {
             // An empty output always returns an empty value
-            0 => RantValue::Nothing,
+            0 => RantyValue::Nothing,
             // Single buffer is always returned unchanged
             1 => {
                 let buffer = self.buffers.pop().unwrap();
                 match buffer {
                     OutputBuffer::Fragment(s) | OutputBuffer::Whitespace(s) => {
-                        RantValue::String(s.as_str().into())
+                        RantyValue::String(s.as_str().into())
                     }
                     OutputBuffer::Value(v) => v,
-                    _ => RantValue::Nothing,
+                    _ => RantyValue::Nothing,
                 }
             }
             _ => {
@@ -192,46 +192,46 @@ impl OutputWriter {
                         }
                         // If there is at least one non-empty, return the string; otherwise, return empty value
                         if has_any_nonempty {
-                            RantValue::String(output.as_str().into())
+                            RantyValue::String(output.as_str().into())
                         } else {
-                            RantValue::Nothing
+                            RantyValue::Nothing
                         }
                     }
                     OutputPrintMode::List => {
-                        let mut output = RantList::new();
+                        let mut output = RantyList::new();
                         for buf in self.buffers {
                             match buf {
-                                OutputBuffer::Value(RantValue::List(list)) => {
+                                OutputBuffer::Value(RantyValue::List(list)) => {
                                     output.extend(list.borrow().iter().cloned());
                                 }
-                                OutputBuffer::Value(RantValue::Tuple(tuple)) => {
+                                OutputBuffer::Value(RantyValue::Tuple(tuple)) => {
                                     output.extend(tuple.iter().cloned());
                                 }
                                 _ => {}
                             }
                         }
-                        RantValue::List(output.into_handle())
+                        RantyValue::List(output.into_handle())
                     }
                     OutputPrintMode::Tuple => {
-                        let mut output: Vec<RantValue> = vec![];
+                        let mut output: Vec<RantyValue> = vec![];
                         for buf in self.buffers {
-                            if let OutputBuffer::Value(RantValue::Tuple(tuple)) = buf {
+                            if let OutputBuffer::Value(RantyValue::Tuple(tuple)) = buf {
                                 output.extend(tuple.iter().cloned());
                             }
                         }
-                        RantValue::Tuple(RantTuple::from(output).into_handle())
+                        RantyValue::Tuple(RantyTuple::from(output).into_handle())
                     }
                     OutputPrintMode::Map => {
-                        let mut output = RantMap::new();
+                        let mut output = RantyMap::new();
                         for buf in self.buffers {
-                            if let OutputBuffer::Value(RantValue::Map(map)) = buf {
+                            if let OutputBuffer::Value(RantyValue::Map(map)) = buf {
                                 output.extend(map.borrow())
                             }
                         }
-                        RantValue::Map(output.into_handle())
+                        RantyValue::Map(output.into_handle())
                     }
                     OutputPrintMode::Concat => {
-                        let mut val = RantValue::Nothing;
+                        let mut val = RantyValue::Nothing;
                         for buf in self.buffers {
                             if let OutputBuffer::Value(bufval) = buf {
                                 val = val + bufval;
@@ -247,7 +247,7 @@ impl OutputWriter {
     /// Consumes the output and returns the final value after discarding any
     /// trailing parser-inserted whitespace buffers.
     #[inline]
-    pub fn render_modifier_input(mut self) -> RantValue {
+    pub fn render_modifier_input(mut self) -> RantyValue {
         self.trim_trailing_syntactic_whitespace();
         self.render_value()
     }
@@ -271,7 +271,7 @@ enum OutputPrintMode {
     Tuple,
     /// All buffers containing a map are merged into a single map.
     Map,
-    /// All buffers are concatenated according to the `RantValue::concat` rules.
+    /// All buffers are concatenated according to the `RantyValue::concat` rules.
     Concat,
 }
 
@@ -280,7 +280,7 @@ enum OutputPrintMode {
 enum OutputBuffer {
     Fragment(InternalString),
     Whitespace(InternalString),
-    Value(RantValue),
+    Value(RantyValue),
     NumberFormatUpdate(NumberFormat),
 }
 
@@ -291,9 +291,9 @@ impl OutputBuffer {
         Some(match self {
             Self::Fragment(s) => s,
             Self::Whitespace(s) => s,
-            Self::Value(RantValue::Nothing) => return None,
-            Self::Value(RantValue::Int(n)) => format.number_format.format_integer(n),
-            Self::Value(RantValue::Float(n)) => format.number_format.format_float(n),
+            Self::Value(RantyValue::Nothing) => return None,
+            Self::Value(RantyValue::Int(n)) => format.number_format.format_integer(n),
+            Self::Value(RantyValue::Float(n)) => format.number_format.format_float(n),
             Self::Value(v) => InternalString::from(v.to_string()),
             Self::NumberFormatUpdate(fmt) => {
                 format.number_format = fmt;

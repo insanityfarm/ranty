@@ -4,7 +4,7 @@ use super::*;
 use crate::lang::VarAccessMode;
 
 /// Prints the first argument that isn't of type `nothing`.
-pub fn alt(vm: &mut VM, (a, mut b): (RantValue, RequiredVarArgs<RantValue>)) -> RantStdResult {
+pub fn alt(vm: &mut VM, (a, mut b): (RantyValue, RequiredVarArgs<RantyValue>)) -> RantyStdResult {
     if !a.is_nothing() {
         vm.cur_frame_mut().write(a);
         Ok(())
@@ -22,9 +22,9 @@ pub fn alt(vm: &mut VM, (a, mut b): (RantValue, RequiredVarArgs<RantValue>)) -> 
 /// Calls a function with the specified arguments.
 pub fn call(
     vm: &mut VM,
-    (func, args): (RantFunctionHandle, Option<Vec<RantValue>>),
-) -> RantStdResult {
-    vm.push_val(RantValue::Function(Rc::clone(&func)))?;
+    (func, args): (RantyFunctionHandle, Option<Vec<RantyValue>>),
+) -> RantyStdResult {
+    vm.push_val(RantyValue::Function(Rc::clone(&func)))?;
     let argc = args.as_ref().map(|args| args.len()).unwrap_or(0);
     if let Some(mut args) = args {
         for arg in args.drain(..).rev() {
@@ -39,7 +39,7 @@ pub fn call(
 }
 
 /// Combines and prints the specified values.
-pub fn cat(vm: &mut VM, mut args: VarArgs<RantValue>) -> RantStdResult {
+pub fn cat(vm: &mut VM, mut args: VarArgs<RantyValue>) -> RantyStdResult {
     let frame = vm.cur_frame_mut();
     for val in args.drain(..) {
         frame.write(val);
@@ -49,7 +49,7 @@ pub fn cat(vm: &mut VM, mut args: VarArgs<RantValue>) -> RantStdResult {
 }
 
 /// Prints the specified values to the calling scope.
-pub fn print(vm: &mut VM, mut args: VarArgs<RantValue>) -> RantStdResult {
+pub fn print(vm: &mut VM, mut args: VarArgs<RantyValue>) -> RantyStdResult {
     if args.len() < 2 {
         let frame = vm.cur_frame_mut();
         for val in args.drain(..) {
@@ -65,23 +65,23 @@ pub fn print(vm: &mut VM, mut args: VarArgs<RantValue>) -> RantStdResult {
 }
 
 /// Returns a copy of a value.
-pub fn copy(vm: &mut VM, val: RantValue) -> RantStdResult {
+pub fn copy(vm: &mut VM, val: RantyValue) -> RantyStdResult {
     vm.cur_frame_mut().write(val.shallow_copy());
     Ok(())
 }
 
 /// Prints `a` if `cond` is true, or `b` otherwise.
-pub fn either(vm: &mut VM, (cond, a, b): (bool, RantValue, RantValue)) -> RantStdResult {
+pub fn either(vm: &mut VM, (cond, a, b): (bool, RantyValue, RantyValue)) -> RantyStdResult {
     let val = if cond { a } else { b };
     vm.cur_frame_mut().write(val);
     Ok(())
 }
 
 /// Forks the RNG with the specified seed.
-pub fn fork(vm: &mut VM, seed: Option<RantValue>) -> RantStdResult {
+pub fn fork(vm: &mut VM, seed: Option<RantyValue>) -> RantyStdResult {
     let rng = match seed {
-        Some(RantValue::Int(i)) => vm.rng().fork_i64(i),
-        Some(RantValue::String(s)) => vm.rng().fork_str(s.as_str()),
+        Some(RantyValue::Int(i)) => vm.rng().fork_i64(i),
+        Some(RantyValue::String(s)) => vm.rng().fork_str(s.as_str()),
         Some(other) => runtime_error!(
             RuntimeErrorType::ArgumentError,
             "seeding fork with '{}' value is not supported",
@@ -94,13 +94,13 @@ pub fn fork(vm: &mut VM, seed: Option<RantValue>) -> RantStdResult {
 }
 
 /// Prints the type name of `val`.
-pub fn type_(vm: &mut VM, val: RantValue) -> RantStdResult {
+pub fn type_(vm: &mut VM, val: RantyValue) -> RantyStdResult {
     vm.cur_frame_mut().write_frag(val.type_name());
     Ok(())
 }
 
 /// Unforks the RNG down one level.
-pub fn unfork(vm: &mut VM, _: ()) -> RantStdResult {
+pub fn unfork(vm: &mut VM, _: ()) -> RantyStdResult {
     if vm.pop_rng().is_none() {
         runtime_error!(
             RuntimeErrorType::InvalidOperation,
@@ -111,27 +111,27 @@ pub fn unfork(vm: &mut VM, _: ()) -> RantStdResult {
 }
 
 /// Does nothing and takes any number of arguments. Use this as a no-op or non-printing temporal pipe.
-pub fn tap(vm: &mut VM, _: VarArgs<RantNothing>) -> RantStdResult {
+pub fn tap(vm: &mut VM, _: VarArgs<RantyNothing>) -> RantyStdResult {
     Ok(())
 }
 
 /// Prints the RNG seed currently in use.
-pub fn seed(vm: &mut VM, _: ()) -> RantStdResult {
+pub fn seed(vm: &mut VM, _: ()) -> RantyStdResult {
     let signed_seed = i64::from_ne_bytes(vm.rng().seed().to_ne_bytes());
     let frame = vm.cur_frame_mut();
-    frame.write(RantValue::Int(signed_seed));
+    frame.write(RantyValue::Int(signed_seed));
     Ok(())
 }
 
 /// Prints the length of `val`.
-pub fn len(vm: &mut VM, val: RantValue) -> RantStdResult {
+pub fn len(vm: &mut VM, val: RantyValue) -> RantyStdResult {
     vm.cur_frame_mut()
-        .write(val.len().try_into_rant().into_runtime_result()?);
+        .write(val.len().try_into_ranty().into_runtime_result()?);
     Ok(())
 }
 
 /// Raises a runtime error.
-pub fn error(vm: &mut VM, msg: Option<String>) -> RantStdResult {
+pub fn error(vm: &mut VM, msg: Option<String>) -> RantyStdResult {
     const DEFAULT_ERROR_MESSAGE: &str = "user error";
     Err(RuntimeError {
         error_type: RuntimeErrorType::UserError,
@@ -141,13 +141,13 @@ pub fn error(vm: &mut VM, msg: Option<String>) -> RantStdResult {
 }
 
 /// Generates a `range` value with an inclusive start bound and exclusive end bound.
-pub fn range(vm: &mut VM, (a, b, step): (i64, Option<i64>, Option<u64>)) -> RantStdResult {
+pub fn range(vm: &mut VM, (a, b, step): (i64, Option<i64>, Option<u64>)) -> RantyStdResult {
     let step = step.unwrap_or(1);
 
     let range = if let Some(b) = b {
-        RantRange::new(a, b, step)
+        RantyRange::new(a, b, step)
     } else {
-        RantRange::new(0, a, step)
+        RantyRange::new(0, a, step)
     };
 
     vm.cur_frame_mut().write(range);
@@ -155,13 +155,13 @@ pub fn range(vm: &mut VM, (a, b, step): (i64, Option<i64>, Option<u64>)) -> Rant
 }
 
 /// Generates a `range` value with inclusive bounds.
-pub fn irange(vm: &mut VM, (a, b, step): (i64, Option<i64>, Option<u64>)) -> RantStdResult {
+pub fn irange(vm: &mut VM, (a, b, step): (i64, Option<i64>, Option<u64>)) -> RantyStdResult {
     let step = step.unwrap_or(1);
 
     let range = if let Some(b) = b {
-        RantRange::new(a, b + if a <= b { 1 } else { -1 }, step)
+        RantyRange::new(a, b + if a <= b { 1 } else { -1 }, step)
     } else {
-        RantRange::new(0, a + if a >= 0 { 1 } else { -1 }, step)
+        RantyRange::new(0, a + if a >= 0 { 1 } else { -1 }, step)
     };
 
     vm.cur_frame_mut().write(range);
@@ -169,7 +169,7 @@ pub fn irange(vm: &mut VM, (a, b, step): (i64, Option<i64>, Option<u64>)) -> Ran
 }
 
 /// Imports a module.
-pub fn require(vm: &mut VM, module_path: String) -> RantStdResult {
+pub fn require(vm: &mut VM, module_path: String) -> RantyStdResult {
     let dependant = Rc::clone(vm.cur_frame().origin());
     let request_key = module_request_cache_key(module_path.as_str(), Some(dependant.as_ref()));
 
@@ -275,8 +275,8 @@ pub fn require(vm: &mut VM, module_path: String) -> RantStdResult {
 /// Attempts to call the `context` function. If it raises a runtime error, calls the `handler` function and passes in the error information.
 pub fn try_(
     vm: &mut VM,
-    (context, handler): (RantFunctionHandle, Option<RantFunctionHandle>),
-) -> RantStdResult {
+    (context, handler): (RantyFunctionHandle, Option<RantyFunctionHandle>),
+) -> RantyStdResult {
     vm.push_unwind_state(handler);
     vm.cur_frame_mut().push_intent(Intent::DropStaleUnwinds);
     vm.call_func(context, vec![], false)?;
@@ -286,8 +286,8 @@ pub fn try_(
 /// Requests data from a data source whose ID matches `dsid`.
 pub fn ds_request(
     vm: &mut VM,
-    (dsid, args): (InternalString, VarArgs<RantValue>),
-) -> RantStdResult {
+    (dsid, args): (InternalString, VarArgs<RantyValue>),
+) -> RantyStdResult {
     match vm.context().data_source(dsid.as_str()) {
         Some(ds) => {
             let result = ds.request_data(args.into_vec()).into_runtime_result()?;
@@ -303,12 +303,12 @@ pub fn ds_request(
 }
 
 /// Prints a list of available data source IDs.
-pub fn ds_query_sources(vm: &mut VM, _: ()) -> RantStdResult {
+pub fn ds_query_sources(vm: &mut VM, _: ()) -> RantyStdResult {
     let sources = vm
         .context()
         .iter_data_sources()
-        .map(|(id, _)| id.into_rant())
-        .collect::<RantList>();
+        .map(|(id, _)| id.into_ranty())
+        .collect::<RantyList>();
     vm.cur_frame_mut().write(sources);
     Ok(())
 }

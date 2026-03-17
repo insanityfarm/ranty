@@ -28,25 +28,25 @@ pub const MAX_STACK_SIZE: usize = 20000;
 pub(crate) const CALL_STACK_INLINE_COUNT: usize = 4;
 pub(crate) const VALUE_STACK_INLINE_COUNT: usize = 4;
 
-/// The Rant Virtual Machine.
-pub struct VM<'rant> {
-    rng_stack: SmallVec<[Rc<RantRng>; 1]>,
-    engine: &'rant mut Rant,
-    program: &'rant RantProgram,
-    val_stack: SmallVec<[RantValue; VALUE_STACK_INLINE_COUNT]>,
+/// The Ranty Virtual Machine.
+pub struct VM<'ranty> {
+    rng_stack: SmallVec<[Rc<RantyRng>; 1]>,
+    engine: &'ranty mut Ranty,
+    program: &'ranty RantyProgram,
+    val_stack: SmallVec<[RantyValue; VALUE_STACK_INLINE_COUNT]>,
     call_stack: CallStack<Intent>,
-    pipeval_overlay_stack: SmallVec<[RantValue; 1]>,
+    pipeval_overlay_stack: SmallVec<[RantyValue; 1]>,
     resolver: Resolver,
     pub(crate) loading_modules: HashSet<String, FnvBuildHasher>,
     unwinds: SmallVec<[UnwindState; 1]>,
 }
 
-impl<'rant> VM<'rant> {
+impl<'ranty> VM<'ranty> {
     #[inline]
     pub(crate) fn new(
-        rng: Rc<RantRng>,
-        engine: &'rant mut Rant,
-        program: &'rant RantProgram,
+        rng: Rc<RantyRng>,
+        engine: &'ranty mut Ranty,
+        program: &'ranty RantyProgram,
     ) -> Self {
         Self {
             resolver: Resolver::new(&rng),
@@ -62,7 +62,7 @@ impl<'rant> VM<'rant> {
     }
 }
 
-/// Feature-gated stderr print function for providing diagnostic information on the Rant VM state.
+/// Feature-gated stderr print function for providing diagnostic information on the Ranty VM state.
 ///
 /// Enable the `vm-trace` feature to use.
 macro_rules! runtime_trace {
@@ -94,7 +94,7 @@ macro_rules! runtime_error {
 }
 
 pub struct UnwindState {
-    pub handler: Option<RantFunctionHandle>,
+    pub handler: Option<RantyFunctionHandle>,
     pub value_stack_size: usize,
     pub block_stack_size: usize,
     pub attr_stack_size: usize,
@@ -102,9 +102,9 @@ pub struct UnwindState {
     pub temp_pipeval_stack_size: usize,
 }
 
-impl<'rant> VM<'rant> {
+impl<'ranty> VM<'ranty> {
     /// Runs the program.
-    pub(crate) fn run(&mut self) -> RuntimeResult<RantValue> {
+    pub(crate) fn run(&mut self) -> RuntimeResult<RantyValue> {
         let mut result = self.run_inner();
         // On error, generate stack trace
         if let Err(err) = result.as_mut() {
@@ -114,9 +114,9 @@ impl<'rant> VM<'rant> {
     }
 
     /// Runs the program with arguments.
-    pub(crate) fn run_with<A>(&mut self, args: A) -> RuntimeResult<RantValue>
+    pub(crate) fn run_with<A>(&mut self, args: A) -> RuntimeResult<RantyValue>
     where
-        A: Into<Option<HashMap<String, RantValue>>>,
+        A: Into<Option<HashMap<String, RantyValue>>>,
     {
         if let Some(args) = args.into() {
             for (k, v) in args {
@@ -133,7 +133,7 @@ impl<'rant> VM<'rant> {
     }
 
     #[inline]
-    fn run_inner(&mut self) -> RuntimeResult<RantValue> {
+    fn run_inner(&mut self) -> RuntimeResult<RantyValue> {
         runtime_trace!("AST: {:#?}", &self.program.root);
 
         // Push the program's root sequence onto the call stack
@@ -157,7 +157,7 @@ impl<'rant> VM<'rant> {
                         if let Some(handler) = unwind.handler {
                             self.call_func(
                                 handler,
-                                vec![RantValue::String(err.to_string().into())],
+                                vec![RantyValue::String(err.to_string().into())],
                                 false,
                             )?;
                             continue;
@@ -225,8 +225,8 @@ impl<'rant> VM<'rant> {
                             BlockElementMetadataKind::Weight => {
                                 if let Some(weights) = &mut weights {
                                     weights.push(match value {
-                                        RantValue::Int(n) => n as f64,
-                                        RantValue::Float(n) => n,
+                                        RantyValue::Int(n) => n as f64,
+                                        RantyValue::Float(n) => n,
                                         other => bf64(other.to_bool()),
                                     });
                                 }
@@ -471,7 +471,7 @@ impl<'rant> VM<'rant> {
 
                         // Pop the function and make sure it's callable
                         let func = match self.pop_val()? {
-                            RantValue::Function(func) => func,
+                            RantyValue::Function(func) => func,
                             other => runtime_error!(
                                 RuntimeErrorType::CannotInvokeValue,
                                 format!("cannot call '{}' value", other.type_name())
@@ -586,7 +586,7 @@ impl<'rant> VM<'rant> {
 
                                 // Pop the function and make sure it's callable
                                 let step_function = match self.pop_val()? {
-                                    RantValue::Function(func) => func,
+                                    RantyValue::Function(func) => func,
                                     // What are you doing, step function?
                                     other => runtime_error!(
                                         RuntimeErrorType::CannotInvokeValue,
@@ -795,7 +795,7 @@ impl<'rant> VM<'rant> {
 
                     // Pop the function and make sure it's callable
                     let func = match self.pop_val()? {
-                        RantValue::Function(func) => func,
+                        RantyValue::Function(func) => func,
                         other => runtime_error!(
                             RuntimeErrorType::CannotInvokeValue,
                             format!("cannot call '{}' value", other.type_name())
@@ -914,7 +914,7 @@ impl<'rant> VM<'rant> {
 
                     // Check if the tuple is complete
                     if index >= init.len() {
-                        self.cur_frame_mut().write(RantTuple::from(items))
+                        self.cur_frame_mut().write(RantyTuple::from(items))
                     } else {
                         // Continue tuple creation
                         let val_expr = Rc::clone(&init[index]);
@@ -1013,7 +1013,7 @@ impl<'rant> VM<'rant> {
                     self.push_val(if lhs_truth == on_truthiness {
                         match short_circuit_result {
                             LogicShortCircuitHandling::Passthrough => lhs,
-                            LogicShortCircuitHandling::OverrideWith(b) => RantValue::Boolean(b),
+                            LogicShortCircuitHandling::OverrideWith(b) => RantyValue::Boolean(b),
                         }
                     } else {
                         lhs
@@ -1087,32 +1087,32 @@ impl<'rant> VM<'rant> {
                 Intent::Equals => {
                     let rhs = self.pop_val()?;
                     let lhs = self.pop_val()?;
-                    self.push_val(RantValue::Boolean(lhs == rhs))?;
+                    self.push_val(RantyValue::Boolean(lhs == rhs))?;
                 }
                 Intent::NotEquals => {
                     let rhs = self.pop_val()?;
                     let lhs = self.pop_val()?;
-                    self.push_val(RantValue::Boolean(lhs != rhs))?;
+                    self.push_val(RantyValue::Boolean(lhs != rhs))?;
                 }
                 Intent::Less => {
                     let rhs = self.pop_val()?;
                     let lhs = self.pop_val()?;
-                    self.push_val(RantValue::Boolean(lhs < rhs))?;
+                    self.push_val(RantyValue::Boolean(lhs < rhs))?;
                 }
                 Intent::LessOrEqual => {
                     let rhs = self.pop_val()?;
                     let lhs = self.pop_val()?;
-                    self.push_val(RantValue::Boolean(lhs <= rhs))?;
+                    self.push_val(RantyValue::Boolean(lhs <= rhs))?;
                 }
                 Intent::Greater => {
                     let rhs = self.pop_val()?;
                     let lhs = self.pop_val()?;
-                    self.push_val(RantValue::Boolean(lhs > rhs))?;
+                    self.push_val(RantyValue::Boolean(lhs > rhs))?;
                 }
                 Intent::GreaterOrEqual => {
                     let rhs = self.pop_val()?;
                     let lhs = self.pop_val()?;
-                    self.push_val(RantValue::Boolean(lhs >= rhs))?;
+                    self.push_val(RantyValue::Boolean(lhs >= rhs))?;
                 }
                 Intent::CheckCondition {
                     conditions,
@@ -1174,7 +1174,7 @@ impl<'rant> VM<'rant> {
                     self.cur_frame_mut().push_intent(Intent::BuildList {
                         init: Rc::clone(elements),
                         index: 0,
-                        list: RantList::with_capacity(elements.len()),
+                        list: RantyList::with_capacity(elements.len()),
                     });
                     return Ok(true);
                 }
@@ -1190,7 +1190,7 @@ impl<'rant> VM<'rant> {
                     self.cur_frame_mut().push_intent(Intent::BuildMap {
                         init: Rc::clone(elements),
                         pair_index: 0,
-                        map: RantMap::new(),
+                        map: RantyMap::new(),
                     });
                     return Ok(true);
                 }
@@ -1213,7 +1213,7 @@ impl<'rant> VM<'rant> {
                         self.def_var_value(
                             def.name.as_str(),
                             def.access_mode,
-                            RantValue::Nothing,
+                            RantyValue::Nothing,
                             def.is_const,
                         )?;
                     }
@@ -1284,8 +1284,8 @@ impl<'rant> VM<'rant> {
                     }
 
                     // Build function
-                    let func = RantValue::Function(Rc::new(RantFunction {
-                        body: RantFunctionInterface::User(Rc::clone(body)),
+                    let func = RantyValue::Function(Rc::new(RantyFunction {
+                        body: RantyFunctionInterface::User(Rc::clone(body)),
                         captured_vars,
                         min_arg_count: params.iter().take_while(|p| p.is_required()).count(),
                         vararg_start_index: params
@@ -1337,8 +1337,8 @@ impl<'rant> VM<'rant> {
                         captured_vars.push((capture_id.clone(), var.clone()));
                     }
 
-                    let func = RantValue::Function(Rc::new(RantFunction {
-                        body: RantFunctionInterface::User(Rc::clone(body)),
+                    let func = RantyValue::Function(Rc::new(RantyFunction {
+                        body: RantyFunctionInterface::User(Rc::clone(body)),
                         captured_vars,
                         min_arg_count: params.iter().take_while(|p| p.is_required()).count(),
                         vararg_start_index: params
@@ -1401,7 +1401,7 @@ impl<'rant> VM<'rant> {
                 Expression::Whitespace(ws) => self.cur_frame_mut().write_ws(ws),
                 Expression::Integer(n) => self.cur_frame_mut().write(*n),
                 Expression::Float(n) => self.cur_frame_mut().write(*n),
-                Expression::NothingVal => self.cur_frame_mut().write(RantNothing),
+                Expression::NothingVal => self.cur_frame_mut().write(RantyNothing),
                 Expression::Boolean(b) => self.cur_frame_mut().write(*b),
                 Expression::Nop => {}
                 Expression::Return(expr) => {
@@ -1771,7 +1771,7 @@ impl<'rant> VM<'rant> {
     fn handle_assignment_pipe(
         &mut self,
         assignment_pipe: &AssignmentPipeTarget,
-        pipeval: RantValue,
+        pipeval: RantyValue,
     ) -> RuntimeResult<()> {
         match assignment_pipe {
             AssignmentPipeTarget::Set(path) => {
@@ -1852,8 +1852,8 @@ impl<'rant> VM<'rant> {
     #[inline]
     pub fn call_func(
         &mut self,
-        func: RantFunctionHandle,
-        mut args: Vec<RantValue>,
+        func: RantyFunctionHandle,
+        mut args: Vec<RantyValue>,
         override_print: bool,
     ) -> RuntimeResult<()> {
         let argc = args.len();
@@ -1885,14 +1885,14 @@ impl<'rant> VM<'rant> {
 
         // Call the function
         match &func.body {
-            RantFunctionInterface::Foreign(foreign_func) => {
+            RantyFunctionInterface::Foreign(foreign_func) => {
                 let foreign_func = Rc::clone(foreign_func);
                 self.push_native_call_frame(
                     Box::new(move |vm| foreign_func(vm, args)),
                     StackFrameFlavor::NativeCall,
                 )?;
             }
-            RantFunctionInterface::User(user_func) => {
+            RantyFunctionInterface::User(user_func) => {
                 // Split args at vararg
                 let mut args_iter = args.drain(..);
                 let mut args_nonvariadic = vec![];
@@ -1908,7 +1908,7 @@ impl<'rant> VM<'rant> {
                 // This won't be added to args because we need to check default arguments
                 let mut vararg = func
                     .is_variadic()
-                    .then(|| args_iter.collect::<RantList>().into_rant());
+                    .then(|| args_iter.collect::<RantyList>().into_ranty());
 
                 // Push the function onto the call stack
                 self.push_frame_flavored(
@@ -1919,7 +1919,7 @@ impl<'rant> VM<'rant> {
                 // Pass captured vars to the function scope
                 for (capture_name, capture_var) in func.captured_vars.iter() {
                     self.call_stack
-                        .def_local_var(capture_name.as_str(), RantVar::clone(capture_var))?;
+                        .def_local_var(capture_name.as_str(), RantyVar::clone(capture_var))?;
                 }
 
                 // Pass the args to the function scope
@@ -1998,7 +1998,7 @@ impl<'rant> VM<'rant> {
         let mut dynamic_values = dynamic_values.drain(..);
 
         // The setter target is the value that will be modified. If None, setter_key refers to a variable.
-        let mut setter_target: Option<RantValue> = None;
+        let mut setter_target: Option<RantyValue> = None;
 
         // The setter key is the location on the setter target that will be written to.
         let mut setter_key = match path_iter.next() {
@@ -2056,14 +2056,14 @@ impl<'rant> VM<'rant> {
                 }
                 // Dynamic key
                 AccessPathComponent::Expression(_) => match dynamic_values.next().unwrap() {
-                    RantValue::Int(index) => SetterKey::Index(index),
+                    RantyValue::Int(index) => SetterKey::Index(index),
                     key_val => SetterKey::KeyString(InternalString::from(key_val.to_string())),
                 },
                 // Pipeval
                 AccessPathComponent::PipeValue => {
                     let pipeval = self.get_pipeval()?;
                     match pipeval {
-                        RantValue::Int(i) => SetterKey::Index(i),
+                        RantyValue::Int(i) => SetterKey::Index(i),
                         key_val => SetterKey::KeyString(InternalString::from(key_val.to_string())),
                     }
                 }
@@ -2111,7 +2111,7 @@ impl<'rant> VM<'rant> {
     }
 
     #[inline]
-    fn get_pipeval(&self) -> RuntimeResult<RantValue> {
+    fn get_pipeval(&self) -> RuntimeResult<RantyValue> {
         self.pipeval_overlay_stack
             .last()
             .cloned()
@@ -2181,7 +2181,7 @@ impl<'rant> VM<'rant> {
                 AccessPathComponent::Expression(_) => {
                     let key = dynamic_keys.next().unwrap();
                     match key {
-                        RantValue::Int(index) => {
+                        RantyValue::Int(index) => {
                             getter_value = match getter_value.index_get(index) {
                                 Ok(val) => val,
                                 Err(err) => runtime_error!(RuntimeErrorType::IndexError(err)),
@@ -2211,7 +2211,7 @@ impl<'rant> VM<'rant> {
                 AccessPathComponent::PipeValue => {
                     let pipeval = self.get_pipeval()?;
                     match pipeval {
-                        RantValue::Int(index) => {
+                        RantyValue::Int(index) => {
                             getter_value = match getter_value.index_get(index) {
                                 Ok(val) => val,
                                 Err(err) => runtime_error!(RuntimeErrorType::IndexError(err)),
@@ -2315,7 +2315,7 @@ impl<'rant> VM<'rant> {
                         let input_value = self.cur_frame_mut().render_and_reset_modifier_input();
 
                         // Call the mutator function
-                        self.call_func(mutator_func, vec![RantValue::Function(elem_func)], true)?;
+                        self.call_func(mutator_func, vec![RantyValue::Function(elem_func)], true)?;
 
                         // Define the input variable
                         if let Some(input_id) = &modifier.input_var {
@@ -2328,14 +2328,14 @@ impl<'rant> VM<'rant> {
                         }
                     } else {
                         // Call the mutator function
-                        self.call_func(mutator_func, vec![RantValue::Function(elem_func)], true)?;
+                        self.call_func(mutator_func, vec![RantyValue::Function(elem_func)], true)?;
                     }
                 }
                 BlockAction::Separator(separator) => {
                     match separator {
                         // If the separator is a function, call the function
-                        RantValue::Function(sep_func) => {
-                            self.push_val(RantValue::Function(sep_func))?;
+                        RantyValue::Function(sep_func) => {
+                            self.push_val(RantyValue::Function(sep_func))?;
                             self.cur_frame_mut().push_intent(Intent::Call {
                                 argc: 0,
                                 override_print: false,
@@ -2384,7 +2384,7 @@ impl<'rant> VM<'rant> {
         &mut self,
         block: &Block,
         weights: Option<Weights>,
-        match_triggers: Option<Vec<Option<RantValue>>>,
+        match_triggers: Option<Vec<Option<RantyValue>>>,
     ) -> RuntimeResult<()> {
         // Push a new state onto the block stack
         self.resolver.push_block(block, weights, match_triggers)?;
@@ -2397,7 +2397,7 @@ impl<'rant> VM<'rant> {
     }
 
     #[inline(always)]
-    fn def_pipeval(&mut self, pipeval: RantValue) -> RuntimeResult<()> {
+    fn def_pipeval(&mut self, pipeval: RantyValue) -> RuntimeResult<()> {
         self.call_stack.def_var_value(
             self.engine,
             PIPE_VALUE_NAME,
@@ -2413,7 +2413,7 @@ impl<'rant> VM<'rant> {
         &mut self,
         varname: &str,
         access: VarAccessMode,
-        val: RantValue,
+        val: RantyValue,
     ) -> RuntimeResult<()> {
         self.call_stack
             .set_var_value(self.engine, varname, access, val)
@@ -2426,13 +2426,13 @@ impl<'rant> VM<'rant> {
         varname: &str,
         access: VarAccessMode,
         prefer_function: bool,
-    ) -> RuntimeResult<RantValue> {
+    ) -> RuntimeResult<RantyValue> {
         self.call_stack
             .get_var_value(self.engine, varname, access, prefer_function)
     }
 
     #[inline]
-    fn get_attribute(&self, keyword: AttributeKeyword) -> RantValue {
+    fn get_attribute(&self, keyword: AttributeKeyword) -> RantyValue {
         let attrs = self.resolver.attrs();
         match keyword {
             AttributeKeyword::Rep => crate::stdlib::block::get_rep_attr_value(attrs.reps),
@@ -2446,24 +2446,24 @@ impl<'rant> VM<'rant> {
             AttributeKeyword::Step => self
                 .resolver
                 .active_block()
-                .map(|block| RantValue::Int(block.step_index() as i64))
-                .unwrap_or(RantValue::Int(0)),
+                .map(|block| RantyValue::Int(block.step_index() as i64))
+                .unwrap_or(RantyValue::Int(0)),
             AttributeKeyword::Total => self
                 .resolver
                 .active_block()
                 .map(|block| {
                     if block.is_infinite() {
-                        RantValue::Nothing
+                        RantyValue::Nothing
                     } else {
-                        RantValue::Int(block.step_count() as i64)
+                        RantyValue::Int(block.step_count() as i64)
                     }
                 })
-                .unwrap_or(RantValue::Int(0)),
+                .unwrap_or(RantyValue::Int(0)),
         }
     }
 
     #[inline]
-    fn set_attribute(&mut self, keyword: AttributeKeyword, value: RantValue) -> RuntimeResult<()> {
+    fn set_attribute(&mut self, keyword: AttributeKeyword, value: RantyValue) -> RuntimeResult<()> {
         let attrs = self.resolver.attrs_mut();
         match keyword {
             AttributeKeyword::Rep => crate::stdlib::block::set_rep_attr(attrs, value)?,
@@ -2486,7 +2486,7 @@ impl<'rant> VM<'rant> {
         &mut self,
         varname: &str,
         access: VarAccessMode,
-        val: RantValue,
+        val: RantyValue,
         is_const: bool,
     ) -> RuntimeResult<()> {
         self.call_stack
@@ -2501,7 +2501,7 @@ impl<'rant> VM<'rant> {
 
     /// Pushes a value onto the value stack.
     #[inline(always)]
-    pub fn push_val(&mut self, val: RantValue) -> RuntimeResult<usize> {
+    pub fn push_val(&mut self, val: RantyValue) -> RuntimeResult<usize> {
         if self.val_stack.len() < MAX_STACK_SIZE {
             runtime_trace!("value stack <- {}", &val);
             self.val_stack.push(val);
@@ -2516,7 +2516,7 @@ impl<'rant> VM<'rant> {
 
     /// Removes and returns the topmost value from the value stack.
     #[inline(always)]
-    pub fn pop_val(&mut self) -> RuntimeResult<RantValue> {
+    pub fn pop_val(&mut self) -> RuntimeResult<RantyValue> {
         if let Some(val) = self.val_stack.pop() {
             runtime_trace!("value stack -> {}", &val);
             Ok(val)
@@ -2633,7 +2633,7 @@ impl<'rant> VM<'rant> {
     #[inline]
     pub fn interrupt_repeater(
         &mut self,
-        break_val: Option<RantValue>,
+        break_val: Option<RantyValue>,
         should_continue: bool,
     ) -> RuntimeResult<()> {
         if let Some(block_depth) = self
@@ -2681,7 +2681,7 @@ impl<'rant> VM<'rant> {
 
     /// Returns from the currently running function.
     #[inline]
-    pub fn func_return(&mut self, ret_val: Option<RantValue>) -> RuntimeResult<()> {
+    pub fn func_return(&mut self, ret_val: Option<RantyValue>) -> RuntimeResult<()> {
         runtime_trace!("func_return");
         if let Some(block_depth) = self
             .call_stack
@@ -2757,25 +2757,25 @@ impl<'rant> VM<'rant> {
 
     /// Gets a reference to the topmost RNG on the RNG stack.
     #[inline(always)]
-    pub fn rng(&self) -> &RantRng {
+    pub fn rng(&self) -> &RantyRng {
         self.rng_stack.last().unwrap().as_ref()
     }
 
     /// Gets a copy of the topmost RNG on the RNG stack.
     #[inline(always)]
-    pub fn rng_clone(&self) -> Rc<RantRng> {
+    pub fn rng_clone(&self) -> Rc<RantyRng> {
         Rc::clone(self.rng_stack.last().unwrap())
     }
 
     /// Adds a new RNG to the top of the RNG stack.
     #[inline]
-    pub fn push_rng(&mut self, rng: Rc<RantRng>) {
+    pub fn push_rng(&mut self, rng: Rc<RantyRng>) {
         self.rng_stack.push(rng);
     }
 
     /// Removes the topmost RNG from the RNG stack and returns it.
     #[inline]
-    pub fn pop_rng(&mut self) -> Option<Rc<RantRng>> {
+    pub fn pop_rng(&mut self) -> Option<Rc<RantyRng>> {
         if self.rng_stack.len() <= 1 {
             return None;
         }
@@ -2783,15 +2783,15 @@ impl<'rant> VM<'rant> {
         self.rng_stack.pop()
     }
 
-    /// Gets a reference to the Rant context that created the VM.
+    /// Gets a reference to the Ranty context that created the VM.
     #[inline(always)]
-    pub fn context(&self) -> &Rant {
+    pub fn context(&self) -> &Ranty {
         self.engine
     }
 
-    /// Gets a mutable reference to the Rant context that created the VM.
+    /// Gets a mutable reference to the Ranty context that created the VM.
     #[inline(always)]
-    pub fn context_mut(&mut self) -> &mut Rant {
+    pub fn context_mut(&mut self) -> &mut Ranty {
         self.engine
     }
 
@@ -2809,12 +2809,12 @@ impl<'rant> VM<'rant> {
 
     /// Gets a reference to the program being executed by the VM.
     #[inline(always)]
-    pub fn program(&self) -> &RantProgram {
+    pub fn program(&self) -> &RantyProgram {
         self.program
     }
 
     #[inline]
-    pub fn push_unwind_state(&mut self, handler: Option<RantFunctionHandle>) {
+    pub fn push_unwind_state(&mut self, handler: Option<RantyFunctionHandle>) {
         self.unwinds.push(UnwindState {
             handler,
             call_stack_size: self.call_stack.len(),
@@ -2861,8 +2861,8 @@ impl<'rant> VM<'rant> {
 }
 
 fn expand_complex_arg(
-    out_targs: &mut Vec<RantValue>,
-    arg: &RantValue,
+    out_targs: &mut Vec<RantyValue>,
+    arg: &RantyValue,
     arg_index: usize,
     arg_expr: &ArgumentExpr,
     temporal_state: &TemporalSpreadState,
@@ -2896,17 +2896,17 @@ fn expand_complex_arg(
 
 #[inline]
 fn expand_parametric_spread_arg(
-    out_args: &mut Vec<RantValue>,
-    ps_arg: &RantValue,
+    out_args: &mut Vec<RantyValue>,
+    ps_arg: &RantyValue,
 ) -> RuntimeResult<bool> {
     if ps_arg.is_indexable() {
         match &ps_arg {
-            RantValue::List(list_ref) => {
+            RantyValue::List(list_ref) => {
                 for v in list_ref.borrow().iter() {
                     out_args.push(v.clone());
                 }
             }
-            RantValue::Tuple(tuple_ref) => {
+            RantyValue::Tuple(tuple_ref) => {
                 for v in tuple_ref.iter() {
                     out_args.push(v.clone());
                 }

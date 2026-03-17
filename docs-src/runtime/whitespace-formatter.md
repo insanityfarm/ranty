@@ -1,3 +1,3 @@
 # Whitespace formatter
 
-The **whitespace formatter** controls how Rant normalizes printable whitespace found in programs.
+The **whitespace formatter** controls how Ranty normalizes printable whitespace found in programs.

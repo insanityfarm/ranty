@@ -9,7 +9,7 @@ This is where `@weight` comes in: by adding the `@weight` charm to a block eleme
 
 The below snippet demonstrates the effect of block weights by generating a list of 20 random items of different rarities.
 
-```rant
+```ranty
 [rep:20][sep:\n]
 {
     {

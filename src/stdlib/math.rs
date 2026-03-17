@@ -5,12 +5,12 @@ use super::*;
 /// `[$add: lhs (any); rhs (any)]`
 ///
 /// Adds two values.
-pub fn add(vm: &mut VM, (lhs, rhs): (RantValue, RantValue)) -> RantStdResult {
+pub fn add(vm: &mut VM, (lhs, rhs): (RantyValue, RantyValue)) -> RantyStdResult {
     vm.cur_frame_mut().write(lhs + rhs);
     Ok(())
 }
 
-pub fn clamp(vm: &mut VM, (value, a, b): (RantValue, RantValue, RantValue)) -> RantStdResult {
+pub fn clamp(vm: &mut VM, (value, a, b): (RantyValue, RantyValue, RantyValue)) -> RantyStdResult {
     vm.cur_frame_mut().write(util::clamp(value, a, b));
     Ok(())
 }
@@ -18,7 +18,7 @@ pub fn clamp(vm: &mut VM, (value, a, b): (RantValue, RantValue, RantValue)) -> R
 /// `[$mul: lhs (any); rhs (any)]`
 ///
 /// Multiplies two values.
-pub fn mul(vm: &mut VM, (lhs, rhs): (RantValue, RantValue)) -> RantStdResult {
+pub fn mul(vm: &mut VM, (lhs, rhs): (RantyValue, RantyValue)) -> RantyStdResult {
     vm.cur_frame_mut().write(lhs * rhs);
     Ok(())
 }
@@ -26,7 +26,7 @@ pub fn mul(vm: &mut VM, (lhs, rhs): (RantValue, RantValue)) -> RantStdResult {
 /// `[$mul-add: lhs (any); mhs (any); rhs (any)]`
 ///
 /// Multiplies two values, then adds a third value to the result.
-pub fn mul_add(vm: &mut VM, (lhs, mhs, rhs): (RantValue, RantValue, RantValue)) -> RantStdResult {
+pub fn mul_add(vm: &mut VM, (lhs, mhs, rhs): (RantyValue, RantyValue, RantyValue)) -> RantyStdResult {
     vm.cur_frame_mut().write(lhs * mhs + rhs);
     Ok(())
 }
@@ -34,7 +34,7 @@ pub fn mul_add(vm: &mut VM, (lhs, mhs, rhs): (RantValue, RantValue, RantValue)) 
 /// `[$sub: lhs (any); rhs (any)]`
 ///
 /// Subtracts one value from another.
-pub fn sub(vm: &mut VM, (lhs, rhs): (RantValue, RantValue)) -> RantStdResult {
+pub fn sub(vm: &mut VM, (lhs, rhs): (RantyValue, RantyValue)) -> RantyStdResult {
     vm.cur_frame_mut().write(lhs - rhs);
     Ok(())
 }
@@ -42,7 +42,7 @@ pub fn sub(vm: &mut VM, (lhs, rhs): (RantValue, RantValue)) -> RantStdResult {
 /// `[$div: lhs (any); rhs (any)]`
 ///
 /// Divides one number by another.
-pub fn div(vm: &mut VM, (lhs, rhs): (RantValue, RantValue)) -> RantStdResult {
+pub fn div(vm: &mut VM, (lhs, rhs): (RantyValue, RantyValue)) -> RantyStdResult {
     vm.cur_frame_mut().write((lhs / rhs).into_runtime_result()?);
     Ok(())
 }
@@ -50,7 +50,7 @@ pub fn div(vm: &mut VM, (lhs, rhs): (RantValue, RantValue)) -> RantStdResult {
 /// `[$mod: lhs (any); rhs (any)]`
 ///
 /// Gets the modulus of two values.
-pub fn mod_(vm: &mut VM, (lhs, rhs): (RantValue, RantValue)) -> RantStdResult {
+pub fn mod_(vm: &mut VM, (lhs, rhs): (RantyValue, RantyValue)) -> RantyStdResult {
     vm.cur_frame_mut().write((lhs % rhs).into_runtime_result()?);
     Ok(())
 }
@@ -58,7 +58,7 @@ pub fn mod_(vm: &mut VM, (lhs, rhs): (RantValue, RantValue)) -> RantStdResult {
 /// `[$neg: val (any)]`
 ///
 /// Negates a value.
-pub fn neg(vm: &mut VM, val: RantValue) -> RantStdResult {
+pub fn neg(vm: &mut VM, val: RantyValue) -> RantyStdResult {
     vm.cur_frame_mut().write(-val);
     Ok(())
 }
@@ -66,19 +66,19 @@ pub fn neg(vm: &mut VM, val: RantValue) -> RantStdResult {
 /// `[$recip: val (any)]`
 ///
 /// Gets the reciproval of a value.
-pub fn recip(vm: &mut VM, val: RantValue) -> RantStdResult {
+pub fn recip(vm: &mut VM, val: RantyValue) -> RantyStdResult {
     vm.cur_frame_mut()
-        .write((RantValue::Float(1.0) / val).into_runtime_result()?);
+        .write((RantyValue::Float(1.0) / val).into_runtime_result()?);
     Ok(())
 }
 
 /// `[$floor: val (int|float)]`
 ///
 /// Gets the largest integer that is less than or equal to the specified value.
-pub fn floor(vm: &mut VM, val: RantValue) -> RantStdResult {
+pub fn floor(vm: &mut VM, val: RantyValue) -> RantyStdResult {
     let val_result = match val {
-        RantValue::Float(f) => RantValue::Float(f.floor()),
-        RantValue::Int(i) => RantValue::Int(i),
+        RantyValue::Float(f) => RantyValue::Float(f.floor()),
+        RantyValue::Int(i) => RantyValue::Int(i),
         other => runtime_error!(
             RuntimeErrorType::ArgumentError,
             "cannot use floor function on '{}' value"
@@ -91,10 +91,10 @@ pub fn floor(vm: &mut VM, val: RantValue) -> RantStdResult {
 /// `[$ceil: val (int|float)]`
 ///
 /// Gets the smallest integer that is greater than or equal to the specified value.
-pub fn ceil(vm: &mut VM, val: RantValue) -> RantStdResult {
+pub fn ceil(vm: &mut VM, val: RantyValue) -> RantyStdResult {
     let val_result = match val {
-        RantValue::Float(f) => RantValue::Float(f.ceil()),
-        RantValue::Int(i) => RantValue::Int(i),
+        RantyValue::Float(f) => RantyValue::Float(f.ceil()),
+        RantyValue::Int(i) => RantyValue::Int(i),
         other => runtime_error!(
             RuntimeErrorType::ArgumentError,
             "cannot use ceil function on '{}' value"
@@ -107,9 +107,9 @@ pub fn ceil(vm: &mut VM, val: RantValue) -> RantStdResult {
 /// `[$frac: val (float)]`
 ///
 /// Gets the fractional part of the specified float value.
-pub fn frac(vm: &mut VM, val: RantValue) -> RantStdResult {
+pub fn frac(vm: &mut VM, val: RantyValue) -> RantyStdResult {
     let val_result = match val {
-        RantValue::Float(f) => RantValue::Float(f.fract()),
+        RantyValue::Float(f) => RantyValue::Float(f.fract()),
         other => runtime_error!(
             RuntimeErrorType::ArgumentError,
             "cannot use frac function on '{}' value"
@@ -122,7 +122,7 @@ pub fn frac(vm: &mut VM, val: RantValue) -> RantStdResult {
 /// `[$abs: num]`
 ///
 /// Calculates the absolute value of `num`.
-pub fn abs(vm: &mut VM, num: RantValue) -> RantStdResult {
+pub fn abs(vm: &mut VM, num: RantyValue) -> RantyStdResult {
     vm.cur_frame_mut().write(num.abs().into_runtime_result()?);
     Ok(())
 }
@@ -130,7 +130,7 @@ pub fn abs(vm: &mut VM, num: RantValue) -> RantStdResult {
 /// `[$pow: lhs (int|float); rhs (int|float)]`
 ///
 /// Raises `lhs` to the `rhs` power.
-pub fn pow(vm: &mut VM, (lhs, rhs): (RantValue, RantValue)) -> RantStdResult {
+pub fn pow(vm: &mut VM, (lhs, rhs): (RantyValue, RantyValue)) -> RantyStdResult {
     vm.cur_frame_mut()
         .write(lhs.pow(rhs).into_runtime_result()?);
     Ok(())
@@ -139,7 +139,7 @@ pub fn pow(vm: &mut VM, (lhs, rhs): (RantValue, RantValue)) -> RantStdResult {
 /// `[$sin: x (float)]`
 ///
 /// Calculates the sine of `x` (in radians).
-pub fn sin(vm: &mut VM, x: f64) -> RantStdResult {
+pub fn sin(vm: &mut VM, x: f64) -> RantyStdResult {
     vm.cur_frame_mut().write(x.sin());
     Ok(())
 }
@@ -147,7 +147,7 @@ pub fn sin(vm: &mut VM, x: f64) -> RantStdResult {
 /// `[$asin: x (float)]`
 ///
 /// Calculates the arcsine (in radians) of `x`.
-pub fn asin(vm: &mut VM, x: f64) -> RantStdResult {
+pub fn asin(vm: &mut VM, x: f64) -> RantyStdResult {
     vm.cur_frame_mut().write(x.asin());
     Ok(())
 }
@@ -155,7 +155,7 @@ pub fn asin(vm: &mut VM, x: f64) -> RantStdResult {
 /// `[$cos: x (float)]`
 ///
 /// Calculates the cosine of `x` (in radians).
-pub fn cos(vm: &mut VM, x: f64) -> RantStdResult {
+pub fn cos(vm: &mut VM, x: f64) -> RantyStdResult {
     vm.cur_frame_mut().write(x.cos());
     Ok(())
 }
@@ -163,7 +163,7 @@ pub fn cos(vm: &mut VM, x: f64) -> RantStdResult {
 /// `[$acos: x (float)]`
 ///
 /// Calculates the arccosine (in radians) of `x`.
-pub fn acos(vm: &mut VM, x: f64) -> RantStdResult {
+pub fn acos(vm: &mut VM, x: f64) -> RantyStdResult {
     vm.cur_frame_mut().write(x.acos());
     Ok(())
 }
@@ -171,7 +171,7 @@ pub fn acos(vm: &mut VM, x: f64) -> RantStdResult {
 /// `[$tan: x (float)]`
 ///
 /// Calculates the tangent of `x` (in radians).
-pub fn tan(vm: &mut VM, x: f64) -> RantStdResult {
+pub fn tan(vm: &mut VM, x: f64) -> RantyStdResult {
     vm.cur_frame_mut().write(x.tan());
     Ok(())
 }
@@ -179,7 +179,7 @@ pub fn tan(vm: &mut VM, x: f64) -> RantStdResult {
 /// `[$atan: x (float)]`
 ///
 /// Calculates the arctangent (in radians) of `x`.
-pub fn atan(vm: &mut VM, x: f64) -> RantStdResult {
+pub fn atan(vm: &mut VM, x: f64) -> RantyStdResult {
     vm.cur_frame_mut().write(x.atan());
     Ok(())
 }
@@ -187,7 +187,7 @@ pub fn atan(vm: &mut VM, x: f64) -> RantStdResult {
 /// `[$atan: y (float); x (float)]`
 ///
 /// Calculates the four-quadrant arctangent (in radians) of `y / x`.
-pub fn atan2(vm: &mut VM, (y, x): (f64, f64)) -> RantStdResult {
+pub fn atan2(vm: &mut VM, (y, x): (f64, f64)) -> RantyStdResult {
     vm.cur_frame_mut().write(y.atan2(x));
     Ok(())
 }
@@ -195,16 +195,16 @@ pub fn atan2(vm: &mut VM, (y, x): (f64, f64)) -> RantStdResult {
 /// `[sqrt: num (int|float)]`
 ///
 /// Calculates the square root of `num`.
-pub fn sqrt(vm: &mut VM, num: RantNumber) -> RantStdResult {
+pub fn sqrt(vm: &mut VM, num: RantyNumber) -> RantyStdResult {
     let result = match num {
-        RantNumber::Int(i) => (i as f64).sqrt(),
-        RantNumber::Float(f) => f.sqrt(),
+        RantyNumber::Int(i) => (i as f64).sqrt(),
+        RantyNumber::Float(f) => f.sqrt(),
     };
     vm.cur_frame_mut().write(result);
     Ok(())
 }
 
-pub fn min(vm: &mut VM, values: RequiredVarArgs<RantValue>) -> RantStdResult {
+pub fn min(vm: &mut VM, values: RequiredVarArgs<RantyValue>) -> RantyStdResult {
     if values.is_empty() {
         return Ok(());
     }
@@ -214,13 +214,13 @@ pub fn min(vm: &mut VM, values: RequiredVarArgs<RantValue>) -> RantStdResult {
 
     for val in iter {
         let flat_val = match val {
-            RantValue::List(list_ref) => Some(Cow::Owned(
-                util::min_rant_value(list_ref.borrow().iter())
+            RantyValue::List(list_ref) => Some(Cow::Owned(
+                util::min_ranty_value(list_ref.borrow().iter())
                     .cloned()
                     .unwrap_or_default(),
             )),
-            RantValue::Tuple(tuple_ref) => Some(Cow::Owned(
-                util::min_rant_value(tuple_ref.iter())
+            RantyValue::Tuple(tuple_ref) => Some(Cow::Owned(
+                util::min_ranty_value(tuple_ref.iter())
                     .cloned()
                     .unwrap_or_default(),
             )),
@@ -240,7 +240,7 @@ pub fn min(vm: &mut VM, values: RequiredVarArgs<RantValue>) -> RantStdResult {
     Ok(())
 }
 
-pub fn max(vm: &mut VM, values: RequiredVarArgs<RantValue>) -> RantStdResult {
+pub fn max(vm: &mut VM, values: RequiredVarArgs<RantyValue>) -> RantyStdResult {
     if values.is_empty() {
         return Ok(());
     }
@@ -250,13 +250,13 @@ pub fn max(vm: &mut VM, values: RequiredVarArgs<RantValue>) -> RantStdResult {
 
     for val in iter {
         let flat_val = match val {
-            RantValue::List(list_ref) => Some(Cow::Owned(
-                util::max_rant_value(list_ref.borrow().iter())
+            RantyValue::List(list_ref) => Some(Cow::Owned(
+                util::max_ranty_value(list_ref.borrow().iter())
                     .cloned()
                     .unwrap_or_default(),
             )),
-            RantValue::Tuple(tuple_ref) => Some(Cow::Owned(
-                util::max_rant_value(tuple_ref.iter())
+            RantyValue::Tuple(tuple_ref) => Some(Cow::Owned(
+                util::max_ranty_value(tuple_ref.iter())
                     .cloned()
                     .unwrap_or_default(),
             )),

@@ -53,7 +53,7 @@ It enables you to set multiple options at once, or get a map of all current opti
 
 To get a map of all number format options, just call `[num-fmt]` and omit the `options` parameter:
 
-```rant
+```ranty
 [num-fmt]
 ```
 
@@ -81,7 +81,7 @@ This can be stored in a variable for later use, or modified and passed back into
 To set options, pass a map to `[num-fmt]` with the fields you're interested in changing. 
 This will overwrite only the specified options, leaving all others unchanged.
 
-```rant
+```ranty
 # Format numbers as 64-bit hex with 0x prefix
 [num-fmt: (:: system = hex; alt = @true; padding = 16)]
 1000000000\n

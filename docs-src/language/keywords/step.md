@@ -12,7 +12,7 @@ is a compile-time error.
 
 If no repeater is active, `@step` reads as `0`.
 
-```rant example
+```ranty example
 [rep:4][sep:", "]{@step}
 ```
 

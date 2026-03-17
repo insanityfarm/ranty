@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Generators - Rant Reference</title>
+        <title>Generators - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -177,14 +177,14 @@
                     <main>
                         <h1 id="standard-library-generators"><a class="header" href="#standard-library-generators">Standard Library: Generators</a></h1>
 <h2 id="alpha"><a class="header" href="#alpha">alpha</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%alpha: count ? 1]
 
 </code></pre>
 <p>→ <code>string</code></p>
 <p>Prints a uniformly random lowercase alphabetic string.</p>
 <h2 id="dig"><a class="header" href="#dig">dig</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%dig: count ? 1]
 
 </code></pre>
@@ -194,11 +194,11 @@
 <p><strong><code>count</code></strong> ← <code>int</code> <em>(optional)</em> <br/>
 The number of digits to generate. Defaults to 1.</p>
 <h3 id="example"><a class="header" href="#example">Example</a></h3>
-<pre><code class="language-rant"># Generate a random 32-character decimal string
+<pre><code class="language-ranty"># Generate a random 32-character decimal string
 [dig:32] # ~&gt; 01952208554533821061510695429126
 </code></pre>
 <h2 id="digh"><a class="header" href="#digh">digh</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%digh: count ? 1]
 
 </code></pre>
@@ -208,11 +208,11 @@ The number of digits to generate. Defaults to 1.</p>
 <p><strong><code>count</code></strong> ← <code>int</code> <em>(optional)</em> <br/>
 The number of digits to generate. Defaults to 1.</p>
 <h3 id="example-1"><a class="header" href="#example-1">Example</a></h3>
-<pre><code class="language-rant"># Generate a random 32-character hex string
+<pre><code class="language-ranty"># Generate a random 32-character hex string
 [digh:32] # ~&gt; f4e5bef31ea02eac22f220e68e837587
 </code></pre>
 <h2 id="dignz"><a class="header" href="#dignz">dignz</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%dignz: count ? 1]
 
 </code></pre>
@@ -222,11 +222,11 @@ The number of digits to generate. Defaults to 1.</p>
 <p><strong><code>count</code></strong> ← <code>int</code> <em>(optional)</em> <br/>
 The number of digits to generate. Defaults to 1.</p>
 <h3 id="example-2"><a class="header" href="#example-2">Example</a></h3>
-<pre><code class="language-rant"># Generate a random 32-character decimal string without zeros
+<pre><code class="language-ranty"># Generate a random 32-character decimal string without zeros
 [dignz:32] # ~&gt; 92558761934966287236132511739511
 </code></pre>
 <h2 id="maybe"><a class="header" href="#maybe">maybe</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%maybe: p ? 0.5]
 
 </code></pre>
@@ -238,26 +238,26 @@ The number of digits to generate. Defaults to 1.</p>
 The probability (0.0 &lt;= p &lt;= 1.0) of the printed boolean being true.
 If omitted or nothing, defaults to 0.5.</p>
 <h2 id="pick"><a class="header" href="#pick">pick</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%pick: collection]
 
 </code></pre>
 <p>Prints a random element from an ordered collection.</p>
 <h2 id="pickn"><a class="header" href="#pickn">pickn</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%pickn: collection; count]
 
 </code></pre>
 <p>→ <code>list</code></p>
 <p>Prints a list containing <code>count</code> random elements sampled from <code>collection</code>.</p>
 <h2 id="pick-sparse"><a class="header" href="#pick-sparse">pick-sparse</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%pick-sparse: first; ...rest]
 
 </code></pre>
 <p>Randomly selects one value from a sparse weighted set of arguments by using each argument's length as its weight.</p>
 <h2 id="rand"><a class="header" href="#rand">rand</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%rand: a; b]
 
 </code></pre>
@@ -269,13 +269,13 @@ The first inclusive bound of the random number.</p>
 <p><strong><code>b</code></strong> ← <code>int</code> <br/>
 The second inclusive bound of the random number.</p>
 <h3 id="example-3"><a class="header" href="#example-3">Example</a></h3>
-<pre><code class="language-rant"># Choose a number by fair dice roll.
+<pre><code class="language-ranty"># Choose a number by fair dice roll.
 You roll a `[rand:1;6].
 
 # ~&gt; You roll a 4.
 </code></pre>
 <h2 id="randf"><a class="header" href="#randf">randf</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%randf: a; b]
 
 </code></pre>
@@ -287,7 +287,7 @@ The first inclusive bound of the random number.</p>
 <p><strong><code>b</code></strong> ← <code>float</code> <br/>
 The second inclusive bound of the random number.</p>
 <h2 id="rand-list"><a class="header" href="#rand-list">rand-list</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%rand-list: a; b; n]
 
 </code></pre>
@@ -301,7 +301,7 @@ The second inclusive bound of the random numbers.</p>
 <p><strong><code>n</code></strong> ← <code>int</code> <br/>
 The amount of numbers to generate.</p>
 <h3 id="example-4"><a class="header" href="#example-4">Example</a></h3>
-<pre><code class="language-rant"># 2-dice roll
+<pre><code class="language-ranty"># 2-dice roll
 
 &lt;$roll = [rand-list: 1; 6; 2]&gt;
 You rolled `[join: \sand\s; &lt;roll&gt;] for a total of `[sum: &lt;roll&gt;].
@@ -309,7 +309,7 @@ You rolled `[join: \sand\s; &lt;roll&gt;] for a total of `[sum: &lt;roll&gt;].
 # ~&gt; You rolled 5 and 3 for a total of 8.
 </code></pre>
 <h2 id="randf-list"><a class="header" href="#randf-list">randf-list</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%randf-list: a; b; n]
 
 </code></pre>
@@ -323,7 +323,7 @@ The second inclusive bound of the random numbers.</p>
 <p><strong><code>n</code></strong> ← <code>int</code> <br/>
 The amount of numbers to generate.</p>
 <h2 id="rand-list-sum"><a class="header" href="#rand-list-sum">rand-list-sum</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%rand-list-sum: input; count; variance]
 
 </code></pre>
@@ -339,7 +339,7 @@ The maximum absolute difference between any two generated numbers.</p>
 <h3 id="errors"><a class="header" href="#errors">Errors</a></h3>
 <p>Raises an error if <code>count</code> is less than 1.</p>
 <h3 id="example-5"><a class="header" href="#example-5">Example</a></h3>
-<pre><code class="language-rant"># Generate and print a list of 5 random numbers that add up to 1000
+<pre><code class="language-ranty"># Generate and print a list of 5 random numbers that add up to 1000
 &lt;$parts = [rand-list-sum: 1000; 5; 200]&gt;
 [join: &lt;parts&gt;; \s+\s] = [sum: &lt;parts&gt;]
 

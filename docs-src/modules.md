@@ -1,13 +1,15 @@
 # Modules
 
-Rant modules are ordinary `.rant` files whose top-level result becomes the imported module value. In typical use a module returns a map of functions and values.
+Ranty modules are `.ranty` files whose top-level result becomes the imported module value. In typical use a module returns a map of functions and values.
+
+For compatibility with Rant 4, legacy `.rant` modules are also supported.
 
 ## Writing modules
 
 A module is just a program that returns a value, usually a map:
 
-```rant
-# seq.rant
+```ranty
+# seq.ranty
 
 <%module = (::)>
 
@@ -22,13 +24,13 @@ A module is just a program that returns a value, usually a map:
 
 Use `@require` to load a module and bind it by filename:
 
-```rant
+```ranty
 @require "seq"
 
 [seq/fib: 16]
 ```
 
-The default resolver appends `.rant` automatically and normalizes relative paths before loading.
+The default resolver prefers `.ranty` when no extension is supplied, falls back to `.rant`, preserves explicit `.ranty` and `.rant` paths, and normalizes relative paths before loading.
 
 ## Search order
 
@@ -36,18 +38,18 @@ When you use `@require`, the default resolver checks the following locations in 
 
 1. the importing program's directory, if the caller came from a file-backed program,
 2. the resolver's local modules path, or the host working directory when no local path is configured,
-3. the global modules path from `RANT_MODULES_PATH` when global modules are enabled.
+3. the global modules path from `RANTY_MODULES_PATH` when global modules are enabled.
 
 ## Caching
 
-Modules are cached per `Rant` context. Requiring the same module again returns the cached value instead of recompiling or re-running the module body.
+Modules are cached per `Ranty` context. Requiring the same module again returns the cached value instead of recompiling or re-running the module body.
 
 ## Relative paths
 
 Relative paths are resolved relative to the active search roots:
 
-```rant
-@require "rant_modules/my-module"
+```ranty
+@require "modules/my-module"
 ```
 
 ## Failures

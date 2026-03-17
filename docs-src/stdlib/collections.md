@@ -2,7 +2,7 @@
 
 ## assoc
 
-```rant
+```ranty
 
 [%assoc: keys; values]
 
@@ -26,7 +26,7 @@ Raises a runtime error if the lengths of `keys` and `values` do not match.
 
 ### Example
 
-```rant
+```ranty
 # Generate a map of the "Big Five" personality traits
 # with random rating values that add up to 50
 <$personality = 
@@ -58,7 +58,7 @@ Raises a runtime error if the lengths of `keys` and `values` do not match.
 
 ## augment
 
-```rant
+```ranty
 
 [%augment: dst-map; src-map]
 
@@ -78,7 +78,7 @@ The map containing the values to add to those in `dst-map`.
 
 ## augment-self
 
-```rant
+```ranty
 
 [%augment-self: dst-map; src-map]
 
@@ -97,7 +97,7 @@ The map containing the values to add to those in `dst-map`.
 
 ## augment-thru
 
-```rant
+```ranty
 
 [%augment-self: dst-map; src-map]
 
@@ -117,7 +117,7 @@ The map containing the values to add to those in `dst-map`.
 
 ## chunks
 
-```rant
+```ranty
 
 [%chunks: collection; count]
 
@@ -145,7 +145,7 @@ Raises a runtime error if `collection` cannot be sliced.
 
 ## clear
 
-```rant
+```ranty
 
 [%clear: collection]
 
@@ -164,7 +164,7 @@ Causes a runtime error if `collection` is not a list or map.
 
 ## fill-self
 
-```rant
+```ranty
 
 [%fill-self: list; value]
 
@@ -174,7 +174,7 @@ Mutates `list` in place by replacing every element with `value`.
 
 ## fill-thru
 
-```rant
+```ranty
 
 [%fill-thru: list; value]
 
@@ -185,7 +185,7 @@ Mutates `list` in place and then prints the same list handle.
 
 ## list
 
-```rant
+```ranty
 
 [%list: values*]
 
@@ -202,7 +202,7 @@ The values to store in the list.
 
 ## tuple
 
-```rant
+```ranty
 
 [%tuple: values*]
 
@@ -218,7 +218,7 @@ The values to store in the tuple.
 
 ## nlist
 
-```rant
+```ranty
 
 [%nlist: values*]
 
@@ -229,7 +229,7 @@ Prints a single-element list whose only value is the list constructed from `valu
 
 ## filter
 
-```rant
+```ranty
 
 [%filter: list; predicate]
 
@@ -254,7 +254,7 @@ The predicate to run against each element in the input list.
 ### Examples
 
 #### Filter a list of numbers by only those divisible by 3
-```rant
+```ranty
 <$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12)>
 <$multiples-of-three = [filter: <numbers>; [?:x] { [is-factor: <x>; 3] }]>
 [join: <multiples-of-three>; ,\s]
@@ -262,7 +262,7 @@ The predicate to run against each element in the input list.
 ```
 
 #### Filter a list of numbers by only odd numbers
-```rant
+```ranty
 <$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12)>
 # `is-odd` is a function, so we can simply pass it in as the predicate!
 <$odd-numbers = [filter: <numbers>; <is-odd>]>
@@ -271,7 +271,7 @@ The predicate to run against each element in the input list.
 ```
 
 #### Filter a list of words to only those that are 3 letters or less
-```rant
+```ranty
 <$words = [split: "the quick brown fox jumps over the lazy dog";\s]>
 <$short-words = [filter: <words>; [?:word] { [le: [len: <word>]; 3] }]>
 [join: <short-words>; ,\s]
@@ -280,7 +280,7 @@ The predicate to run against each element in the input list.
 
 ## has
 
-```rant
+```ranty
 
 [%has: collection; value]
 
@@ -304,7 +304,7 @@ If `collection` is of type `map`, `value` will be coerced to a string before sea
 
 ## index-of
 
-```rant
+```ranty
 
 [%index-of: list; value]
 
@@ -324,7 +324,7 @@ The value to search for.
 
 ### Examples
 
-```rant
+```ranty
 <$letters = (: A; A; B; C; C; D; E)>
 [index-of: <letters>; A |> assert-eq: 0]
 [index-of: <letters>; C |> assert-eq: 3]
@@ -335,7 +335,7 @@ The value to search for.
 
 ## join
 
-```rant
+```ranty
 
 [%join: list; separator?]
 
@@ -355,7 +355,7 @@ The separator to print between each element.
 
 ## last-index-of
 
-```rant
+```ranty
 
 [%last-index-of: list; value]
 
@@ -375,7 +375,7 @@ The value to search for.
 
 ### Example
 
-```rant
+```ranty
 <$letters = (: A; A; B; C; C; D; E)>
 [last-index-of: <letters>; A |> assert-eq: 1]
 [last-index-of: <letters>; C |> assert-eq: 4]
@@ -386,7 +386,7 @@ The value to search for.
 
 ## map
 
-```rant
+```ranty
 
 [%map: list; map-func]
 
@@ -410,7 +410,7 @@ The function to map the values with.
 
 ### Example
 
-```rant
+```ranty
 # Multiple each element of a list by 10
 <$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10)>
 <$tens = [map: <numbers>; [?:x] { [mul: <x>; 10] }]>
@@ -421,7 +421,7 @@ The function to map the values with.
 
 ## oxford-join
 
-```rant
+```ranty
 
 [%oxford-join: comma; conj; comma-conj; list]
 
@@ -455,7 +455,7 @@ The separator values are applied as follows:
 ### Examples
 
 #### Print lists with Oxford comma
-```rant
+```ranty
 <$numbers = (:)>
 [rep: 5][sep: \n]
 {
@@ -475,7 +475,7 @@ The separator values are applied as follows:
 ```
 
 #### Print lists without Oxford comma
-```rant
+```ranty
 <$numbers = (:)>
 [rep: 5][sep: \n]
 {
@@ -496,7 +496,7 @@ The separator values are applied as follows:
 
 ## push
 
-```rant
+```ranty
 
 [%push: list; value]
 
@@ -515,7 +515,7 @@ The value to add to the end of `list`.
 
 ## pop
 
-```rant
+```ranty
 
 [%pop: list]
 
@@ -532,7 +532,7 @@ The list to modify.
 
 ## insert
 
-```rant
+```ranty
 
 [%insert: collection; value; pos]
 
@@ -562,7 +562,7 @@ Raises an error if `pos` is out of range or not the correct type for the provide
 
 ## remove
 
-```rant
+```ranty
 
 [%remove: collection; pos]
 
@@ -588,7 +588,7 @@ Raises an error if `pos` is an unsupported type for the provided collection.
 
 ## rev
 
-```rant
+```ranty
 
 [%rev: collection]
 
@@ -604,7 +604,7 @@ The collection to reverse.
 
 ### Example
 
-```rant
+```ranty
 [rev: (foo; bar)]
 # -> (bar; foo)
 ```
@@ -612,7 +612,7 @@ The collection to reverse.
 
 ## shuffle
 
-```rant
+```ranty
 
 [%shuffle: list]
 
@@ -628,7 +628,7 @@ The input list.
 
 ### Example
 
-```rant
+```ranty
 # Shuffle the words in a string
 <$message = "the quick brown fox jumps over he lazy dog">
 [join: \s; [shuffle: [split: <message>; \s]]]
@@ -639,7 +639,7 @@ The input list.
 
 ## shuffle-self
 
-```rant
+```ranty
 
 [%shuffle-self: list]
 
@@ -662,7 +662,7 @@ Where \\(n\\) = the length of `list`:
 
 ### Example
 
-```rant
+```ranty
 # Shuffles a list of letters and concatenates them into a single string
 <$letters = (:A;B;C;D;E;F;G;H;I;J;K;L)>
 [shuffle-self: <letters>]
@@ -674,7 +674,7 @@ Where \\(n\\) = the length of `list`:
 
 ## shuffle-thru
 
-```rant
+```ranty
 
 [%shuffle-thru: list]
 
@@ -699,7 +699,7 @@ Where \\(n\\) = the length of `list`:
 
 ## sift
 
-```rant
+```ranty
 
 [%sift: list; target-size]
 
@@ -719,7 +719,7 @@ The maximum number of elements to reduce the `list` to.
 
 ### Example
 
-```rant
+```ranty
 # Create a random subset of abilities for a character
 
 <$char-traits = (:
@@ -742,7 +742,7 @@ The maximum number of elements to reduce the `list` to.
 
 ## sift-self
 
-```rant
+```ranty
 
 [%sift-self: list; target-size]
 
@@ -761,7 +761,7 @@ The maximum number of elements to reduce the `list` to.
 
 ### Example
 
-```rant
+```ranty
 # Remove a random element from a list and print the contents at each iteration
 <$list = [split: "Sphinx of black quartz, judge my vow."; \s]>
 [rep: [len: <list>]]
@@ -789,7 +789,7 @@ The maximum number of elements to reduce the `list` to.
 
 ## sift-thru
 
-```rant
+```ranty
 
 [%sift-thru: list; target-size]
 
@@ -812,7 +812,7 @@ The maximum number of elements to reduce the `list` to.
 
 ## squish
 
-```rant
+```ranty
 
 [%squish: list; target-size]
 
@@ -833,7 +833,7 @@ The maximum number of elements to reduce the list copy to.
 
 ## squish-self
 
-```rant
+```ranty
 
 [%squish-self: list; target-size]
 
@@ -852,7 +852,7 @@ The maximum number of elements to reduce the list to.
 
 ### Example
 
-```rant
+```ranty
 # Merge random items in a number list
 <$numbers = (: 100; 100; 100; 100; 100; 100; 100; 100; 100; 100)>
 
@@ -876,7 +876,7 @@ After: `[join: ,\s; <numbers>]\n
 
 ## squish-thru
 
-```rant
+```ranty
 
 [%squish-thru: list; target-size]
 
@@ -897,7 +897,7 @@ The maximum number of elements to reduce the list to.
 
 ## sort
 
-```rant
+```ranty
 
 [%sort: list]
 
@@ -914,7 +914,7 @@ The input list.
 
 ## sort-self
 
-```rant
+```ranty
 
 [%sort-self: list]
 
@@ -930,7 +930,7 @@ The input list.
 
 ## sort-thru
 
-```rant
+```ranty
 
 [%sort-thru: list]
 
@@ -947,7 +947,7 @@ The input list.
 
 ## sum
 
-```rant
+```ranty
 
 [%sum: list]
 
@@ -959,7 +959,7 @@ Adds the elements of a list together from left to right and prints the result.
 
 ## take
 
-```rant
+```ranty
 
 [%take: collection; pos]
 
@@ -984,7 +984,7 @@ Raises an error if `pos` is not a valid location in the collection.
 
 ## translate
 
-```rant
+```ranty
 
 [%translate: list; map]
 
@@ -1005,7 +1005,7 @@ A map associating items in `list` with their replacements.
 
 ### Example
 
-```rant
+```ranty
 # Constructs a substitution cipher function
 [$make-cipher: alphabet] {
   <
@@ -1047,7 +1047,7 @@ Decoded: \"<decoded-message>\"\n
 
 ## keys
 
-```rant
+```ranty
 
 [%keys: map]
 
@@ -1060,7 +1060,7 @@ Inherited prototype keys are not included.
 
 ## values
 
-```rant
+```ranty
 
 [%values: map]
 
@@ -1074,7 +1074,7 @@ Inherited prototype values are not included.
 
 ## zip
 
-```rant
+```ranty
 
 [%zip: list-a; list-b; zip-func]
 
@@ -1105,7 +1105,7 @@ A function that prints a new value for each corresponding pair of values from `l
 
 ### Examples
 
-```rant
+```ranty
 # Dot product
 [$dot: a; b] {
   [zip: <a>; <b>; <mul> |> sum]

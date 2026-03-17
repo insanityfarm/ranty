@@ -4,7 +4,7 @@ The `list` type represents a mutable, resizable, ordered collection of zero or m
 
 Lists are initialized using a pair of parentheses containing the list elements, separated by semicolons:
 
-```rant
+```ranty
 # A pair of parentheses is treated like an empty list
 <$empty-list = (:)>
 
@@ -27,7 +27,7 @@ List indices start at 0 and can be accessed by adding the index to the accessor 
 
 You can also use negative indices to access items relative to the end of a list, starting from -1 and going down.
 
-```rant
+```ranty
 # Create a list
 <$list = (: 1; 2; 3; 4; 5; 6; 7; 8; 9)>
 

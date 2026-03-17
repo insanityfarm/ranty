@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Text - Rant Reference</title>
+        <title>Text - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -176,15 +176,15 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="text"><a class="header" href="#text">Text</a></h1>
-<p>In Rant, text is made from fragments, whitespace, and hinted expression units. Any text is also valid Rant source, but whitespace is normalized unless you opt into other behavior.</p>
+<p>In Ranty, text is made from fragments, whitespace, and hinted expression units. Any text is also valid Ranty source, but whitespace is normalized unless you opt into other behavior.</p>
 <h2 id="fragments-and-same-line-whitespace"><a class="header" href="#fragments-and-same-line-whitespace">Fragments and same-line whitespace</a></h2>
 <p>Plain source text becomes output fragments. By default, same-line whitespace between adjacent fragments or hinted elements is normalized to a single ASCII space.</p>
-<pre><code class="language-rant example">One  two   three
+<pre><code class="language-ranty example">One  two   three
 </code></pre>
 <pre><code class="language-text expected">One two three
 </code></pre>
 <p>Line breaks do not add spaces by themselves.</p>
-<pre><code class="language-rant example">Water
+<pre><code class="language-ranty example">Water
 melon
 </code></pre>
 <pre><code class="language-text expected">Watermelon
@@ -192,21 +192,21 @@ melon
 <p>Escaped whitespace such as <code>\s</code> and <code>\t</code> always prints literally.</p>
 <h2 id="hinting"><a class="header" href="#hinting">Hinting</a></h2>
 <p>A backtick before an expression unit marks it as <strong>hinted</strong>. Hinted units participate in surrounding whitespace as if they were ordinary fragments.</p>
-<pre><code class="language-rant example">&lt;$name = "world"&gt;Hello, `&lt;name&gt;!
+<pre><code class="language-ranty example">&lt;$name = "world"&gt;Hello, `&lt;name&gt;!
 </code></pre>
 <pre><code class="language-text expected">Hello, world!
 </code></pre>
 <p>Some units become implicitly hinted in text-heavy positions, and <code>@text</code> can mark definitions and parameters as auto-hinted. See <a href="keywords/text.html"><code>@text</code></a> for the full rules.</p>
 <h2 id="sinking"><a class="header" href="#sinking">Sinking</a></h2>
 <p><code>~</code> does the opposite of a hint: it tells the compiler not to treat the next expression unit like text. This is useful when formatting code with spaces that should not survive into output.</p>
-<pre><code class="language-rant example">{\:} ~{\(}
+<pre><code class="language-ranty example">{\:} ~{\(}
 </code></pre>
 <pre><code class="language-text expected">:(
 </code></pre>
 <p>The sink and hint operators are compile-time annotations. Using them in unsupported positions is a compiler error.</p>
 <h2 id="string-literals"><a class="header" href="#string-literals">String literals</a></h2>
 <p>String literals count as single text units and preserve their contents without normal fragment splitting:</p>
-<pre><code class="language-rant">"This string literal includes ""quoted"" text"
+<pre><code class="language-ranty">"This string literal includes ""quoted"" text"
 </code></pre>
 <p>Multi-line string literals are also valid.</p>
 <h2 id="text-vs-string"><a class="header" href="#text-vs-string">Text vs. <code>string</code></a></h2>

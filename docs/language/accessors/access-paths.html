@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Access Paths - Rant Reference</title>
+        <title>Access Paths - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -181,8 +181,8 @@
 These are separated by the path separator token <code>/</code>.</p>
 <h2 id="indexing"><a class="header" href="#indexing">Indexing</a></h2>
 <p>Accessing elements in ordered collections (lists, strings, and ranges) is known as <strong>indexing</strong>.
-All Rant collections use "zero-based indexing"; in other words, the first element starts at index 0, the second at index 1, and so on.</p>
-<pre><code class="language-rant">&lt;%numbers = (: 1; 3; 5; 7; 9)&gt;
+All Ranty collections use "zero-based indexing"; in other words, the first element starts at index 0, the second at index 1, and so on.</p>
+<pre><code class="language-ranty">&lt;%numbers = (: 1; 3; 5; 7; 9)&gt;
 
 # Set the first number to 1
 &lt;numbers/0 = 100&gt;
@@ -191,7 +191,7 @@ All Rant collections use "zero-based indexing"; in other words, the first elemen
 &lt;numbers/0&gt; # -&gt; 100
 </code></pre>
 <p>Negative indices are relative to the end of the collection. This means <code>-1</code> represents the last element, <code>-2</code> the penultimate element, and so on.</p>
-<pre><code class="language-rant">&lt;%msg = "hello"&gt;
+<pre><code class="language-ranty">&lt;%msg = "hello"&gt;
 Last char: &lt;msg/-1&gt;\n # same as &lt;msg/4&gt; or &lt;msg/([len: &lt;msg&gt;] - 1)&gt;
 
 # Last char: o
@@ -199,7 +199,7 @@ Last char: &lt;msg/-1&gt;\n # same as &lt;msg/4&gt; or &lt;msg/([len: &lt;msg&gt
 <h2 id="keying"><a class="header" href="#keying">Keying</a></h2>
 <p>Accessing elements in maps is known as <strong>keying</strong>.
 Simply specify the desired map key after the <code>/</code> to access the map element with that key:</p>
-<pre><code class="language-rant">&lt;%citizen = (::
+<pre><code class="language-ranty">&lt;%citizen = (::
     name = "Steve";
     age = 50;
     mood = "angry";
@@ -213,8 +213,8 @@ Simply specify the desired map key after the <code>/</code> to access the map el
 &lt;citizen/mood&gt;\n    # -&gt; angry
 </code></pre>
 <p>Keys follow the same naming rules as variables, unless specified as a dynamic key (see below).</p>
-<p>If a getter cannot find the requested key on the map itself, Rant will continue searching that map's prototype chain.</p>
-<pre><code class="language-rant">&lt;$defaults = (:: role = villager)&gt;
+<p>If a getter cannot find the requested key on the map itself, Ranty will continue searching that map's prototype chain.</p>
+<pre><code class="language-ranty">&lt;$defaults = (:: role = villager)&gt;
 &lt;$npc = (:: name = Tavi)&gt;
 [set-proto: &lt;npc&gt;; &lt;defaults&gt;]
 
@@ -231,7 +231,7 @@ Simply specify the desired map key after the <code>/</code> to access the map el
 <p>Setters are different: writing <code>&lt;npc/role = merchant&gt;</code> would create or update the <code>role</code> key on <code>&lt;npc&gt;</code> itself and would not modify <code>&lt;defaults&gt;</code>.</p>
 <h2 id="dynamic-keys"><a class="header" href="#dynamic-keys">Dynamic keys</a></h2>
 <p>Where an index or key must be calculated at runtime, a dynamic key may be used. Simply use an expression enclosed in <code>()</code> in place of the index or key:</p>
-<pre><code class="language-rant">&lt;%fruits = (apple; orange; banana; tomato)&gt;
+<pre><code class="language-ranty">&lt;%fruits = (apple; orange; banana; tomato)&gt;
 
 &lt;fruits/( [len: &lt;fruits&gt; |&gt; rand: 0; [] - 1])&gt; # returns a random fruit
 </code></pre>
@@ -254,7 +254,7 @@ Simply specify the desired map key after the <code>/</code> to access the map el
 Slices can be fully-bounded (having start + end points), half-bounded (having a start or end point but not both), or unbounded (all elements).</p>
 <p>When you get a slice of a collection, the accessor returns a new copy of the collection containing the slice contents.</p>
 <p>Slice notation takes the following forms:</p>
-<pre><code class="language-rant"># fully-bounded
+<pre><code class="language-ranty"># fully-bounded
 &lt;my-list/2..5&gt;   # get all elements between index 2 (inclusive) and index 5 (exclusive)
 
 # start-bounded
@@ -268,14 +268,14 @@ Slices can be fully-bounded (having start + end points), half-bounded (having a 
 </code></pre>
 <h4 id="splicing"><a class="header" href="#splicing">Splicing</a></h4>
 <p>You can also set a slice on mutable collection types, an operation also known as <strong>splicing</strong>:</p>
-<pre><code class="language-rant">&lt;$my-list = (: 1; 2; 3)&gt;
+<pre><code class="language-ranty">&lt;$my-list = (: 1; 2; 3)&gt;
 &lt;my-list/1..2 = (: a; b)&gt; # the splice value doesn't have to be the same size!
 &lt;my-list/3..4 = (c; d)&gt; # the splice value can also be a tuple!
 &lt;my-list&gt; # -&gt; (: 1; a; b; 3)
 </code></pre>
 <h4 id="dynamic-slices"><a class="header" href="#dynamic-slices">Dynamic slices</a></h4>
 <p>Slices also support dynamic bounds; just replace any slice bound with a dynamic key:</p>
-<pre><code class="language-rant">&lt;%message = "fantastic"&gt;
+<pre><code class="language-ranty">&lt;%message = "fantastic"&gt;
 [rep: [len: &lt;message&gt;]]
 {
     # Use the current block iteration number to slice the message
@@ -295,7 +295,7 @@ fantastic
 </code></pre>
 <h2 id="nested-access-paths"><a class="header" href="#nested-access-paths">Nested access paths</a></h2>
 <p>Access paths can be nested. This means if you have an array in a map and you want to access an element of that array, you most certainly can; just add another component to the path.</p>
-<pre><code class="language-rant">&lt;%arrays = (::
+<pre><code class="language-ranty">&lt;%arrays = (::
     odd-numbers = (: 1; 3; 5; 7; 9);
     even-numbers = (: 0; 2; 4; 6; 8);
 )&gt;

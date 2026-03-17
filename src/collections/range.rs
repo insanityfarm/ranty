@@ -1,18 +1,18 @@
-use crate::{util, RantList, RantTuple, RantValue};
+use crate::{util, RantyList, RantyTuple, RantyValue};
 use std::{cmp::Ordering, fmt::Display};
 
-/// Represents Rant's `range` type, which characterizes a closed range of integers with an exclusive end bound.
+/// Represents Ranty's `range` type, which characterizes a closed range of integers with an exclusive end bound.
 ///
 /// Includes a `step` value which specifies how far apart adjacent values in the range should be.
 /// If the size of the range isn't evenly divisible by `step`, the ending step will be smaller.
 #[derive(Debug, Clone, PartialEq)]
-pub struct RantRange {
+pub struct RantyRange {
     start: i64,
     end: i64,
     step: i64,
 }
 
-impl RantRange {
+impl RantyRange {
     #[inline]
     pub fn new(start: i64, end: i64, abs_step: u64) -> Self {
         let abs_step = if abs_step == 0 { 1 } else { abs_step };
@@ -29,7 +29,7 @@ impl RantRange {
     }
 }
 
-impl Default for RantRange {
+impl Default for RantyRange {
     fn default() -> Self {
         Self {
             start: 0,
@@ -39,7 +39,7 @@ impl Default for RantRange {
     }
 }
 
-impl Display for RantRange {
+impl Display for RantyRange {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let comparison = if self.start < self.end { "<" } else { ">" };
         let op = if self.start < self.end { '+' } else { '-' };
@@ -52,7 +52,7 @@ impl Display for RantRange {
     }
 }
 
-impl RantRange {
+impl RantyRange {
     /// Gets the start bound of the range.
     #[inline]
     pub fn start(&self) -> i64 {
@@ -143,15 +143,15 @@ impl RantRange {
         })
     }
 
-    /// Enumerates the values of the range and returns the results as a Rant `list` object.
+    /// Enumerates the values of the range and returns the results as a Ranty `list` object.
     #[inline]
-    pub fn to_rant_list(&self) -> RantList {
+    pub fn to_ranty_list(&self) -> RantyList {
         let n = self.len();
-        let mut list = RantList::new();
+        let mut list = RantyList::new();
 
         for i in 0..n {
             if let Some(item) = self.get(i) {
-                list.push(RantValue::Int(item));
+                list.push(RantyValue::Int(item));
             }
         }
 
@@ -159,13 +159,13 @@ impl RantRange {
     }
 
     #[inline]
-    pub fn to_rant_tuple(&self) -> RantTuple {
+    pub fn to_ranty_tuple(&self) -> RantyTuple {
         let n = self.len();
         let mut items = Vec::with_capacity(n);
 
         for i in 0..n {
             if let Some(item) = self.get(i) {
-                items.push(RantValue::Int(item));
+                items.push(RantyValue::Int(item));
             }
         }
 

@@ -1,9 +1,9 @@
 use crate::runtime::*;
 use crate::util::*;
 use crate::{
-    collections::*, FromRantArgs, IntoRant, IntoRantFunction, RantSelectorHandle, TryFromRant,
+    collections::*, FromRantyArgs, IntoRanty, IntoRantyFunction, RantySelectorHandle, TryFromRanty,
 };
-use crate::{lang::Slice, util, RantFunction, RantString};
+use crate::{lang::Slice, util, RantyFunction, RantyString};
 use cast::*;
 use std::cmp::Ordering;
 use std::error::Error;
@@ -59,31 +59,31 @@ macro_rules! impl_into_runtime_result {
     };
 }
 
-/// The result type used by Rant value operators and conversion.
+/// The result type used by Ranty value operators and conversion.
 pub type ValueResult<T> = Result<T, ValueError>;
-/// The result type used by Rant value index read operations.
-pub type ValueIndexResult = Result<RantValue, IndexError>;
-/// The result type used by Rant value key read operations.
-pub type ValueKeyResult = Result<RantValue, KeyError>;
-/// The result type used by Rant value index write operations.
+/// The result type used by Ranty value index read operations.
+pub type ValueIndexResult = Result<RantyValue, IndexError>;
+/// The result type used by Ranty value key read operations.
+pub type ValueKeyResult = Result<RantyValue, KeyError>;
+/// The result type used by Ranty value index write operations.
 pub type ValueIndexSetResult = Result<(), IndexError>;
-/// The result type used by Rant value key write operations.
+/// The result type used by Ranty value key write operations.
 pub type ValueKeySetResult = Result<(), KeyError>;
-/// The result type used by Rant value slice read operations.
-pub type ValueSliceResult = Result<RantValue, SliceError>;
-/// The result type used by Rant value slice write operations.
+/// The result type used by Ranty value slice read operations.
+pub type ValueSliceResult = Result<RantyValue, SliceError>;
+/// The result type used by Ranty value slice write operations.
 pub type ValueSliceSetResult = Result<(), SliceError>;
 
-/// Type alias for `Rc<RantFunction>`
-pub type RantFunctionHandle = Rc<RantFunction>;
+/// Type alias for `Rc<RantyFunction>`
+pub type RantyFunctionHandle = Rc<RantyFunction>;
 
-/// Rant's "nothing" value.
-pub struct RantNothing;
+/// Ranty's "nothing" value.
+pub struct RantyNothing;
 
-/// A lightweight representation of a Rant value's type.
+/// A lightweight representation of a Ranty value's type.
 #[derive(Copy, Clone, Debug, PartialEq)]
 #[repr(u8)]
-pub enum RantValueType {
+pub enum RantyValueType {
     /// The `string` type.
     String,
     /// The `float` type.
@@ -108,7 +108,7 @@ pub enum RantValueType {
     Nothing,
 }
 
-impl RantValueType {
+impl RantyValueType {
     /// Gets a string slice representing the type.
     pub fn name(&self) -> &'static str {
         match self {
@@ -127,46 +127,46 @@ impl RantValueType {
     }
 }
 
-impl Display for RantValueType {
+impl Display for RantyValueType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.name())
     }
 }
 
-/// A dynamically-typed Rant value.
+/// A dynamically-typed Ranty value.
 ///
 /// ## Cloning
 ///
-/// Calling `clone()` on a by-ref Rant value type (such as `list`) will only clone its handle; both copies will point to the same contents.
+/// Calling `clone()` on a by-ref Ranty value type (such as `list`) will only clone its handle; both copies will point to the same contents.
 ///
 /// If you want to shallow-copy a by-ref value, use the `shallow_copy` method instead.
 #[derive(Clone)]
-pub enum RantValue {
-    /// A Rant value of type `string`. Passed by-value.
-    String(RantString),
-    /// A Rant value of type `float`. Passed by-value.
+pub enum RantyValue {
+    /// A Ranty value of type `string`. Passed by-value.
+    String(RantyString),
+    /// A Ranty value of type `float`. Passed by-value.
     Float(f64),
-    /// A Rant value of type `int`. Passed by-value.
+    /// A Ranty value of type `int`. Passed by-value.
     Int(i64),
-    /// A Rant value of type `bool`. Passed by-value.
+    /// A Ranty value of type `bool`. Passed by-value.
     Boolean(bool),
-    /// A Rant value of type `function`. Passed by-reference.
-    Function(RantFunctionHandle),
-    /// A Rant value of type `list`. Passed by-reference.
-    List(RantListHandle),
-    /// A Rant value of type `tuple`. Passed by-reference.
-    Tuple(RantTupleHandle),
-    /// A Rant value of type `map`. Passed by-reference.
-    Map(RantMapHandle),
-    /// A Rant value of type `range`. Passed by-value.
-    Range(RantRange),
-    /// A Rant value of type `selector`. Passed by-value.
-    Selector(RantSelectorHandle),
-    /// A Rant unit value of type `nothing`. Passed by-value.
+    /// A Ranty value of type `function`. Passed by-reference.
+    Function(RantyFunctionHandle),
+    /// A Ranty value of type `list`. Passed by-reference.
+    List(RantyListHandle),
+    /// A Ranty value of type `tuple`. Passed by-reference.
+    Tuple(RantyTupleHandle),
+    /// A Ranty value of type `map`. Passed by-reference.
+    Map(RantyMapHandle),
+    /// A Ranty value of type `range`. Passed by-value.
+    Range(RantyRange),
+    /// A Ranty value of type `selector`. Passed by-value.
+    Selector(RantySelectorHandle),
+    /// A Ranty unit value of type `nothing`. Passed by-value.
     Nothing,
 }
 
-impl RantValue {
+impl RantyValue {
     /// Not a Number (NaN).
     pub const NAN: Self = Self::Float(f64::NAN);
     /// Positive infinity.
@@ -187,7 +187,7 @@ impl RantValue {
     /// Returns true if the value is of type `nothing`.
     #[inline]
     pub fn is_nothing(&self) -> bool {
-        matches!(self, RantValue::Nothing)
+        matches!(self, RantyValue::Nothing)
     }
 
     /// Returns true if the value is NaN (Not a Number).
@@ -208,15 +208,15 @@ impl RantValue {
 }
 
 #[allow(clippy::len_without_is_empty)]
-impl RantValue {
+impl RantyValue {
     #[inline]
-    pub fn from_func<P: FromRantArgs, F: 'static + Fn(&mut VM, P) -> Result<(), RuntimeError>>(
+    pub fn from_func<P: FromRantyArgs, F: 'static + Fn(&mut VM, P) -> Result<(), RuntimeError>>(
         func: F,
     ) -> Self {
-        Self::Function(RantFunctionHandle::new(func.into_rant_func()))
+        Self::Function(RantyFunctionHandle::new(func.into_ranty_func()))
     }
 
-    /// Interprets this value as a boolean value according to Rant's truthiness rules.
+    /// Interprets this value as a boolean value according to Ranty's truthiness rules.
     ///
     /// Types are converted as follows:
     /// 1. `bool` returns itself.
@@ -242,13 +242,13 @@ impl RantValue {
         }
     }
 
-    /// Converts to a Rant `bool` value.
+    /// Converts to a Ranty `bool` value.
     #[inline]
     pub fn into_bool_value(self) -> Self {
         Self::Boolean(self.to_bool())
     }
 
-    /// Converts to a Rant `int` value (or `empty` if the conversion fails).
+    /// Converts to a Ranty `int` value (or `empty` if the conversion fails).
     #[inline]
     pub fn into_int_value(self) -> Self {
         match self {
@@ -263,7 +263,7 @@ impl RantValue {
         }
     }
 
-    /// Converts to a Rant `float` value (or `empty` if the conversion fails).
+    /// Converts to a Ranty `float` value (or `empty` if the conversion fails).
     #[inline]
     pub fn into_float_value(self) -> Self {
         match self {
@@ -278,7 +278,7 @@ impl RantValue {
         }
     }
 
-    /// Converts to a Rant `string` value.
+    /// Converts to a Ranty `string` value.
     #[inline]
     pub fn into_string_value(self) -> Self {
         match self {
@@ -287,31 +287,31 @@ impl RantValue {
         }
     }
 
-    /// Converts to a Rant `list` value.
+    /// Converts to a Ranty `list` value.
     #[inline]
     pub fn into_list_value(self) -> Self {
         Self::List(
             match self {
-                Self::Tuple(tuple) => tuple.to_rant_list(),
-                Self::String(s) => s.to_rant_list(),
-                Self::Range(range) => range.to_rant_list(),
+                Self::Tuple(tuple) => tuple.to_ranty_list(),
+                Self::String(s) => s.to_ranty_list(),
+                Self::Range(range) => range.to_ranty_list(),
                 list @ Self::List(_) => return list,
-                _ => return RantValue::Nothing,
+                _ => return RantyValue::Nothing,
             }
             .into_handle(),
         )
     }
 
-    /// Converts to a Rant `tuple` value.
+    /// Converts to a Ranty `tuple` value.
     #[inline]
     pub fn into_tuple_value(self) -> Self {
         Self::Tuple(
             match self {
-                Self::String(s) => s.to_rant_tuple(),
-                Self::List(list) => list.borrow().to_rant_tuple(),
-                Self::Range(range) => range.to_rant_tuple(),
-                tuple @ RantValue::Tuple(_) => return tuple,
-                _ => return RantValue::Nothing,
+                Self::String(s) => s.to_ranty_tuple(),
+                Self::List(list) => list.borrow().to_ranty_tuple(),
+                Self::Range(range) => range.to_ranty_tuple(),
+                tuple @ RantyValue::Tuple(_) => return tuple,
+                _ => return RantyValue::Nothing,
             }
             .into_handle(),
         )
@@ -345,19 +345,19 @@ impl RantValue {
     #[inline]
     pub fn reversed(&self) -> Self {
         match self {
-            Self::String(s) => RantValue::String(s.reversed()),
+            Self::String(s) => RantyValue::String(s.reversed()),
             Self::Tuple(tuple) => {
-                RantValue::Tuple(tuple.iter().rev().collect::<RantTuple>().into_handle())
+                RantyValue::Tuple(tuple.iter().rev().collect::<RantyTuple>().into_handle())
             }
-            Self::List(list) => RantValue::List(
+            Self::List(list) => RantyValue::List(
                 list.borrow()
                     .iter()
                     .rev()
                     .cloned()
-                    .collect::<RantList>()
+                    .collect::<RantyList>()
                     .into_handle(),
             ),
-            Self::Range(range) => RantValue::Range(range.reversed()),
+            Self::Range(range) => RantyValue::Range(range.reversed()),
             _ => self.clone(),
         }
     }
@@ -366,29 +366,29 @@ impl RantValue {
     #[inline]
     pub fn shallow_copy(&self) -> Self {
         match self {
-            Self::List(list) => RantValue::List(list.cloned()),
-            Self::Map(map) => RantValue::Map(map.cloned()),
-            Self::Tuple(tuple) => RantValue::Tuple(tuple.cloned()),
-            Self::Selector(special) => RantValue::Selector(special.clone()),
+            Self::List(list) => RantyValue::List(list.cloned()),
+            Self::Map(map) => RantyValue::Map(map.cloned()),
+            Self::Tuple(tuple) => RantyValue::Tuple(tuple.cloned()),
+            Self::Selector(special) => RantyValue::Selector(special.clone()),
             _ => self.clone(),
         }
     }
 
-    /// Gets the Rant type associated with the value.
+    /// Gets the Ranty type associated with the value.
     #[inline]
-    pub fn get_type(&self) -> RantValueType {
+    pub fn get_type(&self) -> RantyValueType {
         match self {
-            Self::String(_) => RantValueType::String,
-            Self::Float(_) => RantValueType::Float,
-            Self::Int(_) => RantValueType::Int,
-            Self::Boolean(_) => RantValueType::Boolean,
-            Self::Function(_) => RantValueType::Function,
-            Self::List(_) => RantValueType::List,
-            Self::Tuple(_) => RantValueType::Tuple,
-            Self::Map(_) => RantValueType::Map,
-            Self::Range(_) => RantValueType::Range,
-            Self::Selector(_) => RantValueType::Selector,
-            Self::Nothing => RantValueType::Nothing,
+            Self::String(_) => RantyValueType::String,
+            Self::Float(_) => RantyValueType::Float,
+            Self::Int(_) => RantyValueType::Int,
+            Self::Boolean(_) => RantyValueType::Boolean,
+            Self::Function(_) => RantyValueType::Function,
+            Self::List(_) => RantyValueType::List,
+            Self::Tuple(_) => RantyValueType::Tuple,
+            Self::Map(_) => RantyValueType::Map,
+            Self::Range(_) => RantyValueType::Range,
+            Self::Selector(_) => RantyValueType::Selector,
+            Self::Nothing => RantyValueType::Nothing,
         }
     }
 
@@ -455,14 +455,14 @@ impl RantValue {
                         (&list[..to])
                             .iter()
                             .cloned()
-                            .collect::<RantList>()
+                            .collect::<RantyList>()
                             .into_handle(),
                     )),
                     (Some(from), None) => Ok(Self::List(
                         (&list[from..])
                             .iter()
                             .cloned()
-                            .collect::<RantList>()
+                            .collect::<RantyList>()
                             .into_handle(),
                     )),
                     (Some(from), Some(to)) => {
@@ -471,7 +471,7 @@ impl RantValue {
                             (&list[from..to])
                                 .iter()
                                 .cloned()
-                                .collect::<RantList>()
+                                .collect::<RantyList>()
                                 .into_handle(),
                         ))
                     }
@@ -483,14 +483,14 @@ impl RantValue {
                     (&tuple[..to])
                         .iter()
                         .cloned()
-                        .collect::<RantTuple>()
+                        .collect::<RantyTuple>()
                         .into_handle(),
                 )),
                 (Some(from), None) => Ok(Self::Tuple(
                     (&tuple[from..])
                         .iter()
                         .cloned()
-                        .collect::<RantTuple>()
+                        .collect::<RantyTuple>()
                         .into_handle(),
                 )),
                 (Some(from), Some(to)) => {
@@ -499,7 +499,7 @@ impl RantValue {
                         (&tuple[from..to])
                             .iter()
                             .cloned()
-                            .collect::<RantTuple>()
+                            .collect::<RantyTuple>()
                             .into_handle(),
                     ))
                 }
@@ -508,7 +508,7 @@ impl RantValue {
         }
     }
 
-    pub fn slice_set(&mut self, slice: &Slice, val: RantValue) -> ValueSliceSetResult {
+    pub fn slice_set(&mut self, slice: &Slice, val: RantyValue) -> ValueSliceSetResult {
         let (slice_from, slice_to) = self.get_uslice(slice).ok_or(SliceError::OutOfRange)?;
 
         match (self, &val) {
@@ -554,7 +554,7 @@ impl RantValue {
                 Ok(())
             }
             (Self::List(_), other) => Err(SliceError::UnsupportedSpliceSource {
-                src: RantValueType::List,
+                src: RantyValueType::List,
                 dst: other.get_type(),
             }),
             (dst, _src) => Err(SliceError::CannotSetSliceOnType(dst.get_type())),
@@ -609,7 +609,7 @@ impl RantValue {
     }
 
     /// Attempts to set a value by index.
-    pub fn index_set(&mut self, index: i64, val: RantValue) -> ValueIndexSetResult {
+    pub fn index_set(&mut self, index: i64, val: RantyValue) -> ValueIndexSetResult {
         let uindex = self.get_uindex(index).ok_or(IndexError::OutOfRange)?;
 
         match self {
@@ -648,7 +648,7 @@ impl RantValue {
     }
 
     /// Attempts to set a value by key.
-    pub fn key_set(&mut self, key: &str, val: RantValue) -> ValueKeySetResult {
+    pub fn key_set(&mut self, key: &str, val: RantyValue) -> ValueKeySetResult {
         match self {
             Self::Map(map) => {
                 let mut map = map.borrow_mut();
@@ -660,14 +660,14 @@ impl RantValue {
     }
 }
 
-impl Default for RantValue {
-    /// Gets the default RantValue (`empty`).
+impl Default for RantyValue {
+    /// Gets the default RantyValue (`empty`).
     fn default() -> Self {
         Self::Nothing
     }
 }
 
-/// Error produced by a RantValue operator or conversion.
+/// Error produced by a RantyValue operator or conversion.
 #[derive(Debug)]
 pub enum ValueError {
     /// The requested conversion was not valid.
@@ -711,19 +711,19 @@ impl<T> IntoRuntimeResult<T> for Result<T, ValueError> {
     }
 }
 
-/// Error produced by indexing a RantValue.
+/// Error produced by indexing a RantyValue.
 #[derive(Debug)]
 pub enum IndexError {
     /// Index was out of range.
     OutOfRange,
     /// Values of this type cannot be indexed.
-    CannotIndexType(RantValueType),
+    CannotIndexType(RantyValueType),
     /// Values of this type cannot have indices written to.
-    CannotSetIndexOnType(RantValueType),
+    CannotSetIndexOnType(RantyValueType),
 }
 
 impl_error_default!(IndexError);
-impl_into_runtime_result!(ValueIndexResult, RantValue, IndexError);
+impl_into_runtime_result!(ValueIndexResult, RantyValue, IndexError);
 impl_into_runtime_result!(ValueIndexSetResult, (), IndexError);
 
 impl Display for IndexError {
@@ -740,17 +740,17 @@ impl Display for IndexError {
     }
 }
 
-/// Error produced by keying a RantValue.
+/// Error produced by keying a RantyValue.
 #[derive(Debug)]
 pub enum KeyError {
     /// The specified key could not be found.
     KeyNotFound(String),
     /// Values of this type cannot be keyed.
-    CannotKeyType(RantValueType),
+    CannotKeyType(RantyValueType),
 }
 
 impl_error_default!(KeyError);
-impl_into_runtime_result!(ValueKeyResult, RantValue, KeyError);
+impl_into_runtime_result!(ValueKeyResult, RantyValue, KeyError);
 impl_into_runtime_result!(ValueKeySetResult, (), KeyError);
 
 impl Display for KeyError {
@@ -762,26 +762,26 @@ impl Display for KeyError {
     }
 }
 
-/// Error produced by slicing a RantValue.
+/// Error produced by slicing a RantyValue.
 #[derive(Debug)]
 pub enum SliceError {
     /// Slice is out of range.
     OutOfRange,
     /// Tried to slice with an unsupported bound type.
-    UnsupportedSliceBoundType(RantValueType),
+    UnsupportedSliceBoundType(RantyValueType),
     /// Type cannot be sliced.
-    CannotSliceType(RantValueType),
+    CannotSliceType(RantyValueType),
     /// Type cannot be spliced.
-    CannotSetSliceOnType(RantValueType),
+    CannotSetSliceOnType(RantyValueType),
     /// Type cannot be spliced with the specified source type.
     UnsupportedSpliceSource {
-        src: RantValueType,
-        dst: RantValueType,
+        src: RantyValueType,
+        dst: RantyValueType,
     },
 }
 
 impl_error_default!(SliceError);
-impl_into_runtime_result!(ValueSliceResult, RantValue, SliceError);
+impl_into_runtime_result!(ValueSliceResult, RantyValue, SliceError);
 impl_into_runtime_result!(ValueSliceSetResult, (), SliceError);
 
 impl Display for SliceError {
@@ -800,23 +800,23 @@ impl Display for SliceError {
     }
 }
 
-/// Represents a dynamically-typed Rant number.
+/// Represents a dynamically-typed Ranty number.
 ///
-/// Implements `TryFromRant` and can therefore be used on native functions to accept any number type (`int` or `float`),
+/// Implements `TryFromRanty` and can therefore be used on native functions to accept any number type (`int` or `float`),
 /// while preserving the original type.
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-pub enum RantNumber {
-    /// Rant `int` value.
+pub enum RantyNumber {
+    /// Ranty `int` value.
     Int(i64),
-    /// Rant `float` value.
+    /// Ranty `float` value.
     Float(f64),
 }
 
-impl TryFromRant for RantNumber {
-    fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
+impl TryFromRanty for RantyNumber {
+    fn try_from_ranty(val: RantyValue) -> Result<Self, ValueError> {
         match val {
-            RantValue::Int(i) => Ok(RantNumber::Int(i)),
-            RantValue::Float(f) => Ok(RantNumber::Float(f)),
+            RantyValue::Int(i) => Ok(RantyNumber::Int(i)),
+            RantyValue::Float(f) => Ok(RantyNumber::Float(f)),
             other => Err(ValueError::InvalidConversion {
                 from: other.type_name(),
                 to: "[number]",
@@ -830,22 +830,22 @@ impl TryFromRant for RantNumber {
     }
 }
 
-/// Filter type that represents any indexable (ordered) Rant collection type.
+/// Filter type that represents any indexable (ordered) Ranty collection type.
 ///
-/// Use on native functions to accept any ordered collection type. Derefs to `RantValue`.
+/// Use on native functions to accept any ordered collection type. Derefs to `RantyValue`.
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
-pub struct RantOrderedCollection(RantValue);
+pub struct RantyOrderedCollection(RantyValue);
 
-impl Deref for RantOrderedCollection {
-    type Target = RantValue;
+impl Deref for RantyOrderedCollection {
+    type Target = RantyValue;
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
-impl TryFromRant for RantOrderedCollection {
-    fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
+impl TryFromRanty for RantyOrderedCollection {
+    fn try_from_ranty(val: RantyValue) -> Result<Self, ValueError> {
         if val.is_indexable() {
             Ok(Self(val))
         } else {
@@ -861,7 +861,7 @@ impl TryFromRant for RantOrderedCollection {
     }
 }
 
-impl Debug for RantValue {
+impl Debug for RantyValue {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             Self::String(s) => write!(f, "{}", s),
@@ -879,14 +879,14 @@ impl Debug for RantValue {
     }
 }
 
-fn get_display_string(value: &RantValue, max_depth: usize) -> String {
+fn get_display_string(value: &RantyValue, max_depth: usize) -> String {
     match value {
-        RantValue::String(s) => s.to_string(),
-        RantValue::Float(f) => format!("{}", f),
-        RantValue::Int(i) => format!("{}", i),
-        RantValue::Boolean(b) => (if *b { "@true" } else { "@false" }).to_string(),
-        RantValue::Function(f) => format!("[function({:?})]", f.body),
-        RantValue::List(list) => {
+        RantyValue::String(s) => s.to_string(),
+        RantyValue::Float(f) => format!("{}", f),
+        RantyValue::Int(i) => format!("{}", i),
+        RantyValue::Boolean(b) => (if *b { "@true" } else { "@false" }).to_string(),
+        RantyValue::Function(f) => format!("[function({:?})]", f.body),
+        RantyValue::List(list) => {
             let mut buf = String::new();
             let mut is_first = true;
             buf.push_str("(:");
@@ -908,7 +908,7 @@ fn get_display_string(value: &RantValue, max_depth: usize) -> String {
             buf.push(')');
             buf
         }
-        RantValue::Tuple(tuple) => {
+        RantyValue::Tuple(tuple) => {
             let mut buf = String::new();
             let mut is_first = true;
             buf.push('(');
@@ -930,7 +930,7 @@ fn get_display_string(value: &RantValue, max_depth: usize) -> String {
             buf.push(')');
             buf
         }
-        RantValue::Map(map) => {
+        RantyValue::Map(map) => {
             let mut buf = String::new();
             let mut is_first = true;
             buf.push_str("(::");
@@ -960,9 +960,9 @@ fn get_display_string(value: &RantValue, max_depth: usize) -> String {
             buf.push(')');
             buf
         }
-        RantValue::Selector(_) => "[special]".to_owned(),
-        RantValue::Range(range) => range.to_string(),
-        RantValue::Nothing => (if max_depth < MAX_DISPLAY_STRING_DEPTH {
+        RantyValue::Selector(_) => "[special]".to_owned(),
+        RantyValue::Range(range) => range.to_string(),
+        RantyValue::Nothing => (if max_depth < MAX_DISPLAY_STRING_DEPTH {
             "<>"
         } else {
             ""
@@ -971,13 +971,13 @@ fn get_display_string(value: &RantValue, max_depth: usize) -> String {
     }
 }
 
-impl Display for RantValue {
+impl Display for RantyValue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", get_display_string(self, MAX_DISPLAY_STRING_DEPTH))
     }
 }
 
-impl PartialEq for RantValue {
+impl PartialEq for RantyValue {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::Nothing, Self::Nothing) => true,
@@ -997,9 +997,9 @@ impl PartialEq for RantValue {
     }
 }
 
-impl Eq for RantValue {}
+impl Eq for RantyValue {}
 
-impl PartialOrd for RantValue {
+impl PartialOrd for RantyValue {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         match (self, other) {
             (Self::Nothing, _) | (_, Self::Nothing) => None,
@@ -1019,14 +1019,14 @@ impl PartialOrd for RantValue {
     }
 }
 
-impl Not for RantValue {
+impl Not for RantyValue {
     type Output = Self;
     fn not(self) -> Self::Output {
-        RantValue::Boolean(!self.to_bool())
+        RantyValue::Boolean(!self.to_bool())
     }
 }
 
-impl Neg for RantValue {
+impl Neg for RantyValue {
     type Output = Self;
     fn neg(self) -> Self::Output {
         match self {
@@ -1038,7 +1038,7 @@ impl Neg for RantValue {
     }
 }
 
-impl Add for RantValue {
+impl Add for RantyValue {
     type Output = Self;
     fn add(self, rhs: Self) -> Self::Output {
         match (self, rhs) {
@@ -1056,26 +1056,26 @@ impl Add for RantValue {
             (Self::Boolean(a), Self::Boolean(b)) => Self::Int(bi64(a) + bi64(b)),
             (Self::Boolean(a), Self::Int(b)) => Self::Int(bi64(a).saturating_add(b)),
             (Self::Boolean(a), Self::Float(b)) => Self::Float(bf64(a) + b),
-            (Self::Tuple(a), Self::Tuple(b)) => (a + b).into_rant(),
-            (Self::Tuple(a), Self::List(b)) => (a + b).into_rant(),
-            (Self::List(a), Self::List(b)) => (a + b).into_rant(),
-            (Self::List(a), Self::Tuple(b)) => (a + b).into_rant(),
+            (Self::Tuple(a), Self::Tuple(b)) => (a + b).into_ranty(),
+            (Self::Tuple(a), Self::List(b)) => (a + b).into_ranty(),
+            (Self::List(a), Self::List(b)) => (a + b).into_ranty(),
+            (Self::List(a), Self::Tuple(b)) => (a + b).into_ranty(),
             (Self::Map(a), Self::Map(b)) => {
-                let mut map = RantMap::new();
+                let mut map = RantyMap::new();
                 for (k, v) in a.borrow().raw_pairs_internal() {
                     map.raw_set(k, v.clone());
                 }
                 for (k, v) in b.borrow().raw_pairs_internal() {
                     map.raw_set(k, v.clone());
                 }
-                map.into_rant()
+                map.into_ranty()
             }
-            (lhs, rhs) => Self::String(RantString::from(format!("{}{}", lhs, rhs))),
+            (lhs, rhs) => Self::String(RantyString::from(format!("{}{}", lhs, rhs))),
         }
     }
 }
 
-impl Sub for RantValue {
+impl Sub for RantyValue {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self::Output {
         match (self, rhs) {
@@ -1096,7 +1096,7 @@ impl Sub for RantValue {
     }
 }
 
-impl Mul for RantValue {
+impl Mul for RantyValue {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self::Output {
         match (self, rhs) {
@@ -1118,7 +1118,7 @@ impl Mul for RantValue {
     }
 }
 
-impl Div for RantValue {
+impl Div for RantyValue {
     type Output = ValueResult<Self>;
     fn div(self, rhs: Self) -> Self::Output {
         Ok(match (self, rhs) {
@@ -1138,7 +1138,7 @@ impl Div for RantValue {
     }
 }
 
-impl Rem for RantValue {
+impl Rem for RantyValue {
     type Output = ValueResult<Self>;
     fn rem(self, rhs: Self) -> Self::Output {
         Ok(match (self, rhs) {
@@ -1152,7 +1152,7 @@ impl Rem for RantValue {
     }
 }
 
-impl RantValue {
+impl RantyValue {
     /// Raises `self` to the `exponent` power.
     #[inline]
     pub fn pow(self, exponent: Self) -> ValueResult<Self> {
@@ -1186,7 +1186,7 @@ impl RantValue {
 
     /// Calculates the logical AND.
     #[inline]
-    pub fn and(self, rhs: RantValue) -> Self {
+    pub fn and(self, rhs: RantyValue) -> Self {
         let truth_lhs = self.to_bool();
         if !truth_lhs {
             self
@@ -1197,7 +1197,7 @@ impl RantValue {
 
     /// Calculates the logical OR.
     #[inline]
-    pub fn or(self, rhs: RantValue) -> Self {
+    pub fn or(self, rhs: RantyValue) -> Self {
         let truth_lhs = self.to_bool();
         if truth_lhs {
             self
@@ -1208,9 +1208,9 @@ impl RantValue {
 
     /// Calculates the logical XOR.
     #[inline]
-    pub fn xor(self, rhs: RantValue) -> Self {
+    pub fn xor(self, rhs: RantyValue) -> Self {
         let truth_lhs = self.to_bool();
         let truth_rhs = rhs.to_bool();
-        RantValue::Boolean(truth_lhs ^ truth_rhs)
+        RantyValue::Boolean(truth_lhs ^ truth_rhs)
     }
 }

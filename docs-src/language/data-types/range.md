@@ -10,7 +10,7 @@ As such, very large ranges can be stored, indexed, and enumerated without needin
 
 Ranges are created with the built-in `[range]` function:
 
-```rant
+```ranty
 # Print numbers 0 through 4
 [cat: **[range: 0; 5]; \n]
 
@@ -26,7 +26,7 @@ Ranges are created with the built-in `[range]` function:
 
 Backwards ranges are possible, too; just use a start bound larger than the end bound:
 
-```rant
+```ranty
 # Print numbers 4 through 0
 [cat: **[range: 4; -1]; \n]
 
@@ -42,7 +42,7 @@ Backwards ranges are possible, too; just use a start bound larger than the end b
 
 By default, `[range]` uses an interval of 1, but you can change this by adding a third argument:
 
-```rant
+```ranty
 # Print every second number between 0 and 9
 [cat: **[range: 0; 10; 2]; \n]
 

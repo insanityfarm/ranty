@@ -2,7 +2,7 @@
 
 When function calls are nested inside each other, they can be difficult to read and understand at a glance:
 
-```rant
+```ranty
 [e: [d: [c: [b: [a: 1]; 2]; 3]; 4]; 5] # Welcome to bracket hell
 ```
 
@@ -10,7 +10,7 @@ An alternative way to write nested function calls is by using iterative (rather 
 
 By using piping, the same expression above can be rewritten with only a single pair of brackets:
 
-```rant
+```ranty
 [a: 1 |> b: 2 |> c: 3 |> d: 4 |> e: 5] # Much more readable!
 ```
 
@@ -20,10 +20,10 @@ This output value can be accessed using the **pipeval literal** `[]`.
 By default, pipeval is implicitly passed as the first argument in the next function call;
 however, you can disable this and explicitly specify where to pass it in by directly using `[]` in any argument.
 
-Rant treats `[]` like any other constant, meaning that you can pass it to any number of arguments, 
+Ranty treats `[]` like any other constant, meaning that you can pass it to any number of arguments, 
 or even reference it multiple times in one argument.
 
-```rant
+```ranty
 [$get-zipper] {
     {<add>|<sub>}
 }
@@ -34,7 +34,7 @@ or even reference it multiple times in one argument.
 
 If pipeval is a `function`, you can call it directly by using it as the function name:
 
-```rant
+```ranty
 [$get-math-func] {
     {<add>|<mul>|<sub>|<div>}
 }
@@ -51,14 +51,14 @@ To illustrate this, suppose we have a call to `[foo]` that passes its return val
 
 In the nested scenario, a temporal argument in `[foo]` will not duplicate the call to `[bar]`:
 
-```rant
+```ranty
 [bar: [foo: **(1; 2; 3)]]
 # -> [bar: [foo: 1][foo: 2][foo: 3]]
 ```
 
 In the piped scenario, the temporal argument in `[foo]` duplicates the entire call chain:
 
-```rant
+```ranty
 [foo: **(1; 2; 3) |> bar]
 # -> [bar: [foo: 1]]
 # -> [bar: [foo: 2]]
@@ -72,14 +72,14 @@ This can save some nesting and make your code more readable. You can also use it
 
 The assignment pipe must appear at the end of the call chain.
 
-```rant
+```ranty
 <$test>
 [upper: "hello!" > test] # same as <test = [upper: "hello!"]>
 [assert-eq: <test>; "hello!"]
 ```
 
 You can also create new variables from assignment pipes:
-```rant
+```ranty
 [rand: 1; 100 > $n] # same as <$n = [rand: 1; 100]>
 ```
 

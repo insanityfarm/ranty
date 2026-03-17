@@ -1,8 +1,8 @@
-use rant::Rant;
+use ranty::Ranty;
 
 #[test]
 fn stdlib_exports_expected_public_surface() {
-    let rant = Rant::new();
+    let ranty = Ranty::new();
     for name in [
         "alt",
         "call",
@@ -174,7 +174,7 @@ fn stdlib_exports_expected_public_surface() {
         "ord",
         "ord-all",
         "error",
-        "RANT_VERSION",
+        "RANTY_VERSION",
         "BUILD_VERSION",
         "EPSILON",
         "MIN_FLOAT",
@@ -185,6 +185,6 @@ fn stdlib_exports_expected_public_surface() {
         "NEG_INFINITY",
         "NAN",
     ] {
-        assert!(rant.has_global(name), "missing stdlib symbol: {name}");
+        assert!(ranty.has_global(name), "missing stdlib symbol: {name}");
     }
 }

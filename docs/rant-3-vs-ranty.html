@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Comparison of Rant 3 and 4 - Rant Reference</title>
+        <title>Comparison of Rant 3 and Ranty - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -175,12 +175,13 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="comparison-of-rant-3-and-4"><a class="header" href="#comparison-of-rant-3-and-4">Comparison of Rant 3 and 4</a></h1>
-<p>Rant 3 (deprecated as of June 2020) was released in April 2017. Since then, several critical design flaws have been identified in the language.
-Rant 4 aims to address all of those flaws while retaining the ergonomics of the original design.</p>
-<p>It is important to note that Rant 3 code is <em>not</em> forwards-compatible with Rant 4. As such, they should be considered as two different languages.</p>
+                        <h1 id="comparison-of-rant-3-and-ranty"><a class="header" href="#comparison-of-rant-3-and-ranty">Comparison of Rant 3 and Ranty</a></h1>
+<p><a href="https://github.com/TheBerkin/rant3">Rant 3</a> (deprecated as of June 2020) was released in April 2017. Since then, several critical design flaws have been identified in the language.
+Ranty aims to address all of those flaws while retaining the ergonomics of the original design.</p>
+<p>Ranty is a fork of <a href="https://github.com/rant-lang/rant">Rant 4</a>, which was intended as a ground-up rewrite (in Rust) from the original Rant developer but sadly appears to have been abandoned before a stable release could be completed.</p>
+<p>It is important to note that Rant 3 code is <em>not</em> forwards-compatible with either Rant 4 or Ranty. Similarly, Ranty extends Rant 4 but should not be assumed interoperable with it. All three should be regarded as separate languages.</p>
 <h2 id="feature-breakdown"><a class="header" href="#feature-breakdown">Feature breakdown</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Feature name</th><th style="text-align: center">Rant 3</th><th style="text-align: center">Rant 4</th></tr></thead><tbody>
+<div class="table-wrapper"><table><thead><tr><th>Feature name</th><th style="text-align: center">Rant 3</th><th style="text-align: center">Ranty</th></tr></thead><tbody>
 <tr><td>Runtime platform</td><td style="text-align: center">.NET-only</td><td style="text-align: center">Native</td></tr>
 <tr><td>Blocks</td><td style="text-align: center">✅</td><td style="text-align: center">✅</td></tr>
 <tr><td>Block weights</td><td style="text-align: center">✅</td><td style="text-align: center">✅</td></tr>
@@ -215,69 +216,69 @@ Rant 4 aims to address all of those flaws while retaining the ergonomics of the 
 </p>
 <h2 id="multiple-outputs"><a class="header" href="#multiple-outputs">Multiple outputs</a></h2>
 <p>Rant 3 allowed programs to produce multiple outputs via channels. That design mostly compensated for the lack of first-class collection literals, but it also made nested scopes harder to reason about because inner scopes could not work with more than one active output at a time.</p>
-<p>Rant 4 removes channels in favor of ordinary value flow. If a program needs to produce several results, it can return a <code>list</code>, <code>tuple</code>, or <code>map</code> instead of writing to parallel outputs.</p>
+<p>Ranty removes channels in favor of ordinary value flow. If a program needs to produce several results, it can return a <code>list</code>, <code>tuple</code>, or <code>map</code> instead of writing to parallel outputs.</p>
 <h2 id="resource-management"><a class="header" href="#resource-management">Resource management</a></h2>
 <p>Rant 3 used <code>.rantpkg</code> package files to bundle programs and string tables. That required a separate packaging step and combined code loading with data loading.</p>
-<p>Rant 4 splits those concerns:</p>
+<p>Ranty splits those concerns:</p>
 <ul>
 <li>modules handle code dependency management;</li>
 <li>data sources handle external data access.</li>
 </ul>
 <h2 id="querying"><a class="header" href="#querying">Querying</a></h2>
 <p>Rant 3 included a built-in query system for filtering and printing entries from packaged string tables.</p>
-<p>Rant 4 removes query expressions from the language itself. The equivalent workflow is to pull data through a module or data source and then manipulate it with ordinary language features and stdlib functions.</p>
+<p>Ranty removes query expressions from the language itself. The equivalent workflow is to pull data through a module or data source and then manipulate it with ordinary language features and stdlib functions.</p>
 <h2 id="variables"><a class="header" href="#variables">Variables</a></h2>
 <p>Variables in Rant 3 were mostly manipulated through standard-library functions such as <code>[v]</code>, <code>[vn]</code>, and <code>[vs]</code>.</p>
-<p>Rant 4 replaces that system with <a href="language/accessors.html">accessors</a>, giving variables, keys, indices, descoping, and fallbacks a consistent language-level syntax.</p>
+<p>Ranty replaces that system with <a href="language/accessors.html">accessors</a>, giving variables, keys, indices, descoping, and fallbacks a consistent language-level syntax.</p>
 <h3 id="example"><a class="header" href="#example">Example</a></h3>
-<pre><code class="language-rant"># Rant 3 style
+<pre><code class="language-ranty"># Rant 3 style
 [vn: foo; 1]
 [vn: bar; 2]
 [add: [v: foo]; [v: bar]]
 # -&gt; 3
 
 
-# Rant 4 equivalent
+# Ranty equivalent
 &lt;$foo = 1; $bar = 2&gt;
 &lt;foo&gt; + &lt;bar&gt;
 # -&gt; 3
 </code></pre>
 <h2 id="printing-values"><a class="header" href="#printing-values">Printing values</a></h2>
 <p>Rant 3 effectively treated printed output as strings only. Working with numbers and collections often required specialized helper functions because values would not naturally flow through the runtime as structured types.</p>
-<p>Rant 4 prints and carries structured values directly. Lists, tuples, maps, numbers, selectors, functions, and <code>nothing</code> all participate in ordinary evaluation without being flattened to strings first.</p>
+<p>Ranty prints and carries structured values directly. Lists, tuples, maps, numbers, selectors, functions, and <code>nothing</code> all participate in ordinary evaluation without being flattened to strings first.</p>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <p>Rant 3 distinguished between native functions and user-defined subroutines, and those lived in different conceptual spaces.</p>
-<p>Rant 4 has a single <a href="language/data-types/function.html"><code>function</code></a> type for named functions, lambdas, and stdlib callables. Functions can be stored in variables, passed around, returned, and captured like other values. The language also supports <a href="language/functions/lambdas.html">lambda expressions</a>, which Rant 3 did not.</p>
+<p>Ranty has a single <a href="language/data-types/function.html"><code>function</code></a> type for named functions, lambdas, and stdlib callables. Functions can be stored in variables, passed around, returned, and captured like other values. The language also supports <a href="language/functions/lambdas.html">lambda expressions</a>, which Rant 3 did not.</p>
 <h2 id="collections"><a class="header" href="#collections">Collections</a></h2>
 <p>Rant 3 had <code>list</code> and <code>map</code> types, but creating them relied on stdlib helpers, which made collection-heavy code harder to read and less composable.</p>
-<p>Rant 4 adds collection initializer syntax, so lists, tuples, and maps can be created directly inside expressions without temporary variable plumbing.</p>
+<p>Ranty adds collection initializer syntax, so lists, tuples, and maps can be created directly inside expressions without temporary variable plumbing.</p>
 <h2 id="variadic-and-optional-parameters"><a class="header" href="#variadic-and-optional-parameters">Variadic and optional parameters</a></h2>
 <p>Rant 3 only supported variadic and optional parameters on native functions.</p>
-<p>Rant 4 allows user-defined functions and lambdas to declare optional and variadic parameters directly, including default values for optional parameters and both <code>*</code> and <code>+</code> variadic forms.</p>
+<p>Ranty allows user-defined functions and lambdas to declare optional and variadic parameters directly, including default values for optional parameters and both <code>*</code> and <code>+</code> variadic forms.</p>
 <h2 id="selectors"><a class="header" href="#selectors">Selectors</a></h2>
 <p>Rant 3 kept selectors in a separate named object space that lived for the duration of the program. Reusing or discarding them required explicit naming and lifecycle management.</p>
-<p>In Rant 4, selectors are ordinary values of type <a href="language/data-types/selector.html"><code>selector</code></a>. They can be created once, stored in variables, shared across blocks, or created inline for one-off use.</p>
+<p>In Ranty, selectors are ordinary values of type <a href="language/data-types/selector.html"><code>selector</code></a>. They can be created once, stored in variables, shared across blocks, or created inline for one-off use.</p>
 <h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
 <p><strong>Reusing a selector</strong></p>
-<pre><code class="language-rant"># Old Rant 3 style
+<pre><code class="language-ranty"># Old Rant 3 style
 [x:foo;locked]
 {a|b|c|d|e|f|g|h}
 [x:foo;locked]
 {1|2|3|4|5|6|7|8}
 
 
-# Rant 4 equivalent
+# Ranty equivalent
 &lt;%sync = [mksel: one]&gt;
 [sel: &lt;sync&gt;] {a|b|c|d|e|f|g|h}
 [sel: &lt;sync&gt;] {1|2|3|4|5|6|7|8}
 </code></pre>
 <p><strong>Single-use selector</strong></p>
-<pre><code class="language-rant"># Rant 3 style
+<pre><code class="language-ranty"># Rant 3 style
 [x:foo;deck][rep:each]{A|B|C|D|E|F|G|H}
 [xdel:foo]
 
 
-# Rant 4 equivalent
+# Ranty equivalent
 [sel: deck] [rep: all] {A|B|C|D|E|F|G|H}
 </code></pre>
 

@@ -2,7 +2,7 @@
 
 ## alpha
 
-```rant
+```ranty
 
 [%alpha: count ? 1]
 
@@ -13,7 +13,7 @@ Prints a uniformly random lowercase alphabetic string.
 
 ## dig
 
-```rant
+```ranty
 
 [%dig: count ? 1]
 
@@ -29,7 +29,7 @@ The number of digits to generate. Defaults to 1.
 
 ### Example
 
-```rant
+```ranty
 # Generate a random 32-character decimal string
 [dig:32] # ~> 01952208554533821061510695429126
 ```
@@ -37,7 +37,7 @@ The number of digits to generate. Defaults to 1.
 
 ## digh
 
-```rant
+```ranty
 
 [%digh: count ? 1]
 
@@ -53,7 +53,7 @@ The number of digits to generate. Defaults to 1.
 
 ### Example
 
-```rant
+```ranty
 # Generate a random 32-character hex string
 [digh:32] # ~> f4e5bef31ea02eac22f220e68e837587
 ```
@@ -61,7 +61,7 @@ The number of digits to generate. Defaults to 1.
 
 ## dignz
 
-```rant
+```ranty
 
 [%dignz: count ? 1]
 
@@ -77,7 +77,7 @@ The number of digits to generate. Defaults to 1.
 
 ### Example
 
-```rant
+```ranty
 # Generate a random 32-character decimal string without zeros
 [dignz:32] # ~> 92558761934966287236132511739511
 ```
@@ -85,7 +85,7 @@ The number of digits to generate. Defaults to 1.
 
 ## maybe
 
-```rant
+```ranty
 
 [%maybe: p ? 0.5]
 
@@ -105,7 +105,7 @@ If omitted or nothing, defaults to 0.5.
 
 ## pick
 
-```rant
+```ranty
 
 [%pick: collection]
 
@@ -115,7 +115,7 @@ Prints a random element from an ordered collection.
 
 ## pickn
 
-```rant
+```ranty
 
 [%pickn: collection; count]
 
@@ -126,7 +126,7 @@ Prints a list containing `count` random elements sampled from `collection`.
 
 ## pick-sparse
 
-```rant
+```ranty
 
 [%pick-sparse: first; ...rest]
 
@@ -137,7 +137,7 @@ Randomly selects one value from a sparse weighted set of arguments by using each
 
 ## rand
 
-```rant
+```ranty
 
 [%rand: a; b]
 
@@ -156,7 +156,7 @@ The second inclusive bound of the random number.
 
 ### Example
 
-```rant
+```ranty
 # Choose a number by fair dice roll.
 You roll a `[rand:1;6].
 
@@ -166,7 +166,7 @@ You roll a `[rand:1;6].
 
 ## randf
 
-```rant
+```ranty
 
 [%randf: a; b]
 
@@ -186,7 +186,7 @@ The second inclusive bound of the random number.
 
 ## rand-list
 
-```rant
+```ranty
 
 [%rand-list: a; b; n]
 
@@ -208,7 +208,7 @@ The amount of numbers to generate.
 
 ### Example
 
-```rant
+```ranty
 # 2-dice roll
 
 <$roll = [rand-list: 1; 6; 2]>
@@ -220,7 +220,7 @@ You rolled `[join: \sand\s; <roll>] for a total of `[sum: <roll>].
 
 ## randf-list
 
-```rant
+```ranty
 
 [%randf-list: a; b; n]
 
@@ -243,7 +243,7 @@ The amount of numbers to generate.
 
 ## rand-list-sum
 
-```rant
+```ranty
 
 [%rand-list-sum: input; count; variance]
 
@@ -269,7 +269,7 @@ Raises an error if `count` is less than 1.
 
 ### Example
 
-```rant
+```ranty
 # Generate and print a list of 5 random numbers that add up to 1000
 <$parts = [rand-list-sum: 1000; 5; 200]>
 [join: <parts>; \s+\s] = [sum: <parts>]

@@ -2,7 +2,7 @@
 
 Conditional expressions are built from `@if`, `@elseif`, and `@else`. Conditions are evaluated from left to right until the first truthy branch succeeds.
 
-```rant example
+```ranty example
 @if 0: {
   zero
 } @else: {
@@ -30,7 +30,7 @@ All condition values are coerced to `bool` using the shipped 4.0 truthiness rule
 
 Once a branch succeeds, later conditions are not evaluated and their bodies are not run.
 
-```rant example
+```ranty example
 @if @true: {
   pass
 } @elseif [error: "should not run"]: {

@@ -2,7 +2,7 @@
 
 ## ws-fmt
 
-```rant
+```ranty
 
 [%ws-fmt: mode?; custom?]
 
@@ -13,7 +13,7 @@ Gets or sets the whitespace normalization mode for the current scope. `custom` i
 
 ## num-fmt
 
-```rant
+```ranty
 
 [%num-fmt: options?; depth ? 0]
 
@@ -42,7 +42,7 @@ Defaults to 0 (the calling scope).
 ### Examples
 
 **Getting the current number format**
-```rant
+```ranty
 # Print current number format
 [num-fmt]
 ## -> 
@@ -62,7 +62,7 @@ Defaults to 0 (the calling scope).
 ```
 
 **Setting the current number format**
-```rant
+```ranty
 # Set format to big-endian 64-bit uppercase hex with prefix
 [num-fmt: (:: system = hex; upper = @true; alt = @true; padding = 16)]
 
@@ -74,7 +74,7 @@ Defaults to 0 (the calling scope).
 
 ## num-fmt-system
 
-```rant
+```ranty
 
 [%num-fmt-system: system?; depth ? 0]
 ```
@@ -102,7 +102,7 @@ Defaults to 0 (the calling scope).
 
 ## num-fmt-alt
 
-```rant
+```ranty
 
 [%num-fmt-alt: flag?; depth ? 0]
 
@@ -126,7 +126,7 @@ Defaults to 0 (the calling scope).
 
 ## num-fmt-precision
 
-```rant
+```ranty
 
 [%num-fmt-precision: precision?; depth ? 0]
 
@@ -151,7 +151,7 @@ Defaults to 0 (the calling scope).
 
 ## num-fmt-padding
 
-```rant
+```ranty
 
 [%num-fmt-padding: padding?; depth ? 0]
 
@@ -174,7 +174,7 @@ Defaults to 0 (the calling scope).
 
 ## num-fmt-upper
 
-```rant
+```ranty
 
 [%num-fmt-upper: flag?; depth ? 0]
 
@@ -198,7 +198,7 @@ Defaults to 0 (the calling scope).
 
 ## num-fmt-sign
 
-```rant
+```ranty
 
 [%num-fmt-sign: sign?; depth ? 0]
 
@@ -226,7 +226,7 @@ Defaults to 0 (the calling scope).
 
 ## num-fmt-endian
 
-```rant
+```ranty
 
 [%num-fmt-endian: endianness?; depth ? 0]
 
@@ -253,7 +253,7 @@ Defaults to 0 (the calling scope).
 
 ## num-fmt-infinity
 
-```rant
+```ranty
 
 [%num-fmt-infinity: infinity?; depth ? 0]
 
@@ -281,7 +281,7 @@ Defaults to 0 (the calling scope).
 
 ## num-fmt-group-sep
 
-```rant
+```ranty
 
 [%num-fmt-group-sep: group-sep?; depth ? 0]
 
@@ -304,7 +304,7 @@ Defaults to 0 (the calling scope).
 
 ## num-fmt-decimal-sep
 
-```rant
+```ranty
 
 [%num-fmt-decimal-sep: decimal-sep?; depth ? 0]
 

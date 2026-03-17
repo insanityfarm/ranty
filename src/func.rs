@@ -8,9 +8,9 @@ use std::{
     rc::Rc,
 };
 
-/// A function callable from Rant.
+/// A function callable from Ranty.
 #[derive(Debug)]
-pub struct RantFunction {
+pub struct RantyFunction {
     /// Parameter information for the function.
     pub(crate) params: Rc<Vec<Parameter>>,
     /// The number of required parameters.
@@ -19,15 +19,15 @@ pub struct RantFunction {
     /// If this is greater than or equal to the number of params, there are no variadic parameters.
     pub(crate) vararg_start_index: usize,
     /// The external variables captured by the function when it was defined.
-    pub(crate) captured_vars: Vec<(Identifier, RantVar)>,
+    pub(crate) captured_vars: Vec<(Identifier, RantyVar)>,
     /// The body of the function.
-    pub(crate) body: RantFunctionInterface,
+    pub(crate) body: RantyFunctionInterface,
     /// Assigns a custom flavor to the stack frame created by the function call.
     /// If not set, the default function call flavor will be used.
     pub(crate) flavor: Option<StackFrameFlavor>,
 }
 
-impl RantFunction {
+impl RantyFunction {
     /// Returns true if the function should be treated as variadic.
     #[inline]
     pub fn is_variadic(&self) -> bool {
@@ -37,27 +37,27 @@ impl RantFunction {
     /// Returns true if the function is native.
     #[inline]
     pub fn is_native(&self) -> bool {
-        matches!(self.body, RantFunctionInterface::Foreign(_))
+        matches!(self.body, RantyFunctionInterface::Foreign(_))
     }
 }
 
-/// Defines endpoint variants for Rant functions.
+/// Defines endpoint variants for Ranty functions.
 #[derive(Clone)]
-pub enum RantFunctionInterface {
+pub enum RantyFunctionInterface {
     /// Represents a foreign function as a wrapper function accepting a variable number of arguments.
-    Foreign(Rc<dyn 'static + Fn(&mut VM, Vec<RantValue>) -> RantStdResult>),
+    Foreign(Rc<dyn 'static + Fn(&mut VM, Vec<RantyValue>) -> RantyStdResult>),
     /// Represents a user function as an RST.
     User(Rc<Sequence>),
 }
 
-impl Debug for RantFunctionInterface {
+impl Debug for RantyFunctionInterface {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            RantFunctionInterface::Foreign(func) => unsafe {
+            RantyFunctionInterface::Foreign(func) => unsafe {
                 let (a, b) = transmute::<_, (usize, usize)>(Rc::as_ptr(func));
                 write!(f, "{:#02$x}{:02$x}", a, b, &(size_of::<usize>() * 2))
             },
-            RantFunctionInterface::User(func) => write!(f, "{:#p}", Rc::as_ptr(func)),
+            RantyFunctionInterface::User(func) => write!(f, "{:#p}", Rc::as_ptr(func)),
         }
     }
 }

@@ -1,23 +1,23 @@
-//! # Rant
+//! # Ranty
 //!
-//! Rant is a high-level procedural templating language.
+//! Ranty is a high-level procedural templating language.
 //! It is designed to help you write more dynamic and expressive templates, dialogue, stories, names, test data, and much more.
 //!
 //! The language reference and CLI documentation live in the repository's `docs/` directory.
 //!
-//! ## The Rant context
+//! ## The Ranty context
 //!
-//! All programs are run through a Rant context, represented by the [`Rant`] struct.
-//! It allows you to execute Rant programs, define and retrieve global variables, manipulate the RNG, and compile Rant code.
+//! All programs are run through a Ranty context, represented by the [`Ranty`] struct.
+//! It allows you to execute Ranty programs, define and retrieve global variables, manipulate the RNG, and compile Ranty code.
 //!
 //! ## Reading compiler errors
 //!
-//! You will notice that the `Err` variant of the `Rant::compile*` methods is `()` instead of providing an error list. Instead,
+//! You will notice that the `Err` variant of the `Ranty::compile*` methods is `()` instead of providing an error list. Instead,
 //! errors and warnings are reported via implementors of the [`Reporter`] trait, which allows the user to control what happens to messages emitted by the compiler.
-//! Currently, Rant has two built-in `Reporter` implementations: the unit type `()`, and `Vec<CompilerMessage>`.
+//! Currently, Ranty has two built-in `Reporter` implementations: the unit type `()`, and `Vec<CompilerMessage>`.
 //! You can also make your own custom reporters to suit your specific needs.
 //!
-//! [`Rant`]: struct.Rant.html
+//! [`Ranty`]: struct.Ranty.html
 //! [`Reporter`]: compiler/trait.Reporter.html
 //! [`Vec<CompilerMessage>`]: compiler/struct.CompilerMessage.html
 
@@ -60,7 +60,7 @@ pub use crate::var::*;
 
 use crate::compiler::*;
 use crate::lang::Sequence;
-use crate::rng::RantRng;
+use crate::rng::RantyRng;
 use crate::runtime::{IntoRuntimeResult, RuntimeError, RuntimeErrorType, RuntimeResult, VM};
 
 use data::DataSource;
@@ -77,14 +77,21 @@ pub(crate) type InternalString = smartstring::alias::CompactString;
 /// The build version according to the crate metadata at the time of compiling.
 pub const BUILD_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-/// The Rant language version implemented by this library.
-pub const RANT_LANG_VERSION: &str = "4.0";
+/// The Ranty language version implemented by this library.
+pub const RANTY_LANG_VERSION: &str = "1.0.0";
 
 /// The default name given to programs compiled from raw strings.
 pub const DEFAULT_PROGRAM_NAME: &str = "program";
 
-/// The file extension that Rant expects modules to have.
-pub const RANT_FILE_EXTENSION: &str = "rant";
+/// The preferred file extension for Ranty source files and modules.
+pub const RANTY_FILE_EXTENSION: &str = "ranty";
+
+/// The legacy file extension still accepted for compatibility.
+pub const RANTY_COMPAT_FILE_EXTENSION: &str = "rant";
+
+/// Supported file extensions in resolution order for extensionless module paths.
+pub const RANTY_SUPPORTED_FILE_EXTENSIONS: [&str; 2] =
+    [RANTY_FILE_EXTENSION, RANTY_COMPAT_FILE_EXTENSION];
 
 /// Name of global variable that stores cached modules.
 pub(crate) const MODULES_CACHE_KEY: &str = "__MODULES";
@@ -99,7 +106,7 @@ fn normalize_module_cache_path<P: AsRef<Path>>(path: P) -> String {
 
 pub(crate) fn module_request_cache_key(
     module_path: &str,
-    dependant: Option<&RantProgramInfo>,
+    dependant: Option<&RantyProgramInfo>,
 ) -> String {
     let normalized_module_path = module_path.replace('\\', "/");
     let dependant_root = dependant
@@ -115,62 +122,62 @@ pub(crate) fn module_request_cache_key(
     }
 }
 
-pub(crate) fn module_resolved_cache_key(program: &RantProgram) -> Option<String> {
+pub(crate) fn module_resolved_cache_key(program: &RantyProgram) -> Option<String> {
     program
         .path()
         .map(|path| format!("path:{}", normalize_module_cache_path(path)))
 }
 
-/// A Rant execution context.
+/// A Ranty execution context.
 #[derive(Debug)]
-pub struct Rant {
-    options: RantOptions,
+pub struct Ranty {
+    options: RantyOptions,
     module_resolver: Rc<dyn ModuleResolver>,
-    rng: Rc<RantRng>,
+    rng: Rc<RantyRng>,
     data_sources: HashMap<InternalString, Box<dyn DataSource>, FnvBuildHasher>,
-    globals: HashMap<InternalString, RantVar, FnvBuildHasher>,
+    globals: HashMap<InternalString, RantyVar, FnvBuildHasher>,
 }
 
-impl Rant {
-    /// Creates a new Rant context with the default seed (0) and loads the standard library.
+impl Ranty {
+    /// Creates a new Ranty context with the default seed (0) and loads the standard library.
     #[inline(always)]
     pub fn new() -> Self {
         Self::with_seed(0)
     }
 
-    /// Creates a new Rant context with the specified seed and loads the standard library.
+    /// Creates a new Ranty context with the specified seed and loads the standard library.
     pub fn with_seed(seed: u64) -> Self {
-        Self::with_options(RantOptions {
+        Self::with_options(RantyOptions {
             seed,
             ..Default::default()
         })
     }
 
-    /// Creates a new Rant context with a seed generated by a thread-local PRNG and loads the standard library.
+    /// Creates a new Ranty context with a seed generated by a thread-local PRNG and loads the standard library.
     pub fn with_random_seed() -> Self {
-        Self::with_options(RantOptions {
+        Self::with_options(RantyOptions {
             seed: rand::thread_rng().gen(),
             ..Default::default()
         })
     }
 
-    /// Creates a new Rant context with the specified options.
+    /// Creates a new Ranty context with the specified options.
     #[inline(always)]
-    pub fn with_options(options: RantOptions) -> Self {
-        let mut rant = Self {
+    pub fn with_options(options: RantyOptions) -> Self {
+        let mut ranty = Self {
             module_resolver: Rc::new(DefaultModuleResolver::default()),
             globals: Default::default(),
             data_sources: Default::default(),
-            rng: Rc::new(RantRng::new(options.seed)),
+            rng: Rc::new(RantyRng::new(options.seed)),
             options,
         };
 
         // Load standard library
-        if rant.options.use_stdlib {
-            stdlib::load_stdlib(&mut rant);
+        if ranty.options.use_stdlib {
+            stdlib::load_stdlib(&mut ranty);
         }
 
-        rant
+        ranty
     }
 
     /// Replaces the module resolver.
@@ -183,26 +190,26 @@ impl Rant {
     }
 }
 
-impl Default for Rant {
-    /// Creates a default `Rant` instance.
+impl Default for Ranty {
+    /// Creates a default `Ranty` instance.
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Rant {
+impl Ranty {
     /// Compiles a source string using the specified reporter.
     #[must_use = "compiling a program without storing or running it achieves nothing"]
     pub fn compile<R: Reporter>(
         &self,
         source: &str,
         reporter: &mut R,
-    ) -> Result<RantProgram, CompilerError> {
+    ) -> Result<RantyProgram, CompilerError> {
         compiler::compile_string(
             source,
             reporter,
             self.options.debug_mode,
-            RantProgramInfo {
+            RantyProgramInfo {
                 name: None,
                 path: None,
             },
@@ -216,12 +223,12 @@ impl Rant {
         source: &str,
         reporter: &mut R,
         name: &str,
-    ) -> Result<RantProgram, CompilerError> {
+    ) -> Result<RantyProgram, CompilerError> {
         compiler::compile_string(
             source,
             reporter,
             self.options.debug_mode,
-            RantProgramInfo {
+            RantyProgramInfo {
                 name: Some(name.to_owned()),
                 path: None,
             },
@@ -236,12 +243,12 @@ impl Rant {
     ///
     /// If you require this information, use the `compile()` method instead.
     #[must_use = "compiling a program without storing or running it achieves nothing"]
-    pub fn compile_quiet(&self, source: &str) -> Result<RantProgram, CompilerError> {
+    pub fn compile_quiet(&self, source: &str) -> Result<RantyProgram, CompilerError> {
         compiler::compile_string(
             source,
             &mut (),
             self.options.debug_mode,
-            RantProgramInfo {
+            RantyProgramInfo {
                 name: None,
                 path: None,
             },
@@ -260,12 +267,12 @@ impl Rant {
         &self,
         source: &str,
         name: &str,
-    ) -> Result<RantProgram, CompilerError> {
+    ) -> Result<RantyProgram, CompilerError> {
         compiler::compile_string(
             source,
             &mut (),
             self.options.debug_mode,
-            RantProgramInfo {
+            RantyProgramInfo {
                 name: Some(name.to_owned()),
                 path: None,
             },
@@ -278,7 +285,7 @@ impl Rant {
         &self,
         path: P,
         reporter: &mut R,
-    ) -> Result<RantProgram, CompilerError> {
+    ) -> Result<RantyProgram, CompilerError> {
         compiler::compile_file(path, reporter, self.options.debug_mode)
     }
 
@@ -293,7 +300,7 @@ impl Rant {
     pub fn compile_file_quiet<P: AsRef<Path>>(
         &self,
         path: P,
-    ) -> Result<RantProgram, CompilerError> {
+    ) -> Result<RantyProgram, CompilerError> {
         compiler::compile_file(path, &mut (), self.options.debug_mode)
     }
 
@@ -303,12 +310,12 @@ impl Rant {
     ///
     /// Returns `true` if the write succeeded; otherwise, `false`.
     #[inline]
-    pub fn set_global(&mut self, key: &str, value: RantValue) -> bool {
+    pub fn set_global(&mut self, key: &str, value: RantyValue) -> bool {
         if let Some(global_var) = self.globals.get_mut(key) {
             global_var.write(value)
         } else {
             self.globals
-                .insert(InternalString::from(key), RantVar::ByVal(value));
+                .insert(InternalString::from(key), RantyVar::ByVal(value));
             true
         }
     }
@@ -319,52 +326,52 @@ impl Rant {
     ///
     /// Returns `true` if the write succeeded; otherwise, `false`.
     #[inline]
-    pub fn set_global_const(&mut self, key: &str, value: RantValue) -> bool {
+    pub fn set_global_const(&mut self, key: &str, value: RantyValue) -> bool {
         if let Some(global_var) = self.globals.get(key) {
             if global_var.is_const() {
                 return false;
             }
         }
         self.globals
-            .insert(InternalString::from(key), RantVar::ByValConst(value));
+            .insert(InternalString::from(key), RantyVar::ByValConst(value));
         true
     }
 
     /// Sets a global's value, forcing the write even if the existing global is a constant.
     /// This will auto-define the global if it doesn't exist.
     #[inline]
-    pub fn set_global_force(&mut self, key: &str, value: RantValue, is_const: bool) {
+    pub fn set_global_force(&mut self, key: &str, value: RantyValue, is_const: bool) {
         self.globals.insert(
             InternalString::from(key),
             if is_const {
-                RantVar::ByValConst(value)
+                RantyVar::ByValConst(value)
             } else {
-                RantVar::ByVal(value)
+                RantyVar::ByVal(value)
             },
         );
     }
 
     /// Gets the value of a global variable.
     #[inline]
-    pub fn get_global(&self, key: &str) -> Option<RantValue> {
+    pub fn get_global(&self, key: &str) -> Option<RantyValue> {
         self.globals.get(key).map(|var| var.value_cloned())
     }
 
-    /// Gets a global variable by its `RantVar` representation.
+    /// Gets a global variable by its `RantyVar` representation.
     #[inline]
-    pub(crate) fn get_global_var(&self, key: &str) -> Option<&RantVar> {
+    pub(crate) fn get_global_var(&self, key: &str) -> Option<&RantyVar> {
         self.globals.get(key)
     }
 
-    /// Sets a global variable to the provided `RantVar`.
+    /// Sets a global variable to the provided `RantyVar`.
     #[inline]
-    pub(crate) fn set_global_var(&mut self, key: &str, var: RantVar) {
+    pub(crate) fn set_global_var(&mut self, key: &str, var: RantyVar) {
         self.globals.insert(InternalString::from(key), var);
     }
 
-    /// Gets a mutable reference to the `RantVar` representation of the specified variable.
+    /// Gets a mutable reference to the `RantyVar` representation of the specified variable.
     #[inline]
-    pub(crate) fn get_global_var_mut(&mut self, key: &str) -> Option<&mut RantVar> {
+    pub(crate) fn get_global_var_mut(&mut self, key: &str) -> Option<&mut RantyVar> {
         self.globals.get_mut(key)
     }
 
@@ -387,12 +394,12 @@ impl Rant {
     }
 
     /// Gets the options used to initialize the context.
-    pub fn options(&self) -> &RantOptions {
+    pub fn options(&self) -> &RantyOptions {
         &self.options
     }
 
     /// Gets a mutable reference to the options used by the context.
-    pub fn options_mut(&mut self) -> &mut RantOptions {
+    pub fn options_mut(&mut self) -> &mut RantyOptions {
         &mut self.options
     }
 
@@ -403,13 +410,13 @@ impl Rant {
 
     /// Re-seeds the RNG with the specified seed.
     pub fn set_seed(&mut self, seed: u64) {
-        self.rng = Rc::new(RantRng::new(seed));
+        self.rng = Rc::new(RantyRng::new(seed));
     }
 
     /// Resets the RNG back to its initial state with the current seed.
     pub fn reset_seed(&mut self) {
         let seed = self.rng.seed();
-        self.rng = Rc::new(RantRng::new(seed));
+        self.rng = Rc::new(RantyRng::new(seed));
     }
 
     /// Registers a data source to the context, making it available to scripts.
@@ -455,14 +462,14 @@ impl Rant {
     }
 
     /// Runs a program and returns the output value.
-    pub fn run(&mut self, program: &RantProgram) -> RuntimeResult<RantValue> {
+    pub fn run(&mut self, program: &RantyProgram) -> RuntimeResult<RantyValue> {
         VM::new(self.rng.clone(), self, program).run()
     }
 
     /// Runs a program with the specified arguments and returns the output value.
-    pub fn run_with<A>(&mut self, program: &RantProgram, args: A) -> RuntimeResult<RantValue>
+    pub fn run_with<A>(&mut self, program: &RantyProgram, args: A) -> RuntimeResult<RantyValue>
     where
-        A: Into<Option<HashMap<String, RantValue>>>,
+        A: Into<Option<HashMap<String, RantyValue>>>,
     {
         VM::new(self.rng.clone(), self, program).run_with(args)
     }
@@ -517,8 +524,8 @@ impl Rant {
     }
 
     #[inline]
-    pub(crate) fn get_cached_module(&self, cache_key: &str) -> Option<RantValue> {
-        if let Some(RantValue::Map(module_cache_ref)) = self.get_global(MODULES_CACHE_KEY) {
+    pub(crate) fn get_cached_module(&self, cache_key: &str) -> Option<RantyValue> {
+        if let Some(RantyValue::Map(module_cache_ref)) = self.get_global(MODULES_CACHE_KEY) {
             if let Some(module) = module_cache_ref.borrow().raw_get(cache_key) {
                 return Some(module.clone());
             }
@@ -527,20 +534,20 @@ impl Rant {
     }
 
     #[inline]
-    pub(crate) fn cache_module(&mut self, cache_key: &str, module: RantValue) {
-        if let Some(RantValue::Map(module_cache_ref)) = self.get_global(MODULES_CACHE_KEY) {
+    pub(crate) fn cache_module(&mut self, cache_key: &str, module: RantyValue) {
+        if let Some(RantyValue::Map(module_cache_ref)) = self.get_global(MODULES_CACHE_KEY) {
             module_cache_ref.borrow_mut().raw_set(cache_key, module);
         } else {
-            let mut cache = RantMap::new();
+            let mut cache = RantyMap::new();
             cache.raw_set(cache_key, module);
-            self.set_global(MODULES_CACHE_KEY, cache.into_rant());
+            self.set_global(MODULES_CACHE_KEY, cache.into_ranty());
         }
     }
 }
 
-/// Provides options for customizing the creation of a `Rant` instance.
+/// Provides options for customizing the creation of a `Ranty` instance.
 #[derive(Debug, Clone)]
-pub struct RantOptions {
+pub struct RantyOptions {
     /// Specifies whether the standard library should be loaded.
     pub use_stdlib: bool,
     /// Enables debug mode, which includes additional debug information in compiled programs and more detailed runtime error data.
@@ -553,7 +560,7 @@ pub struct RantOptions {
     pub seed: u64,
 }
 
-impl Default for RantOptions {
+impl Default for RantyOptions {
     fn default() -> Self {
         Self {
             use_stdlib: true,
@@ -564,15 +571,15 @@ impl Default for RantOptions {
     }
 }
 
-/// A compiled Rant program.
+/// A compiled Ranty program.
 #[derive(Debug)]
-pub struct RantProgram {
-    info: Rc<RantProgramInfo>,
+pub struct RantyProgram {
+    info: Rc<RantyProgramInfo>,
     root: Rc<Sequence>,
 }
 
-impl RantProgram {
-    pub(crate) fn new(root: Rc<Sequence>, info: Rc<RantProgramInfo>) -> Self {
+impl RantyProgram {
+    pub(crate) fn new(root: Rc<Sequence>, info: Rc<RantyProgramInfo>) -> Self {
         Self { info, root }
     }
 
@@ -590,19 +597,19 @@ impl RantProgram {
 
     /// Gets the metadata associated with the program.
     #[inline]
-    pub fn info(&self) -> &RantProgramInfo {
+    pub fn info(&self) -> &RantyProgramInfo {
         self.info.as_ref()
     }
 }
 
 /// Contains metadata used to identify a loaded program.
 #[derive(Debug)]
-pub struct RantProgramInfo {
+pub struct RantyProgramInfo {
     path: Option<String>,
     name: Option<String>,
 }
 
-impl RantProgramInfo {
+impl RantyProgramInfo {
     /// Gets the display name of the program, if any.
     #[inline]
     pub fn name(&self) -> Option<&str> {
@@ -641,7 +648,7 @@ impl Display for ModuleLoadError {
 
 impl Error for ModuleLoadError {}
 
-/// Represents error states that can occur when registering a data source on a Rant execution context.
+/// Represents error states that can occur when registering a data source on a Ranty execution context.
 #[derive(Debug)]
 pub enum DataSourceRegisterError {
     /// The type ID provided by the data source was invalid.

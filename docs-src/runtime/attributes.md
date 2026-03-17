@@ -20,7 +20,7 @@ Stable 4.0 exposes the attribute system in three complementary ways:
 
 The mutable attribute keywords also support immediate-block sugar:
 
-```rant example
+```ranty example
 @rep 3: {x}
 ```
 
@@ -38,7 +38,7 @@ This attribute is set with the `[rep]` function or with `@rep`.
 
 ### Example
 
-```rant
+```ranty
 [rep:10]{[step]\n}
 # Output:
 # 1
@@ -60,7 +60,7 @@ It is set using the `[sep]` function or `@sep`.
 
 ### Example
 
-```rant
+```ranty
 [rep:4][sep:" and "]
 It just keeps {going}...
 
@@ -70,7 +70,7 @@ It just keeps {going}...
 
 The `@sep` keyword can also be read and written through accessor syntax:
 
-```rant example
+```ranty example
 <@sep = ",">[rep:3][sep:<@sep>]{x}
 ```
 
@@ -80,7 +80,7 @@ x,x,x
 
 ## Selectors
 
-The selector attribute controls how Rant chooses which branch of a block to take. It does this using a special state machine object, which must be created separately but can be shared between blocks to coordinate their behavior.
+The selector attribute controls how Ranty chooses which branch of a block to take. It does this using a special state machine object, which must be created separately but can be shared between blocks to coordinate their behavior.
 You can set it with `[sel]`, `[match]`, `@sel`, or `<@sel = ...>`.
 
 ### Selector modes
@@ -89,7 +89,7 @@ You can set it with `[sel]`, `[match]`, `@sel`, or `<@sel = ...>`.
 
 ### Example
 
-```rant
+```ranty
 # Print every element of the block in a random order with no duplicates
 
 <$s=[mksel:deck]>  # Create a "deck" selector
@@ -106,7 +106,7 @@ You can set it with `[sel]`, `[match]`, `@sel`, or `<@sel = ...>`.
 
 Match selectors choose from elements tagged with `@on`.
 
-```rant example
+```ranty example
 [match: foo]{yes @on foo|no @on bar|fallback}
 ```
 
@@ -125,7 +125,7 @@ The mutator function accepts the current block element as a callback parameter, 
 
 This is extremely useful for applying filters or post-processing to a block at a per-iteration level.
 
-```rant
+```ranty
 [rep: all]
 [sep: \n]
 [mut: [?:elem] { [elem]! }] # Just adds an exclamation point
@@ -137,7 +137,7 @@ This is extremely useful for applying filters or post-processing to a block at a
 
 You can also choose how many times you want to run the element, or even not run it at all.
 
-```rant
+```ranty
 # Without mutator
 [rep: all]
 [sep: \s]
@@ -157,7 +157,7 @@ You can also choose how many times you want to run the element, or even not run 
 
 The `@mut` keyword supports the same attribute state:
 
-```rant example
+```ranty example
 @mut [?: elem] { [elem]! }: {foo}
 ```
 

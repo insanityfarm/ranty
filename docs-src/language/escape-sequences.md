@@ -1,13 +1,13 @@
 # Escape sequences
 
 Some scripts may need to print characters reserved by the language, or characters that cannot be typed on a standard keyboard layout.
-To help with this, Rant offers **escape sequences**.
+To help with this, Ranty offers **escape sequences**.
 
 ## Character escapes
 
 Any reserved character can be printed by prefixing it with `\`:
 
-```rant
+```ranty
 \{This text will print with braces around it\}
 ```
 
@@ -33,7 +33,7 @@ Here's a list of them:
 
 Escape sequences can also be used to specify arbitrary Unicode characters by their hexadecimal form:
 
-```rant
+```ranty
 # Byte escape
 \xE4    # 'ä'
 

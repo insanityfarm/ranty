@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Escape Sequences - Rant Reference</title>
+        <title>Escape Sequences - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -177,10 +177,10 @@
                     <main>
                         <h1 id="escape-sequences"><a class="header" href="#escape-sequences">Escape sequences</a></h1>
 <p>Some scripts may need to print characters reserved by the language, or characters that cannot be typed on a standard keyboard layout.
-To help with this, Rant offers <strong>escape sequences</strong>.</p>
+To help with this, Ranty offers <strong>escape sequences</strong>.</p>
 <h2 id="character-escapes"><a class="header" href="#character-escapes">Character escapes</a></h2>
 <p>Any reserved character can be printed by prefixing it with <code>\</code>:</p>
-<pre><code class="language-rant">\{This text will print with braces around it\}
+<pre><code class="language-ranty">\{This text will print with braces around it\}
 </code></pre>
 <h2 id="special-escapes"><a class="header" href="#special-escapes">Special escapes</a></h2>
 <p>Certain characters are not interpreted verbatim when escaped, and instead have special meaning.
@@ -200,7 +200,7 @@ Here's a list of them:</p>
 </div>
 <h3 id="unicode-escapes"><a class="header" href="#unicode-escapes">Unicode escapes</a></h3>
 <p>Escape sequences can also be used to specify arbitrary Unicode characters by their hexadecimal form:</p>
-<pre><code class="language-rant"># Byte escape
+<pre><code class="language-ranty"># Byte escape
 \xE4    # 'ä'
 
 # 16-bit Unicode escape

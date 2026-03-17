@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Output modifiers - Rant Reference</title>
+        <title>Output modifiers - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -179,19 +179,19 @@
 <p>Output modifiers are block elements that transform the caller's current output before the modifier's own result is written back.</p>
 <h2 id="the-edit-operator"><a class="header" href="#the-edit-operator">The @edit operator</a></h2>
 <p><code>@edit</code> consumes the caller's current output, optionally binds it to a local name, and replaces it with the modifier body.</p>
-<pre><code class="language-rant example">"example" { @edit x: `&lt;x&gt; `&lt;x&gt; }
+<pre><code class="language-ranty example">"example" { @edit x: `&lt;x&gt; `&lt;x&gt; }
 </code></pre>
 <pre><code class="language-text expected">example example
 </code></pre>
 <p>If no binding name is supplied, the previous output is discarded and only the modifier result is kept.</p>
-<pre><code class="language-rant example">"example" { @edit: "overwritten" }
+<pre><code class="language-ranty example">"example" { @edit: "overwritten" }
 </code></pre>
 <pre><code class="language-text expected">overwritten
 </code></pre>
 <h2 id="placement-rules"><a class="header" href="#placement-rules">Placement rules</a></h2>
 <p><code>@edit</code> must appear at the start of a block element. Misplaced <code>@edit</code> is a compile-time error.</p>
 <h2 id="example-accumulating-across-repeats"><a class="header" href="#example-accumulating-across-repeats">Example: accumulating across repeats</a></h2>
-<pre><code class="language-rant example">[%factorial: n] {
+<pre><code class="language-ranty example">[%factorial: n] {
   1 [rep: &lt;n&gt;] {@edit x: &lt;x&gt; * [step]}
 }
 

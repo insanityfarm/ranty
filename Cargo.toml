@@ -1,12 +1,12 @@
 [package]
-name = "rant"
-version = "4.0.0"
+name = "ranty"
+version = "1.0.0"
 edition = "2021"
-description = "The Rant procedural templating language"
+description = "The Ranty procedural templating language"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/rant-lang/rant"
-homepage = "https://rant-lang.org"
-keywords = ["rant", "templating", "procedural", "generation", "procgen"]
+repository = "https://github.com/insanityfarm/ranty"
+homepage = "https://github.com/insanityfarm/ranty"
+keywords = ["ranty", "templating", "procedural", "generation", "procgen"]
 categories = ["text-processing", "game-development", "template-engine"]
 readme = "README.md"
 rust-version = "1.61.0"
@@ -20,7 +20,7 @@ include = [
   "!tests/unincluded_*.rs",
   "src/tools/cli/_*.txt"
 ]
-default-run = "rant"
+default-run = "ranty"
 # publish = false
 
 [workspace]
@@ -34,7 +34,7 @@ opt-level = 3
 codegen-units = 1
 
 [[bin]]
-name = "rant"
+name = "ranty"
 path = "src/tools/cli/main.rs"
 required-features = ["cli"]
 
@@ -45,18 +45,18 @@ vm-trace = []
 
 [dependencies]
 # Library
-cast = "0.3.0"                    # Automates a lot of native <-> Rant value conversions  
-cervine = "0.0.6"                 # Simplifies Rant's by-ref variable passing code.
-fnv = "1.0.7"                     # Hashing algorithm used by Rant's map type and other internals.
+cast = "0.3.0"                    # Automates a lot of native <-> Ranty value conversions  
+cervine = "0.0.6"                 # Simplifies Ranty's by-ref variable passing code.
+fnv = "1.0.7"                     # Hashing algorithm used by Ranty's map type and other internals.
 line-col = "0.2.1"                # Calculates locations for compiler messages.
 logos = "0.12.0"                  # Powers the lexer.
 once_cell = "1.5.2"               # Lazy initialization for various internals.
 quickscope = "0.2.0"              # Powers the variable scoping system.
-rand = "0.8.3"                    # RNG utilities used throughout Rant.
-rand_xoshiro = "0.6.0"            # RNG implementation used by the Rant runtime.
-smallvec = "1.6.1"                # List optimization used throughout Rant.
-smartstring = "1.0.1"             # String optimization used throughout Rant.
-unicode-segmentation = "1.7.1"    # Used by Rant to index strings by grapheme cluster.
+rand = "0.8.3"                    # RNG utilities used throughout Ranty.
+rand_xoshiro = "0.6.0"            # RNG implementation used by the Ranty runtime.
+smallvec = "1.6.1"                # List optimization used throughout Ranty.
+smartstring = "1.0.1"             # String optimization used throughout Ranty.
+unicode-segmentation = "1.7.1"    # Used by Ranty to index strings by grapheme cluster.
 
 # CLI
 atty = { version = "0.2.14", optional = true }

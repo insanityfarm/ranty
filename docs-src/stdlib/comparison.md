@@ -2,7 +2,7 @@
 
 ## eq
 
-```rant
+```ranty
 
 [%eq: lhs; rhs]
 
@@ -22,7 +22,7 @@ The right-hand operand of the comparison.
 
 ## ge
 
-```rant
+```ranty
 
 [%ge: lhs; rhs]
 
@@ -42,7 +42,7 @@ The right-hand operand of the comparison.
 
 ## gt
 
-```rant
+```ranty
 
 [%gt: lhs; rhs]
 
@@ -62,7 +62,7 @@ The right-hand operand of the comparison.
 
 ## le
 
-```rant
+```ranty
 
 [%le: lhs; rhs]
 
@@ -82,7 +82,7 @@ The right-hand operand of the comparison.
 
 ## lt
 
-```rant
+```ranty
 
 [%lt: lhs; rhs]
 
@@ -102,7 +102,7 @@ The right-hand operand of the comparison.
 
 ## neq
 
-```rant
+```ranty
 
 [%neq: lhs; rhs]
 

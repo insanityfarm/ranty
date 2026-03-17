@@ -2,7 +2,7 @@ mod common;
 
 use assert_matches::assert_matches;
 use common::{compile_with_reporter, run, run_str};
-use rant::runtime::RuntimeErrorType;
+use ranty::runtime::RuntimeErrorType;
 
 #[test]
 fn match_selector_runs_matching_tagged_branches() {

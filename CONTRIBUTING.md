@@ -1,19 +1,19 @@
-# How to contribute to Rant
+# How to contribute to Ranty
 
-So you want to help develop Rant. Great!
+So you want to help develop Ranty. Great!
 
 Here's a brief overview of how you can contribute:
 
 ## Developer resources
 
-* [Rant Discord](https://discord.gg/U8Bj6gSshJ)
-* [Rant Reference](docs/index.html)
+* [Ranty Discord](https://discord.gg/U8Bj6gSshJ)
+* [Ranty Reference](docs/index.html)
 
 ## Ways to contribute
 
 ### Bug reports
 
-If you find something in Rant that isn't behaving correctly, please tell us!
+If you find something in Ranty that isn't behaving correctly, please tell us!
 
 Bugs should be reported through the issue tracker. 
 Please search the issues beforehand to see if your bug has already been reported.
@@ -28,7 +28,7 @@ A bug report should provide a detailed description of the following:
 
 ### Feature requests
 
-Your ideas for how to improve Rant are always welcome. As with bugs, feature requests are submitted via the issue tracker.
+Your ideas for how to improve Ranty are always welcome. As with bugs, feature requests are submitted via the issue tracker.
 
 ### Pull requests
 

@@ -1,41 +1,41 @@
-use crate::{RantList, RantListHandle, RantValue};
+use crate::{RantyList, RantyListHandle, RantyValue};
 use std::{
     iter::FromIterator,
     ops::{Add, Deref},
     rc::Rc,
 };
 
-/// Reference handle for a Rant tuple
+/// Reference handle for a Ranty tuple
 #[derive(Debug, Clone, PartialEq)]
-pub struct RantTupleHandle(Rc<RantTuple>);
+pub struct RantyTupleHandle(Rc<RantyTuple>);
 
-impl RantTupleHandle {
+impl RantyTupleHandle {
     /// Makes a copy of the underlying tuple and returns a handle containing it.
     pub fn cloned(&self) -> Self {
         Self(Rc::new((*self.0).clone()))
     }
 }
 
-impl From<RantTuple> for RantTupleHandle {
+impl From<RantyTuple> for RantyTupleHandle {
     #[inline]
-    fn from(tuple: RantTuple) -> Self {
+    fn from(tuple: RantyTuple) -> Self {
         Self(Rc::new(tuple))
     }
 }
 
-impl Deref for RantTupleHandle {
-    type Target = RantTuple;
+impl Deref for RantyTupleHandle {
+    type Target = RantyTuple;
     #[inline]
     fn deref(&self) -> &Self::Target {
         self.0.as_ref()
     }
 }
 
-/// Represents Rant's `tuple` type, which stores an ordered, immutable collection of values.
+/// Represents Ranty's `tuple` type, which stores an ordered, immutable collection of values.
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct RantTuple(Vec<RantValue>);
+pub struct RantyTuple(Vec<RantyValue>);
 
-impl RantTuple {
+impl RantyTuple {
     #[inline]
     pub fn new() -> Self {
         Self(vec![])
@@ -52,50 +52,50 @@ impl RantTuple {
     }
 
     #[inline]
-    pub fn into_handle(self) -> RantTupleHandle {
-        RantTupleHandle::from(self)
+    pub fn into_handle(self) -> RantyTupleHandle {
+        RantyTupleHandle::from(self)
     }
 
     #[inline]
-    pub fn to_rant_list(&self) -> RantList {
-        RantList::from(self.0.clone())
+    pub fn to_ranty_list(&self) -> RantyList {
+        RantyList::from(self.0.clone())
     }
 
     #[inline]
-    pub fn into_rant_list(self) -> RantList {
-        RantList::from(self.0)
+    pub fn into_ranty_list(self) -> RantyList {
+        RantyList::from(self.0)
     }
 }
 
-impl From<Vec<RantValue>> for RantTuple {
-    fn from(values: Vec<RantValue>) -> Self {
+impl From<Vec<RantyValue>> for RantyTuple {
+    fn from(values: Vec<RantyValue>) -> Self {
         Self(values)
     }
 }
 
-impl Deref for RantTuple {
-    type Target = Vec<RantValue>;
+impl Deref for RantyTuple {
+    type Target = Vec<RantyValue>;
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
-impl<'a> FromIterator<&'a RantValue> for RantTuple {
-    fn from_iter<T: IntoIterator<Item = &'a RantValue>>(iter: T) -> Self {
-        let vec: Vec<RantValue> = iter.into_iter().cloned().collect();
+impl<'a> FromIterator<&'a RantyValue> for RantyTuple {
+    fn from_iter<T: IntoIterator<Item = &'a RantyValue>>(iter: T) -> Self {
+        let vec: Vec<RantyValue> = iter.into_iter().cloned().collect();
         Self(vec)
     }
 }
 
-impl FromIterator<RantValue> for RantTuple {
-    fn from_iter<T: IntoIterator<Item = RantValue>>(iter: T) -> Self {
-        let vec: Vec<RantValue> = iter.into_iter().collect();
+impl FromIterator<RantyValue> for RantyTuple {
+    fn from_iter<T: IntoIterator<Item = RantyValue>>(iter: T) -> Self {
+        let vec: Vec<RantyValue> = iter.into_iter().collect();
         Self(vec)
     }
 }
 
-impl IntoIterator for RantTuple {
-    type Item = RantValue;
+impl IntoIterator for RantyTuple {
+    type Item = RantyValue;
     type IntoIter = std::vec::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -103,102 +103,102 @@ impl IntoIterator for RantTuple {
     }
 }
 
-impl Add for RantTuple {
-    type Output = RantTuple;
+impl Add for RantyTuple {
+    type Output = RantyTuple;
 
     fn add(self, rhs: Self) -> Self::Output {
         self.into_iter()
             .chain(rhs.into_iter())
-            .collect::<RantTuple>()
+            .collect::<RantyTuple>()
     }
 }
 
-impl Add<&RantTuple> for RantTuple {
-    type Output = RantTuple;
+impl Add<&RantyTuple> for RantyTuple {
+    type Output = RantyTuple;
 
-    fn add(self, rhs: &RantTuple) -> Self::Output {
+    fn add(self, rhs: &RantyTuple) -> Self::Output {
         self.into_iter()
             .chain(rhs.iter().cloned())
-            .collect::<RantTuple>()
+            .collect::<RantyTuple>()
     }
 }
 
-impl Add<RantList> for RantTuple {
-    type Output = RantList;
+impl Add<RantyList> for RantyTuple {
+    type Output = RantyList;
 
-    fn add(self, rhs: RantList) -> Self::Output {
+    fn add(self, rhs: RantyList) -> Self::Output {
         self.into_iter()
             .chain(rhs.into_iter())
-            .collect::<RantList>()
+            .collect::<RantyList>()
     }
 }
 
-impl Add<&RantList> for RantTuple {
-    type Output = RantList;
+impl Add<&RantyList> for RantyTuple {
+    type Output = RantyList;
 
-    fn add(self, rhs: &RantList) -> Self::Output {
+    fn add(self, rhs: &RantyList) -> Self::Output {
         self.into_iter()
             .chain(rhs.iter().cloned())
-            .collect::<RantList>()
+            .collect::<RantyList>()
     }
 }
 
-impl Add<RantTuple> for &RantTuple {
-    type Output = RantTuple;
+impl Add<RantyTuple> for &RantyTuple {
+    type Output = RantyTuple;
 
-    fn add(self, rhs: RantTuple) -> Self::Output {
-        self.iter()
-            .cloned()
-            .chain(rhs.into_iter())
-            .collect::<RantTuple>()
-    }
-}
-
-impl Add<&RantTuple> for &RantTuple {
-    type Output = RantTuple;
-
-    fn add(self, rhs: &RantTuple) -> Self::Output {
-        self.iter()
-            .cloned()
-            .chain(rhs.iter().cloned())
-            .collect::<RantTuple>()
-    }
-}
-
-impl Add<RantList> for &RantTuple {
-    type Output = RantList;
-
-    fn add(self, rhs: RantList) -> Self::Output {
+    fn add(self, rhs: RantyTuple) -> Self::Output {
         self.iter()
             .cloned()
             .chain(rhs.into_iter())
-            .collect::<RantList>()
+            .collect::<RantyTuple>()
     }
 }
 
-impl Add<&RantList> for &RantTuple {
-    type Output = RantList;
+impl Add<&RantyTuple> for &RantyTuple {
+    type Output = RantyTuple;
 
-    fn add(self, rhs: &RantList) -> Self::Output {
+    fn add(self, rhs: &RantyTuple) -> Self::Output {
         self.iter()
             .cloned()
             .chain(rhs.iter().cloned())
-            .collect::<RantList>()
+            .collect::<RantyTuple>()
     }
 }
 
-impl Add for RantTupleHandle {
-    type Output = RantTupleHandle;
+impl Add<RantyList> for &RantyTuple {
+    type Output = RantyList;
+
+    fn add(self, rhs: RantyList) -> Self::Output {
+        self.iter()
+            .cloned()
+            .chain(rhs.into_iter())
+            .collect::<RantyList>()
+    }
+}
+
+impl Add<&RantyList> for &RantyTuple {
+    type Output = RantyList;
+
+    fn add(self, rhs: &RantyList) -> Self::Output {
+        self.iter()
+            .cloned()
+            .chain(rhs.iter().cloned())
+            .collect::<RantyList>()
+    }
+}
+
+impl Add for RantyTupleHandle {
+    type Output = RantyTupleHandle;
 
     fn add(self, rhs: Self) -> Self::Output {
         (&*self + &*rhs).into_handle()
     }
 }
 
-impl Add<RantListHandle> for RantTupleHandle {
-    type Output = RantListHandle;
+impl Add<RantyListHandle> for RantyTupleHandle {
+    type Output = RantyListHandle;
 
-    fn add(self, rhs: RantListHandle) -> Self::Output {
+    fn add(self, rhs: RantyListHandle) -> Self::Output {
         (&*self + &*rhs.borrow()).into_handle()
     }
 }

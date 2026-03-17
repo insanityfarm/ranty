@@ -10,7 +10,7 @@ Map keys come in two flavors:
 * **Static keys:** Evaluated at compile-time. They must be identifiers or string literals.
 * **Dynamic keys:** Evaluated at run-time. They must be blocks.
 
-```rant
+```ranty
 # Create an empty map
 <$empty-map = (::)>
 
@@ -41,12 +41,12 @@ Maps can also inherit keys and functions from an optional **prototype** map.
 Prototype lookup is fallback-based:
 
 * getters check the map's own keys first
-* if the key is missing, Rant walks the prototype chain
+* if the key is missing, Ranty walks the prototype chain
 * setters still write only to the target map
 
 Use `[set-proto]` to attach or clear a prototype and `[proto]` to inspect the current one.
 
-```rant
+```ranty
 <$obj = (::)>
 <$proto = (:: flavor = vanilla)>
 [set-proto: <obj>; <proto>]
@@ -55,7 +55,7 @@ Use `[set-proto]` to attach or clear a prototype and `[proto]` to inspect the cu
 [proto: <obj>] # -> (:: flavor = vanilla)
 ```
 
-Prototype inheritance in Rant is intentionally small:
+Prototype inheritance in Ranty is intentionally small:
 
 * own keys shadow inherited keys
 * inherited functions are ordinary functions, not bound methods

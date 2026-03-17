@@ -4,13 +4,13 @@ use crate::format::*;
 /// `[$ws-fmt: mode? (string); custom-value? (any)]`
 ///
 /// Gets or sets the whitespace normalization mode for the current scope.
-pub fn ws_fmt(vm: &mut VM, (mode, custom): (Option<String>, Option<RantValue>)) -> RantStdResult {
+pub fn ws_fmt(vm: &mut VM, (mode, custom): (Option<String>, Option<RantyValue>)) -> RantyStdResult {
     if let Some(mode) = mode.as_deref() {
         let mode = match mode {
             "default" => WhitespaceNormalizationMode::Default,
             "ignore-all" => WhitespaceNormalizationMode::IgnoreAll,
             "verbatim" => WhitespaceNormalizationMode::Verbatim,
-            "custom" => WhitespaceNormalizationMode::Custom(custom.unwrap_or(RantValue::Nothing)),
+            "custom" => WhitespaceNormalizationMode::Custom(custom.unwrap_or(RantyValue::Nothing)),
             bad_mode => runtime_error!(
                 RuntimeErrorType::ArgumentError,
                 "invalid whitespace normalization mode: '{}'",
@@ -42,8 +42,8 @@ pub fn ws_fmt(vm: &mut VM, (mode, custom): (Option<String>, Option<RantValue>)) 
 
 pub fn num_fmt(
     vm: &mut VM,
-    (options, depth): (Option<RantMapHandle>, Option<usize>),
-) -> RantStdResult {
+    (options, depth): (Option<RantyMapHandle>, Option<usize>),
+) -> RantyStdResult {
     const KEY_SYSTEM: &str = "system";
     const KEY_ALT: &str = "alt";
     const KEY_PRECISION: &str = "precision";
@@ -73,47 +73,47 @@ pub fn num_fmt(
 
                 match key_invariant.as_str() {
                     KEY_SYSTEM => {
-                        let system = NumeralSystem::try_from_rant(v).into_runtime_result()?;
+                        let system = NumeralSystem::try_from_ranty(v).into_runtime_result()?;
                         format.system = system;
                     }
                     KEY_ALT => {
-                        let alt = bool::try_from_rant(v).into_runtime_result()?;
+                        let alt = bool::try_from_ranty(v).into_runtime_result()?;
                         format.alternate = alt;
                     }
                     KEY_PRECISION => {
-                        let precision_encoded = i16::try_from_rant(v).into_runtime_result()?;
+                        let precision_encoded = i16::try_from_ranty(v).into_runtime_result()?;
                         let precision = (precision_encoded >= 0).then(|| precision_encoded as u16);
                         format.precision = precision;
                     }
                     KEY_PADDING => {
-                        let padding = u16::try_from_rant(v).into_runtime_result()?;
+                        let padding = u16::try_from_ranty(v).into_runtime_result()?;
                         format.padding = padding;
                     }
                     KEY_UPPER => {
-                        let upper = bool::try_from_rant(v).into_runtime_result()?;
+                        let upper = bool::try_from_ranty(v).into_runtime_result()?;
                         format.uppercase = upper;
                     }
                     KEY_ENDIAN => {
-                        let endian = Endianness::try_from_rant(v).into_runtime_result()?;
+                        let endian = Endianness::try_from_ranty(v).into_runtime_result()?;
                         format.endianness = endian;
                     }
                     KEY_SIGN => {
-                        let sign = SignStyle::try_from_rant(v).into_runtime_result()?;
+                        let sign = SignStyle::try_from_ranty(v).into_runtime_result()?;
                         format.sign = sign;
                     }
                     KEY_INFINITY => {
-                        let infinity = InfinityStyle::try_from_rant(v).into_runtime_result()?;
+                        let infinity = InfinityStyle::try_from_ranty(v).into_runtime_result()?;
                         format.infinity = infinity;
                     }
                     KEY_GROUP_SEP => {
                         let group_sep_encoded =
-                            InternalString::try_from_rant(v).into_runtime_result()?;
+                            InternalString::try_from_ranty(v).into_runtime_result()?;
                         let group_sep = (!group_sep_encoded.is_empty()).then(|| group_sep_encoded);
                         format.group_sep = group_sep;
                     }
                     KEY_DECIMAL_SEP => {
                         let decimal_sep_encoded =
-                            InternalString::try_from_rant(v).into_runtime_result()?;
+                            InternalString::try_from_ranty(v).into_runtime_result()?;
                         let decimal_sep =
                             (!decimal_sep_encoded.is_empty()).then(|| decimal_sep_encoded);
                         format.decimal_sep = decimal_sep;
@@ -130,53 +130,53 @@ pub fn num_fmt(
             None => Default::default(),
         };
 
-        let mut fmt_map = RantMap::new();
+        let mut fmt_map = RantyMap::new();
 
         fmt_map.raw_set(
             KEY_SYSTEM,
-            fmt.system.try_into_rant().into_runtime_result()?,
+            fmt.system.try_into_ranty().into_runtime_result()?,
         );
         fmt_map.raw_set(
             KEY_ALT,
-            fmt.alternate.try_into_rant().into_runtime_result()?,
+            fmt.alternate.try_into_ranty().into_runtime_result()?,
         );
         fmt_map.raw_set(
             KEY_PRECISION,
             fmt.precision
                 .map(|p| p as i64)
                 .unwrap_or(-1)
-                .try_into_rant()
+                .try_into_ranty()
                 .into_runtime_result()?,
         );
         fmt_map.raw_set(
             KEY_PADDING,
-            fmt.padding.try_into_rant().into_runtime_result()?,
+            fmt.padding.try_into_ranty().into_runtime_result()?,
         );
         fmt_map.raw_set(
             KEY_UPPER,
-            fmt.uppercase.try_into_rant().into_runtime_result()?,
+            fmt.uppercase.try_into_ranty().into_runtime_result()?,
         );
         fmt_map.raw_set(
             KEY_ENDIAN,
-            fmt.endianness.try_into_rant().into_runtime_result()?,
+            fmt.endianness.try_into_ranty().into_runtime_result()?,
         );
-        fmt_map.raw_set(KEY_SIGN, fmt.sign.try_into_rant().into_runtime_result()?);
+        fmt_map.raw_set(KEY_SIGN, fmt.sign.try_into_ranty().into_runtime_result()?);
         fmt_map.raw_set(
             KEY_INFINITY,
-            fmt.infinity.try_into_rant().into_runtime_result()?,
+            fmt.infinity.try_into_ranty().into_runtime_result()?,
         );
         fmt_map.raw_set(
             KEY_GROUP_SEP,
             fmt.group_sep
                 .unwrap_or_default()
-                .try_into_rant()
+                .try_into_ranty()
                 .into_runtime_result()?,
         );
         fmt_map.raw_set(
             KEY_DECIMAL_SEP,
             fmt.decimal_sep
                 .unwrap_or_default()
-                .try_into_rant()
+                .try_into_ranty()
                 .into_runtime_result()?,
         );
 
@@ -189,7 +189,7 @@ pub fn num_fmt(
 pub fn num_fmt_system(
     vm: &mut VM,
     (system, depth): (Option<NumeralSystem>, Option<usize>),
-) -> RantStdResult {
+) -> RantyStdResult {
     let actual_depth = depth.unwrap_or(0).saturating_add(1);
 
     if let Some(system) = system {
@@ -203,7 +203,7 @@ pub fn num_fmt_system(
             Some(frame) => frame.output().format().number_format.system,
             None => Default::default(),
         }
-        .try_into_rant()
+        .try_into_ranty()
         .into_runtime_result()?;
 
         vm.cur_frame_mut().write(cur_system);
@@ -212,7 +212,7 @@ pub fn num_fmt_system(
     Ok(())
 }
 
-pub fn num_fmt_alt(vm: &mut VM, (alt, depth): (Option<bool>, Option<usize>)) -> RantStdResult {
+pub fn num_fmt_alt(vm: &mut VM, (alt, depth): (Option<bool>, Option<usize>)) -> RantyStdResult {
     let actual_depth = depth.unwrap_or(0).saturating_add(1);
 
     if let Some(alt) = alt {
@@ -226,7 +226,7 @@ pub fn num_fmt_alt(vm: &mut VM, (alt, depth): (Option<bool>, Option<usize>)) -> 
             Some(frame) => frame.output().format().number_format.alternate,
             None => false,
         }
-        .try_into_rant()
+        .try_into_ranty()
         .into_runtime_result()?;
         vm.cur_frame_mut().write(cur_alternate);
     }
@@ -237,7 +237,7 @@ pub fn num_fmt_alt(vm: &mut VM, (alt, depth): (Option<bool>, Option<usize>)) -> 
 pub fn num_fmt_padding(
     vm: &mut VM,
     (padding, depth): (Option<u16>, Option<usize>),
-) -> RantStdResult {
+) -> RantyStdResult {
     let actual_depth = depth.unwrap_or(0).saturating_add(1);
 
     if let Some(padding) = padding {
@@ -251,7 +251,7 @@ pub fn num_fmt_padding(
             Some(frame) => frame.output().format().number_format.padding,
             None => 0,
         }
-        .try_into_rant()
+        .try_into_ranty()
         .into_runtime_result()?;
         vm.cur_frame_mut().write(cur_padding);
     }
@@ -262,7 +262,7 @@ pub fn num_fmt_padding(
 pub fn num_fmt_precision(
     vm: &mut VM,
     (precision, depth): (Option<i16>, Option<usize>),
-) -> RantStdResult {
+) -> RantyStdResult {
     const DEFAULT_PRECISION: i64 = -1;
     let actual_depth = depth.unwrap_or(0).saturating_add(1);
 
@@ -284,7 +284,7 @@ pub fn num_fmt_precision(
                 .unwrap_or(-DEFAULT_PRECISION),
             None => DEFAULT_PRECISION,
         }
-        .try_into_rant()
+        .try_into_ranty()
         .into_runtime_result()?;
         vm.cur_frame_mut().write(cur_precision);
     }
@@ -292,7 +292,7 @@ pub fn num_fmt_precision(
     Ok(())
 }
 
-pub fn num_fmt_upper(vm: &mut VM, (upper, depth): (Option<bool>, Option<usize>)) -> RantStdResult {
+pub fn num_fmt_upper(vm: &mut VM, (upper, depth): (Option<bool>, Option<usize>)) -> RantyStdResult {
     let actual_depth = depth.unwrap_or(0).saturating_add(1);
 
     if let Some(upper) = upper {
@@ -306,7 +306,7 @@ pub fn num_fmt_upper(vm: &mut VM, (upper, depth): (Option<bool>, Option<usize>))
             Some(frame) => frame.output().format().number_format.uppercase,
             None => false,
         }
-        .try_into_rant()
+        .try_into_ranty()
         .into_runtime_result()?;
         vm.cur_frame_mut().write(cur_upper);
     }
@@ -317,7 +317,7 @@ pub fn num_fmt_upper(vm: &mut VM, (upper, depth): (Option<bool>, Option<usize>))
 pub fn num_fmt_endian(
     vm: &mut VM,
     (endianness, depth): (Option<Endianness>, Option<usize>),
-) -> RantStdResult {
+) -> RantyStdResult {
     let actual_depth = depth.unwrap_or(0).saturating_add(1);
 
     if let Some(endianness) = endianness {
@@ -331,7 +331,7 @@ pub fn num_fmt_endian(
             Some(frame) => frame.output().format().number_format.endianness,
             None => Default::default(),
         }
-        .try_into_rant()
+        .try_into_ranty()
         .into_runtime_result()?;
         vm.cur_frame_mut().write(cur_endianness);
     }
@@ -342,7 +342,7 @@ pub fn num_fmt_endian(
 pub fn num_fmt_sign(
     vm: &mut VM,
     (sign_style, depth): (Option<SignStyle>, Option<usize>),
-) -> RantStdResult {
+) -> RantyStdResult {
     let actual_depth = depth.unwrap_or(0).saturating_add(1);
 
     if let Some(sign_style) = sign_style {
@@ -356,7 +356,7 @@ pub fn num_fmt_sign(
             Some(frame) => frame.output().format().number_format.sign,
             None => Default::default(),
         }
-        .try_into_rant()
+        .try_into_ranty()
         .into_runtime_result()?;
         vm.cur_frame_mut().write(cur_sign_style);
     }
@@ -367,7 +367,7 @@ pub fn num_fmt_sign(
 pub fn num_fmt_infinity(
     vm: &mut VM,
     (infinity_style, depth): (Option<InfinityStyle>, Option<usize>),
-) -> RantStdResult {
+) -> RantyStdResult {
     let actual_depth = depth.unwrap_or(0).saturating_add(1);
 
     if let Some(infinity_style) = infinity_style {
@@ -381,7 +381,7 @@ pub fn num_fmt_infinity(
             Some(frame) => frame.output().format().number_format.infinity,
             None => Default::default(),
         }
-        .try_into_rant()
+        .try_into_ranty()
         .into_runtime_result()?;
         vm.cur_frame_mut().write(cur_infinity_style);
     }
@@ -392,7 +392,7 @@ pub fn num_fmt_infinity(
 pub fn num_fmt_group_sep(
     vm: &mut VM,
     (group_sep, depth): (Option<InternalString>, Option<usize>),
-) -> RantStdResult {
+) -> RantyStdResult {
     let actual_depth = depth.unwrap_or(0).saturating_add(1);
 
     if let Some(group_sep) = group_sep {
@@ -413,7 +413,7 @@ pub fn num_fmt_group_sep(
                 .unwrap_or_default(),
             None => Default::default(),
         }
-        .try_into_rant()
+        .try_into_ranty()
         .into_runtime_result()?;
 
         vm.cur_frame_mut().write(cur_group_sep);
@@ -425,7 +425,7 @@ pub fn num_fmt_group_sep(
 pub fn num_fmt_decimal_sep(
     vm: &mut VM,
     (decimal_sep, depth): (Option<InternalString>, Option<usize>),
-) -> RantStdResult {
+) -> RantyStdResult {
     let actual_depth = depth.unwrap_or(0).saturating_add(1);
 
     if let Some(decimal_sep) = decimal_sep {
@@ -446,7 +446,7 @@ pub fn num_fmt_decimal_sep(
                 .unwrap_or_default(),
             None => Default::default(),
         }
-        .try_into_rant()
+        .try_into_ranty()
         .into_runtime_result()?;
 
         vm.cur_frame_mut().write(cur_decimal_sep);

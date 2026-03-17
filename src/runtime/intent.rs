@@ -1,14 +1,14 @@
 use std::rc::Rc;
 
 use crate::{lang::*, InternalString};
-use crate::{RantFunctionHandle, RantList, RantMap, RantValue};
+use crate::{RantyFunctionHandle, RantyList, RantyMap, RantyValue};
 
 use super::{resolver::Weights, RuntimeResult, VM};
 
 /// Actions that can be queued on a stack frame that are performed before the frame runs.
 ///
 /// ## "Call" or "Invoke"?
-/// In the context of Rant runtime intents, "calling" and "invoking" have specific meanings:
+/// In the context of Ranty runtime intents, "calling" and "invoking" have specific meanings:
 /// * "Invoke" means that argument expressions potentially need to be evaluated before the call can proceed;
 /// * "Call" means that all argument values are already known (either in the intent or on the value stack).
 pub enum Intent {
@@ -89,13 +89,13 @@ pub enum Intent {
         /// Current state of the intent.
         state: InvokePipeStepState,
         /// The pipe value from the last step
-        pipeval: Option<RantValue>,
+        pipeval: Option<RantyValue>,
         /// Optional assignment pipe
         assignment_pipe: Option<Rc<AssignmentPipeTarget>>,
     },
     /// Evaluates each sequence in `default_arg_exprs` in order and assigns their results to local constants with their associated `Identifier`.
     CreateDefaultArgs {
-        context: RantFunctionHandle,
+        context: RantyFunctionHandle,
         default_arg_exprs: Vec<(Rc<Sequence>, usize)>,
         eval_index: usize,
     },
@@ -105,34 +105,34 @@ pub enum Intent {
     CallOperand { sequence: Rc<Sequence> },
     /// Calls a function for every variant of a temporal argument set and increments the provided temporal state.
     CallTemporal {
-        func: RantFunctionHandle,
+        func: RantyFunctionHandle,
         arg_exprs: Rc<Vec<ArgumentExpr>>,
-        args: Rc<Vec<RantValue>>,
+        args: Rc<Vec<RantyValue>>,
         temporal_state: TemporalSpreadState,
     },
     /// Pops value from stack and adds it to a list. If `index` is out of range, prints the list.
     BuildList {
         init: Rc<Vec<Rc<Sequence>>>,
         index: usize,
-        list: RantList,
+        list: RantyList,
     },
     /// Pops a value from the stack and adds it to `items`. If `index` is out of range, produces a tuple from `items` and prints it.
     BuildTuple {
         init: Rc<Vec<Rc<Sequence>>>,
         index: usize,
-        items: Vec<RantValue>,
+        items: Vec<RantyValue>,
     },
     /// Pops a value and optional key from stack and adds them to `map`. If `pair_index` is out of range, prints `map`.
     BuildMap {
         init: Rc<Vec<(MapKeyExpr, Rc<Sequence>)>>,
         pair_index: usize,
-        map: RantMap,
+        map: RantyMap,
     },
     /// Evaluates dynamic block metadata and then runs the block with the computed state.
     BuildPreparedBlock {
         block: Rc<Block>,
         weights: Option<Weights>,
-        match_triggers: Option<Vec<Option<RantValue>>>,
+        match_triggers: Option<Vec<Option<RantyValue>>>,
         element_index: usize,
         metadata_index: usize,
         pending_metadata: Option<BlockElementMetadataKind>,
@@ -285,16 +285,16 @@ pub enum InvokePipeStepState {
     ///
     /// Transitions to `PostTemporalCall`.
     PreTemporalCall {
-        step_function: RantFunctionHandle,
+        step_function: RantyFunctionHandle,
         temporal_state: TemporalSpreadState,
-        args: Vec<RantValue>,
+        args: Vec<RantyValue>,
     },
     /// Step function is ready to call.
     ///
     /// Transitions to `PostCall`.
     PreCall {
-        step_function: RantFunctionHandle,
-        args: Vec<RantValue>,
+        step_function: RantyFunctionHandle,
+        args: Vec<RantyValue>,
     },
     /// Step function has returned and output can be used.
     PostCall,
@@ -302,9 +302,9 @@ pub enum InvokePipeStepState {
     ///
     /// Might transition to `PreTemporalCall`.
     PostTemporalCall {
-        step_function: RantFunctionHandle,
+        step_function: RantyFunctionHandle,
         temporal_state: TemporalSpreadState,
-        args: Vec<RantValue>,
+        args: Vec<RantyValue>,
     },
 }
 
@@ -334,7 +334,7 @@ pub enum SetterValueSource {
     /// Setter RHS is evaluated from an expression.
     FromExpression(Rc<Sequence>),
     /// Setter RHS is a value.
-    FromValue(RantValue),
+    FromValue(RantyValue),
     /// Setter RHS was already consumed and pushed to the value stack.
     FromStack,
 }

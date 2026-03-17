@@ -1,18 +1,18 @@
-use crate::{InternalString, RantList, RantValue};
+use crate::{InternalString, RantyList, RantyValue};
 use fnv::FnvHashMap;
 use std::{borrow::Cow, cell::RefCell, ops::Deref, rc::Rc};
 
-/// Reference handle for a Rant map
+/// Reference handle for a Ranty map
 #[derive(Debug, Clone)]
-pub struct RantMapHandle(Rc<RefCell<RantMap>>);
+pub struct RantyMapHandle(Rc<RefCell<RantyMap>>);
 
-impl RantMapHandle {
+impl RantyMapHandle {
     pub fn cloned(&self) -> Self {
         Self(Rc::new(RefCell::new((*self.0.borrow()).clone())))
     }
 
-    pub fn would_create_proto_cycle(&self, proto: &RantMapHandle) -> bool {
-        let mut next_proto = Some(RantMapHandle::clone(proto));
+    pub fn would_create_proto_cycle(&self, proto: &RantyMapHandle) -> bool {
+        let mut next_proto = Some(RantyMapHandle::clone(proto));
         while let Some(cur_proto) = next_proto {
             if &cur_proto == self {
                 return true;
@@ -23,38 +23,38 @@ impl RantMapHandle {
     }
 }
 
-impl PartialEq for RantMapHandle {
+impl PartialEq for RantyMapHandle {
     fn eq(&self, other: &Self) -> bool {
         self.0.as_ptr() == other.0.as_ptr()
     }
 }
 
-impl From<RantMap> for RantMapHandle {
+impl From<RantyMap> for RantyMapHandle {
     #[inline]
-    fn from(map: RantMap) -> Self {
+    fn from(map: RantyMap) -> Self {
         Self(Rc::new(RefCell::new(map)))
     }
 }
 
-impl Deref for RantMapHandle {
-    type Target = RefCell<RantMap>;
+impl Deref for RantyMapHandle {
+    type Target = RefCell<RantyMap>;
     #[inline]
     fn deref(&self) -> &Self::Target {
         self.0.as_ref()
     }
 }
 
-/// Represents Rant's `map` type, which stores a mutable collection of key-value pairs.
+/// Represents Ranty's `map` type, which stores a mutable collection of key-value pairs.
 /// Map keys are always strings.
 #[derive(Debug, Clone)]
-pub struct RantMap {
+pub struct RantyMap {
     /// The physical contents of the map
-    map: FnvHashMap<InternalString, RantValue>,
+    map: FnvHashMap<InternalString, RantyValue>,
     /// The prototype of the map
-    proto: Option<RantMapHandle>,
+    proto: Option<RantyMapHandle>,
 }
 
-impl RantMap {
+impl RantyMap {
     pub fn new() -> Self {
         Self {
             map: Default::default(),
@@ -63,8 +63,8 @@ impl RantMap {
     }
 
     #[inline]
-    pub fn into_handle(self) -> RantMapHandle {
-        RantMapHandle::from(self)
+    pub fn into_handle(self) -> RantyMapHandle {
+        RantyMapHandle::from(self)
     }
 
     #[inline]
@@ -83,24 +83,24 @@ impl RantMap {
     }
 
     #[inline]
-    pub fn proto(&self) -> Option<RantMapHandle> {
+    pub fn proto(&self) -> Option<RantyMapHandle> {
         self.proto.clone()
     }
 
     #[inline]
-    pub fn extend<M: Deref<Target = RantMap>>(&mut self, other: M) {
+    pub fn extend<M: Deref<Target = RantyMap>>(&mut self, other: M) {
         for (k, v) in other.map.iter() {
             self.map.insert(k.clone(), v.clone());
         }
     }
 
     #[inline]
-    pub fn set_proto(&mut self, proto: Option<RantMapHandle>) {
+    pub fn set_proto(&mut self, proto: Option<RantyMapHandle>) {
         self.proto = proto;
     }
 
     #[inline]
-    pub fn raw_set(&mut self, key: &str, val: RantValue) {
+    pub fn raw_set(&mut self, key: &str, val: RantyValue) {
         self.map.insert(InternalString::from(key), val);
     }
 
@@ -110,30 +110,30 @@ impl RantMap {
     }
 
     #[inline]
-    pub fn raw_take(&mut self, key: &str) -> Option<RantValue> {
+    pub fn raw_take(&mut self, key: &str) -> Option<RantyValue> {
         self.map.remove(key)
     }
 
     #[inline]
-    pub fn raw_get(&self, key: &str) -> Option<&RantValue> {
+    pub fn raw_get(&self, key: &str) -> Option<&RantyValue> {
         self.map.get(key)
     }
 
     #[inline]
-    pub fn get(&self, key: &str) -> Option<Cow<'_, RantValue>> {
+    pub fn get(&self, key: &str) -> Option<Cow<'_, RantyValue>> {
         // Check if the member is in the map itself
         if let Some(member) = self.raw_get(key) {
             return Some(Cow::Borrowed(member));
         }
 
         // Climb the prototype chain to see if the member is in one of them
-        let mut next_proto = self.proto.as_ref().map(RantMapHandle::clone);
+        let mut next_proto = self.proto.as_ref().map(RantyMapHandle::clone);
         while let Some(cur_proto) = next_proto {
             let cur_proto_ref = cur_proto.borrow();
             if let Some(proto_member) = cur_proto_ref.raw_get(key) {
                 return Some(Cow::Owned(proto_member.clone()));
             }
-            next_proto = cur_proto_ref.proto.as_ref().map(RantMapHandle::clone);
+            next_proto = cur_proto_ref.proto.as_ref().map(RantyMapHandle::clone);
         }
         None
     }
@@ -144,26 +144,26 @@ impl RantMap {
     }
 
     #[inline]
-    pub fn raw_keys(&self) -> RantList {
+    pub fn raw_keys(&self) -> RantyList {
         self.map
             .keys()
-            .map(|k| RantValue::String(k.as_str().into()))
+            .map(|k| RantyValue::String(k.as_str().into()))
             .collect()
     }
 
     #[inline]
-    pub fn raw_values(&self) -> RantList {
+    pub fn raw_values(&self) -> RantyList {
         self.map.values().cloned().collect()
     }
 
     #[inline]
-    pub(crate) fn raw_pairs_internal(&self) -> impl Iterator<Item = (&'_ str, &'_ RantValue)> {
+    pub(crate) fn raw_pairs_internal(&self) -> impl Iterator<Item = (&'_ str, &'_ RantyValue)> {
         self.map.iter().map(|(k, v)| (k.as_str(), v))
     }
 }
 
-impl Default for RantMap {
+impl Default for RantyMap {
     fn default() -> Self {
-        RantMap::new()
+        RantyMap::new()
     }
 }

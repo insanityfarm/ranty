@@ -10,7 +10,7 @@ Both getters and setters can be made anonymous; however, anonymous setters must 
 
 ### Example 1
 
-```rant
+```ranty
 # Create two lists
 <$list1 = (:1;2;3;4;5;6;7;8)>
 <$list2 = (:a;b;c;d;e;f;g;h)>
@@ -24,7 +24,7 @@ Both getters and setters can be made anonymous; however, anonymous setters must 
 
 ### Example 2
 
-```rant
+```ranty
 # Get the first letter of a string literal
 <("hello")/0> # Returns 'h'
 ```

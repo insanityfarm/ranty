@@ -2,7 +2,7 @@ mod common;
 
 use assert_matches::assert_matches;
 use common::{run, run_str};
-use rant::runtime::{RuntimeError, RuntimeErrorType};
+use ranty::runtime::{RuntimeError, RuntimeErrorType};
 
 #[test]
 fn inherited_map_value_lookup() {
@@ -59,10 +59,10 @@ fn inherited_functions_are_callable() {
             <$obj = (::)>
             <$proto = (:: greet = [?: name] { Hello,\s<name>! })>
             [set-proto: <obj>; <proto>]
-            [obj/greet: Rant]
+            [obj/greet: Ranty]
             "#
         ),
-        "Hello, Rant!"
+        "Hello, Ranty!"
     );
 }
 

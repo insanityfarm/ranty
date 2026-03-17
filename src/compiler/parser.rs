@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 #![allow(clippy::ptr_arg)]
 
-use super::{lexer::*, message::*, reader::RantTokenReader, Problem, Reporter};
-use crate::{lang::*, InternalString, RantProgramInfo};
+use super::{lexer::*, message::*, reader::RantyTokenReader, Problem, Reporter};
+use crate::{lang::*, InternalString, RantyProgramInfo};
 use fnv::FnvBuildHasher;
 use line_col::LineColLookup;
 use quickscope::ScopeMap;
@@ -11,7 +11,7 @@ use std::{
     ops::Range,
     rc::Rc,
 };
-use RantToken::*;
+use RantyToken::*;
 
 type ParseResult<T> = Result<T, ()>;
 
@@ -107,7 +107,7 @@ impl Op {
     }
 
     #[inline(always)]
-    fn from_token(token: &RantToken) -> Option<Op> {
+    fn from_token(token: &RantyToken) -> Option<Op> {
         Some(match token {
             Plus => Self::Infix(InfixOp::Add),
             Minus => Self::Infix(InfixOp::Subtract),
@@ -427,14 +427,14 @@ struct ParsedGroupOrCollection {
     is_auto_hinted: bool,
 }
 
-/// A parser that turns Rant code into an RST (Rant Syntax Tree).
-pub struct RantParser<'source, 'report, R: Reporter> {
+/// A parser that turns Ranty code into an RST (Ranty Syntax Tree).
+pub struct RantyParser<'source, 'report, R: Reporter> {
     /// A string slice containing the source code being parsed.
     source: &'source str,
     /// Flag set if there are compiler errors.
     has_errors: bool,
     /// The token stream used by the parser.
-    reader: RantTokenReader<'source>,
+    reader: RantyTokenReader<'source>,
     /// The line/col lookup for error reporting.
     lookup: LineColLookup<'source>,
     /// The error reporter.
@@ -442,24 +442,24 @@ pub struct RantParser<'source, 'report, R: Reporter> {
     /// Enables additional debug information.
     debug_enabled: bool,
     /// A string describing the origin (containing program) of a program element.
-    info: Rc<RantProgramInfo>,
+    info: Rc<RantyProgramInfo>,
     /// Keeps track of active variables in each scope while parsing.
     var_stack: ScopeMap<Identifier, VarStats>,
     /// Keeps track of active variable capture frames.
     capture_stack: Vec<(usize, HashSet<Identifier, FnvBuildHasher>)>,
 }
 
-impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
+impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
     pub fn new(
         source: &'source str,
         reporter: &'report mut R,
         debug_enabled: bool,
-        info: &Rc<RantProgramInfo>,
+        info: &Rc<RantyProgramInfo>,
     ) -> Self {
         Self {
             source,
             has_errors: false,
-            reader: RantTokenReader::new(source),
+            reader: RantyTokenReader::new(source),
             lookup: LineColLookup::new(source),
             reporter,
             debug_enabled,
@@ -470,7 +470,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
     }
 }
 
-impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
+impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
     /// Top-level parsing function invoked by the compiler.
     pub fn parse(&mut self) -> Result<Rc<Sequence>, ()> {
         let result = self.parse_sequence(SequenceParseMode::TopLevel);
@@ -487,7 +487,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
     fn lookahead_attribute_block_sugar(&self) -> bool {
         let mut reporter = ();
         let mut parser =
-            RantParser::new(self.source, &mut reporter, self.debug_enabled, &self.info);
+            RantyParser::new(self.source, &mut reporter, self.debug_enabled, &self.info);
         parser.has_errors = self.has_errors;
         parser.reader = self.reader.clone();
         parser.var_stack = self.var_stack.clone();
@@ -548,7 +548,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
         self.report_error(Problem::ExpectedToken(expected.to_owned()), span);
     }
 
-    /// Parses a sequence of items with a new variable scope. Items are individual elements of a Rant program (fragments, blocks, function calls, etc.)
+    /// Parses a sequence of items with a new variable scope. Items are individual elements of a Ranty program (fragments, blocks, function calls, etc.)
     #[inline]
     fn parse_sequence(&mut self, mode: SequenceParseMode) -> ParseResult<ParsedSequence> {
         self.var_stack.push_layer();
@@ -794,7 +794,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                                 self.reader.next()
                             {
                                 match require_first_arg_token {
-                                    RantToken::StringLiteral(require_path) => {
+                                    RantyToken::StringLiteral(require_path) => {
                                         let node = Expression::Require {
                                             alias: None,
                                             path: require_path,
@@ -802,7 +802,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                                         whitespace!(ignore next);
                                         emit!(node);
                                     }
-                                    RantToken::Fragment => {
+                                    RantyToken::Fragment => {
                                         let require_alias = self.reader.last_token_string();
                                         if !is_valid_ident(require_alias.as_str()) {
                                             self.report_error(
@@ -815,7 +815,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                                         whitespace!(ignore next);
                                         if !self
                                             .reader
-                                            .eat_where(|t| matches!(t, Some((RantToken::Colon, _))))
+                                            .eat_where(|t| matches!(t, Some((RantyToken::Colon, _))))
                                         {
                                             self.report_error(
                                                 Problem::ExpectedToken(":".to_owned()),
@@ -828,7 +828,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                                         {
                                             whitespace!(ignore next);
                                             match require_path_token {
-                                                RantToken::StringLiteral(require_path) => {
+                                                RantyToken::StringLiteral(require_path) => {
                                                     let node = Expression::Require {
                                                         alias: Some(require_alias),
                                                         path: require_path,
@@ -1342,14 +1342,14 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                         matches!(
                             t,
                             Some((
-                                RantToken::IntegerPositive(_) | RantToken::FloatPositive(_),
+                                RantyToken::IntegerPositive(_) | RantyToken::FloatPositive(_),
                                 _
                             ))
                         )
                     }) {
                         whitespace!(ignore prev);
                         emit!(match number_token {
-                            RantToken::IntegerPositive(nt) => match nt {
+                            RantyToken::IntegerPositive(nt) => match nt {
                                 PositiveIntegerToken::Value(n) =>
                                     match self.try_sign_unsigned_int(n, true, &number_token_span) {
                                         Ok(n) => Expression::Integer(n),
@@ -1360,7 +1360,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                                     Expression::NothingVal
                                 }
                             },
-                            RantToken::FloatPositive(nt) => match nt {
+                            RantyToken::FloatPositive(nt) => match nt {
                                 PositiveFloatToken::Value(n) => Expression::Float(-n),
                                 PositiveFloatToken::OutOfRange => {
                                     self.report_error(Problem::FloatLiteralOutOfRange, &span);
@@ -1780,7 +1780,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
             self.reader.skip_ws();
             if !self
                 .reader
-                .eat_where(|t| matches!(t, Some((RantToken::Colon, _))))
+                .eat_where(|t| matches!(t, Some((RantyToken::Colon, _))))
             {
                 self.report_error(
                     Problem::ExpectedToken(":".to_owned()),
@@ -1820,13 +1820,13 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
         self.reader.skip_ws();
         let collection_type_token_info = self
             .reader
-            .take_where(|t| matches!(t, Some((RantToken::Colon | RantToken::DoubleColon, ..))));
+            .take_where(|t| matches!(t, Some((RantyToken::Colon | RantyToken::DoubleColon, ..))));
         self.reader.skip_ws();
 
         if let Some((collection_type_token, _)) = collection_type_token_info {
             match collection_type_token {
                 // Is it a list?
-                RantToken::Colon => {
+                RantyToken::Colon => {
                     // Exit early on empty list
                     if self
                         .reader
@@ -1883,7 +1883,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                     })
                 }
                 // Is it a map?
-                RantToken::DoubleColon => {
+                RantyToken::DoubleColon => {
                     let mut pairs = vec![];
 
                     loop {
@@ -1905,7 +1905,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                                 self.reader.skip_ws();
 
                                 // Ignore the separator since that's usually handled by the value sequence parser
-                                self.reader.eat(RantToken::Semicolon);
+                                self.reader.eat(RantyToken::Semicolon);
 
                                 if accessor_nodes.len() != 1 {
                                     self.report_error(
@@ -2445,7 +2445,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                 Some((DoubleStar, ..)) => {
                   is_temporal = true;
                   self.reader.skip_ws();
-                  let is_complex = self.reader.eat(RantToken::Star);
+                  let is_complex = self.reader.eat(RantyToken::Star);
                   self.reader.skip_ws();
                   spread_mode = ArgumentSpreadMode::Temporal { label: cur_temporal_index, is_complex };
                   cur_temporal_index += 1;
@@ -2454,7 +2454,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                 Some((TemporalLabeled(label_str), ..)) => {
                   is_temporal = true;
                   self.reader.skip_ws();
-                  let is_complex = self.reader.eat(RantToken::Star);
+                  let is_complex = self.reader.eat(RantyToken::Star);
                   self.reader.skip_ws();
                   let label_index = if let Some(label_index) = temporal_index_labels.get(&label_str) {
                     *label_index
@@ -2562,7 +2562,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                   self.reader.skip_ws();
 
                   // We expect the function accessor to end here
-                  if !self.reader.eat(RantToken::RightBracket) {
+                  if !self.reader.eat(RantyToken::RightBracket) {
                     self.report_expected_token_error("]", &self.reader.last_token_span());
                   }
 
@@ -3152,7 +3152,7 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
         let protection = match parse_mode {
             BlockParseMode::NeedsStart => {
                 self.reader.skip_ws();
-                let protection = if self.reader.eat(RantToken::At) {
+                let protection = if self.reader.eat(RantyToken::At) {
                     Some(BlockProtection::Outer)
                 } else {
                     None
@@ -3190,14 +3190,14 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
             // Check for @edit
             let modifier = if self.reader.eat_kw(KW_EDIT) {
                 self.reader.skip_ws();
-                let input_id = if self.reader.eat(RantToken::Colon) {
+                let input_id = if self.reader.eat(RantyToken::Colon) {
                     None // No input variable
                 } else {
                     // Get the name of the input variable
                     let input_id = self.parse_ident()?;
                     let input_id_span = self.reader.last_token_span();
                     self.reader.skip_ws();
-                    if !self.reader.eat(RantToken::Colon) {
+                    if !self.reader.eat(RantyToken::Colon) {
                         self.report_expected_token_error(":", &self.reader.last_token_span());
                     }
                     self.var_stack.define(
@@ -3908,11 +3908,11 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
         if let Some((token, span)) = self.reader.take_where(|t| {
             matches!(
                 t,
-                Some((RantToken::Minus | RantToken::IntegerPositive(_), _))
+                Some((RantyToken::Minus | RantyToken::IntegerPositive(_), _))
             )
         }) {
             match token {
-                RantToken::IntegerPositive(nt) => match nt {
+                RantyToken::IntegerPositive(nt) => match nt {
                     PositiveIntegerToken::Value(n) => {
                         match self.try_sign_unsigned_int(n, false, &span) {
                             Ok(i) => return Ok(Some(i)),
@@ -3924,11 +3924,11 @@ impl<'source, 'report, R: Reporter> RantParser<'source, 'report, R> {
                         return Err(());
                     }
                 },
-                RantToken::Minus => {
+                RantyToken::Minus => {
                     self.reader.skip_ws();
-                    if let Some((RantToken::IntegerPositive(nt), span)) = self
+                    if let Some((RantyToken::IntegerPositive(nt), span)) = self
                         .reader
-                        .take_where(|t| matches!(t, Some((RantToken::IntegerPositive(_), _))))
+                        .take_where(|t| matches!(t, Some((RantyToken::IntegerPositive(_), _))))
                     {
                         return match nt {
                             PositiveIntegerToken::Value(n) => {

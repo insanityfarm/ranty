@@ -78,5 +78,5 @@
 
 - [Appendix]()
     - [Diagnostics](compiler-messages.md)
-    - [Comparison of Rant 3 and 4](rant-3-vs-4.md)
+    - [Comparison of Rant 3 and Ranty](rant-3-vs-ranty.md)
     - [Glossary](glossary.md)

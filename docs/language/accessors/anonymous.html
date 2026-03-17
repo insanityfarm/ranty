@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Anonymous Accessors - Rant Reference</title>
+        <title>Anonymous Accessors - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -182,7 +182,7 @@ However, you can also access elements on inline values directly using an <strong
 Write the rest of your access path as normal.</p>
 <p>Both getters and setters can be made anonymous; however, anonymous setters must include at least one index or key.</p>
 <h3 id="example-1"><a class="header" href="#example-1">Example 1</a></h3>
-<pre><code class="language-rant"># Create two lists
+<pre><code class="language-ranty"># Create two lists
 &lt;$list1 = (:1;2;3;4;5;6;7;8)&gt;
 &lt;$list2 = (:a;b;c;d;e;f;g;h)&gt;
 
@@ -193,7 +193,7 @@ Write the rest of your access path as normal.</p>
 &lt;([get-either-list])/3&gt; # Returns either '4' or 'd'
 </code></pre>
 <h3 id="example-2"><a class="header" href="#example-2">Example 2</a></h3>
-<pre><code class="language-rant"># Get the first letter of a string literal
+<pre><code class="language-ranty"># Get the first letter of a string literal
 &lt;("hello")/0&gt; # Returns 'h'
 </code></pre>
 

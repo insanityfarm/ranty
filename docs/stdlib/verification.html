@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Verification - Rant Reference</title>
+        <title>Verification - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -177,7 +177,7 @@
                     <main>
                         <h1 id="standard-library-verification-functions"><a class="header" href="#standard-library-verification-functions">Standard Library: Verification functions</a></h1>
 <h2 id="is-some"><a class="header" href="#is-some">is-some</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-some: value] 
 
 </code></pre>
@@ -187,7 +187,7 @@
 <p><strong><code>value</code></strong> ← <code>any</code> <br/>
 The value to check.</p>
 <h2 id="is-between"><a class="header" href="#is-between">is-between</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-between: value; a; b]
 
 </code></pre>
@@ -201,7 +201,7 @@ The first bound.</p>
 <p><strong><code>b</code></strong> ← <code>any</code> <br/>
 The second bound.</p>
 <h2 id="is-bool"><a class="header" href="#is-bool">is-bool</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-bool: value]
 
 </code></pre>
@@ -211,7 +211,7 @@ The second bound.</p>
 <p><strong><code>value</code></strong> ← <code>any</code> <br/>
 The value to check.</p>
 <h2 id="is-nothing"><a class="header" href="#is-nothing">is-nothing</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-nothing: value]
 
 </code></pre>
@@ -221,7 +221,7 @@ The value to check.</p>
 <p><strong><code>value</code></strong> ← <code>any</code> <br/>
 The value to check.</p>
 <h2 id="is-even"><a class="header" href="#is-even">is-even</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-even: number]
 
 </code></pre>
@@ -231,14 +231,14 @@ The value to check.</p>
 <p><strong><code>number</code></strong> ← <code>int | float</code> <br/>
 The number to check.</p>
 <h2 id="is-factor"><a class="header" href="#is-factor">is-factor</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-factor: value; factor]
 
 </code></pre>
 <p>→ <code>bool</code></p>
 <p>Returns <code>@true</code> if <code>value</code> is evenly divisible by <code>factor</code>.</p>
 <h2 id="is-float"><a class="header" href="#is-float">is-float</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-float: value]
 
 </code></pre>
@@ -248,7 +248,7 @@ The number to check.</p>
 <p><strong><code>value</code></strong> ← <code>any</code> <br/>
 The value to check.</p>
 <h2 id="is-int"><a class="header" href="#is-int">is-int</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-int: value]
 
 </code></pre>
@@ -258,7 +258,7 @@ The value to check.</p>
 <p><strong><code>value</code></strong> ← <code>any</code> <br/>
 The value to check.</p>
 <h2 id="is-nan"><a class="header" href="#is-nan">is-nan</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-nan: value]
 
 </code></pre>
@@ -268,7 +268,7 @@ The value to check.</p>
 <p><strong><code>value</code></strong> ← <code>any</code> <br/>
 The value to check.</p>
 <h2 id="is-number"><a class="header" href="#is-number">is-number</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-number: value]
 
 </code></pre>
@@ -278,14 +278,14 @@ The value to check.</p>
 <p><strong><code>value</code></strong> ← <code>any</code> <br/>
 The value to check.</p>
 <h2 id="is"><a class="header" href="#is">is</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is: value; type-name]
 
 </code></pre>
 <p>→ <code>bool</code></p>
 <p>Returns <code>@true</code> when <code>value</code>'s runtime type name exactly matches <code>type-name</code>.</p>
 <h2 id="is-odd"><a class="header" href="#is-odd">is-odd</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-odd: number]
 
 </code></pre>
@@ -295,7 +295,7 @@ The value to check.</p>
 <p><strong><code>value</code></strong> ← <code>any</code> <br/>
 The value to check.</p>
 <h2 id="is-string"><a class="header" href="#is-string">is-string</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%is-string: value]
 
 </code></pre>

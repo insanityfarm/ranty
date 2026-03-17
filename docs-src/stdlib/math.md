@@ -3,7 +3,7 @@
 
 ## abs
 
-```rant
+```ranty
 
 [%abs: num]
 
@@ -24,7 +24,7 @@ Raises an error if `num` is an integer and the absolute value overflows.
 
 ## add
 
-```rant
+```ranty
 
 [%add: lhs; rhs]
 
@@ -43,7 +43,7 @@ The right-hand operand of the addition.
 
 ## clamp
 
-```rant
+```ranty
 
 [%clamp: value; a; b]
 
@@ -54,7 +54,7 @@ Prints `value` clamped to the inclusive range between `a` and `b`.
 
 ## ceil
 
-```rant
+```ranty
 
 [%ceil: val]
 
@@ -71,7 +71,7 @@ The input number.
 
 ## div
 
-```rant
+```ranty
 
 [%div: lhs; rhs]
 
@@ -91,7 +91,7 @@ The right-hand operand (divisor).
 
 ## floor
 
-```rant
+```ranty
 
 [%floor: val]
 
@@ -108,7 +108,7 @@ The input number.
 
 ## frac
 
-```rant
+```ranty
 
 [%frac: val]
 
@@ -125,7 +125,7 @@ The input number.
 
 ## max
 
-```rant
+```ranty
 
 [%max: values+]
 
@@ -144,7 +144,7 @@ The input values.
 
 ### Examples
 
-```rant
+```ranty
 # Arguments can be single values
 [max: 3; 2 |> assert-eq: 3]
 
@@ -158,7 +158,7 @@ The input values.
 
 ## min
 
-```rant
+```ranty
 
 [%min: values+]
 
@@ -177,7 +177,7 @@ The input values.
 
 ### Examples
 
-```rant
+```ranty
 # Arguments can be single values
 [min: 3; 2 |> assert-eq: 2]
 
@@ -191,7 +191,7 @@ The input values.
 
 ## mod
 
-```rant
+```ranty
 
 [%mod: lhs; rhs]
 
@@ -211,7 +211,7 @@ The right-hand operand (divisor).
 
 ## mul
 
-```rant
+```ranty
 
 [%mul: lhs; rhs]
 
@@ -231,7 +231,7 @@ The right-hand operand.
 
 ## mul-add
 
-```rant
+```ranty
 
 [%mul-add: lhs; rhs; add]
 
@@ -254,7 +254,7 @@ The value to add to the product.
 
 ## neg
 
-```rant
+```ranty
 
 [%neg: val]
 
@@ -271,7 +271,7 @@ The input value.
 
 ## recip
 
-```rant
+```ranty
 
 [%recip: n]
 
@@ -283,7 +283,7 @@ Gets the reciprocal of a value.
 
 ## sub
 
-```rant
+```ranty
 
 [%sub: lhs; rhs]
 
@@ -303,7 +303,7 @@ The right-hand side of the subtraction.
 
 ## sin
 
-```rant
+```ranty
 
 [%sin: x]
 
@@ -320,7 +320,7 @@ The input value, in radians.
 
 ## cos
 
-```rant
+```ranty
 
 [%cos: x]
 
@@ -337,7 +337,7 @@ The input value, in radians.
 
 ## tan
 
-```rant
+```ranty
 
 [%tan: x]
 
@@ -354,7 +354,7 @@ The input value, in radians.
 
 ## asin
 
-```rant
+```ranty
 
 [%asin: x]
 
@@ -371,7 +371,7 @@ The input sine value.
 
 ## acos
 
-```rant
+```ranty
 
 [%acos: x]
 
@@ -388,7 +388,7 @@ The input cosine value.
 
 ## atan
 
-```rant
+```ranty
 
 [%atan: x]
 
@@ -405,7 +405,7 @@ The input tangent value.
 
 ## atan2
 
-```rant
+```ranty
 
 [%atan2: y; x]
 
@@ -427,7 +427,7 @@ The input tangent's denominator.
 
 ## sqrt
 
-```rant
+```ranty
 
 [%sqrt: x]
 
@@ -444,7 +444,7 @@ The input value.
 
 ## pow
 
-```rant
+```ranty
 
 [%pow: x; y]
 

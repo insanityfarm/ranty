@@ -2,7 +2,7 @@
 
 | Symbol | Category | Call Form | Summary | Canonical Location |
 | --- | --- | --- | --- | --- |
-| `BUILD_VERSION` | Constants | `BUILD_VERSION` | The build version of the Rant library being used. | [stdlib/constants.md#build_version](stdlib/constants.md#build_version) |
+| `BUILD_VERSION` | Constants | `BUILD_VERSION` | The build version of the Ranty library being used. | [stdlib/constants.md#build_version](stdlib/constants.md#build_version) |
 | `EPSILON` | Constants | `EPSILON` | The smallest possible `float` value greater than zero. | [stdlib/constants.md#epsilon](stdlib/constants.md#epsilon) |
 | `INFINITY` | Constants | `INFINITY` | The floating-point special value for positive infinity. | [stdlib/constants.md#infinity](stdlib/constants.md#infinity) |
 | `MAX_FLOAT` | Constants | `MAX_FLOAT` | The largest representable finite value of the `float` type. | [stdlib/constants.md#max_float](stdlib/constants.md#max_float) |
@@ -11,7 +11,7 @@
 | `MIN_INT` | Constants | `MIN_INT` | The smallest representable value of the `int` type. | [stdlib/constants.md#min_int](stdlib/constants.md#min_int) |
 | `NAN` | Constants | `NAN` | The floating-point special value for NaN (Not a Number). | [stdlib/constants.md#nan](stdlib/constants.md#nan) |
 | `NEG_INFINITY` | Constants | `NEG_INFINITY` | The floating-point special value for negative infinity. | [stdlib/constants.md#neg_infinity](stdlib/constants.md#neg_infinity) |
-| `RANT_VERSION` | Constants | `RANT_VERSION` | The version of the Rant language currently being used. | [stdlib/constants.md#rant_version](stdlib/constants.md#rant_version) |
+| `RANTY_VERSION` | Constants | `RANTY_VERSION` | The version of the Ranty language currently being used. | [stdlib/constants.md#ranty_version](stdlib/constants.md#ranty_version) |
 | `abs` | Math | `[%abs: num]` | Prints the absolute value of `num`. | [stdlib/math.md#abs](stdlib/math.md#abs) |
 | `acos` | Math | `[%acos: x]` | Calculates the arccosine (in radians) of `x`. | [stdlib/math.md#acos](stdlib/math.md#acos) |
 | `add` | Math | `[%add: lhs; rhs]` | Adds two values and prints the sum. | [stdlib/math.md#add](stdlib/math.md#add) |
@@ -165,7 +165,7 @@
 | `take` | Collections | `[%take: collection; pos]` | Removes the value at `pos` from a list or map and prints it. | [stdlib/collections.md#take](stdlib/collections.md#take) |
 | `tan` | Math | `[%tan: x]` | Calculates the tangent of `x`. | [stdlib/math.md#tan](stdlib/math.md#tan) |
 | `tap` | General | `[%tap: ...]` | Consumes arguments and produces no output. This is useful as a no-op sink in pipe chains. | [stdlib/general.md#tap](stdlib/general.md#tap) |
-| `to-bool` | Conversion | `[%to-bool: value]` | Converts `value` to a boolean using Rant's runtime truthiness rules. | [stdlib/conversion.md#to-bool](stdlib/conversion.md#to-bool) |
+| `to-bool` | Conversion | `[%to-bool: value]` | Converts `value` to a boolean using Ranty's runtime truthiness rules. | [stdlib/conversion.md#to-bool](stdlib/conversion.md#to-bool) |
 | `to-float` | Conversion | `[%to-float: value]` | Attempts to convert `value` to a `float` value and prints the result. If the conversion fails, prints nothing. | [stdlib/conversion.md#to-float](stdlib/conversion.md#to-float) |
 | `to-int` | Conversion | `[%to-int: value]` | Attempts to convert `value` to an `int` value and prints the result. If the conversion fails, prints nothing. | [stdlib/conversion.md#to-int](stdlib/conversion.md#to-int) |
 | `to-list` | Conversion | `[%to-list: value]` | Attempts to convert `value` to a `list` and prints the result. If the conversion fails, prints nothing. | [stdlib/conversion.md#to-list](stdlib/conversion.md#to-list) |

@@ -6,7 +6,7 @@ A `*` parameter is optional and defaults to an empty list, while a `+` parameter
 
 Functions may only have up to one variadic parameter, and it must appear last in the signature.
 
-```rant
+```ranty
 [$how-many: items*] {
     [len: <items>]
 }

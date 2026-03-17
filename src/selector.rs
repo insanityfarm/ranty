@@ -1,48 +1,48 @@
 use std::{cell::RefCell, error::Error, fmt::Display, ops::Deref, rc::Rc};
 
 use crate::{
-    rng::RantRng,
+    rng::RantyRng,
     runtime::{IntoRuntimeResult, RuntimeError},
-    RantValue, TryFromRant, ValueError,
+    RantyValue, TryFromRanty, ValueError,
 };
 
-/// Reference handle for a Rant selector.
+/// Reference handle for a Ranty selector.
 #[derive(Debug, Clone)]
-pub struct RantSelectorHandle(Rc<RefCell<RantSelector>>);
+pub struct RantySelectorHandle(Rc<RefCell<RantySelector>>);
 
-impl RantSelectorHandle {
+impl RantySelectorHandle {
     pub fn cloned(&self) -> Self {
         Self(Rc::new(RefCell::new((*self.0.borrow()).clone())))
     }
 }
 
-impl Deref for RantSelectorHandle {
-    type Target = RefCell<RantSelector>;
+impl Deref for RantySelectorHandle {
+    type Target = RefCell<RantySelector>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
-impl PartialEq for RantSelectorHandle {
+impl PartialEq for RantySelectorHandle {
     fn eq(&self, other: &Self) -> bool {
         self.0.as_ptr() == other.0.as_ptr()
     }
 }
 
-impl From<RantSelector> for RantSelectorHandle {
-    fn from(sel: RantSelector) -> Self {
+impl From<RantySelector> for RantySelectorHandle {
+    fn from(sel: RantySelector) -> Self {
         Self(Rc::new(RefCell::new(sel)))
     }
 }
 
-/// Represents a Rant selector instance used by the resolver to select block branches.
+/// Represents a Ranty selector instance used by the resolver to select block branches.
 #[derive(Debug, Clone)]
-pub struct RantSelector {
+pub struct RantySelector {
     /// Mode of the selector
     mode: SelectorMode,
     /// Match value used by value-driven selectors.
-    match_value: Option<RantValue>,
+    match_value: Option<RantyValue>,
     /// Current iteration of the selector
     index: usize,
     /// Element count of the selector
@@ -55,7 +55,7 @@ pub struct RantSelector {
     jump_table: Vec<usize>,
 }
 
-impl RantSelector {
+impl RantySelector {
     /// Creates a new selector.
     #[inline]
     pub fn new(mode: SelectorMode) -> Self {
@@ -72,12 +72,12 @@ impl RantSelector {
 
     /// Converts the instance into a handle.
     #[inline]
-    pub fn into_handle(self) -> RantSelectorHandle {
+    pub fn into_handle(self) -> RantySelectorHandle {
         self.into()
     }
 
     #[inline]
-    pub fn with_match_value(mut self, value: RantValue) -> Self {
+    pub fn with_match_value(mut self, value: RantyValue) -> Self {
         self.match_value = Some(value);
         self
     }
@@ -89,7 +89,7 @@ impl RantSelector {
     }
 
     #[inline]
-    pub fn match_value(&self) -> Option<&RantValue> {
+    pub fn match_value(&self) -> Option<&RantyValue> {
         self.match_value.as_ref()
     }
 
@@ -134,7 +134,7 @@ impl RantSelector {
 
     /// Initializes the selector state using the specified element count.
     #[inline]
-    pub fn init(&mut self, rng: &RantRng, elem_count: usize) -> Result<(), SelectorError> {
+    pub fn init(&mut self, rng: &RantyRng, elem_count: usize) -> Result<(), SelectorError> {
         if elem_count == 0 {
             return Err(SelectorError::InvalidElementCount(0));
         }
@@ -173,7 +173,7 @@ impl RantSelector {
 
     /// SHuffles the branch indices in the selector's jump table.
     #[inline]
-    fn shuffle(&mut self, rng: &RantRng) {
+    fn shuffle(&mut self, rng: &RantyRng) {
         let jump_table = &mut self.jump_table;
         let n = self.count;
 
@@ -190,7 +190,7 @@ impl RantSelector {
     }
 
     /// Returns the next branch index and advances the selector state.
-    pub fn select(&mut self, elem_count: usize, rng: &RantRng) -> Result<usize, SelectorError> {
+    pub fn select(&mut self, elem_count: usize, rng: &RantyRng) -> Result<usize, SelectorError> {
         // Initialize and sanity check
         if self.mode == SelectorMode::Match {
             return Err(SelectorError::UnsupportedOperation(
@@ -431,10 +431,10 @@ pub enum SelectorMode {
     Match,
 }
 
-impl TryFromRant for SelectorMode {
-    fn try_from_rant(val: RantValue) -> Result<Self, ValueError> {
+impl TryFromRanty for SelectorMode {
+    fn try_from_ranty(val: RantyValue) -> Result<Self, ValueError> {
         match &val {
-            RantValue::String(s) => Ok(match s.as_str() {
+            RantyValue::String(s) => Ok(match s.as_str() {
                 "random" => SelectorMode::Random,
                 "one" => SelectorMode::One,
                 "forward" => SelectorMode::Forward,

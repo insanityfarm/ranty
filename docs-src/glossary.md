@@ -29,7 +29,7 @@ Attribute functions can only modify the attributes in the topmost frame.
 
 ### Attribute stack
 
-Rant maintains an "attribute stack" that stores **attributes** and provides them to **blocks**.
+Ranty maintains an "attribute stack" that stores **attributes** and provides them to **blocks**.
 When a block starts resolving, it consumes the attributes in the topmost frame of the attribute stack, replacing them with their default values.
 
 The user can add and remove frames from the attribute stack to preserve attribute frames for later use.
@@ -40,7 +40,7 @@ Auto-hinting refers to using the `@text` keyword to mark variables, function par
 
 ### Block
 
-A block is a section of a Rant program subdivided into zero or more parts.
+A block is a section of a Ranty program subdivided into zero or more parts.
 Blocks act as variable scopes and can be combined with various constructs to produce a wide variety of behaviors.
 
 ### Closure
@@ -66,11 +66,11 @@ Nothing refers to the name and value of the `nothing` type.
 
 ### Expression
 
-An expression is a sequence of Rant **expression units**.
+An expression is a sequence of Ranty **expression units**.
 
 ### Expression unit
 
-An expression unit is the smallest component of a Rant program. Examples of expression units inclide fragments, accessors, function calls, and blocks.
+An expression unit is the smallest component of a Ranty program. Examples of expression units inclide fragments, accessors, function calls, and blocks.
 
 ### Formatter
 
@@ -78,7 +78,7 @@ A formatter is a runtime component that passively changes the output in some way
 
 ### Fragment
 
-A fragment is a sequence of any non-whitespace, non-reserved characters found in a Rant program.
+A fragment is a sequence of any non-whitespace, non-reserved characters found in a Ranty program.
 
 ### Function percolation
 
@@ -116,7 +116,7 @@ A map is a collection of key-value pairs, also known as an "associative array".
 
 ### Module
 
-A module is a library of Rant functions that can be loaded into another program with `@require`.
+A module is a library of Ranty functions that can be loaded into another program with `@require`.
 
 ### Pipeval
 
@@ -136,11 +136,11 @@ A looping block that uses **attributes**. Blocks can be made to loop by setting 
 
 ### Resolution
 
-Resolution refers to the process of Rant selecting which branch to run on a **block**.
+Resolution refers to the process of Ranty selecting which branch to run on a **block**.
 
 ### Resolver
 
-The component of the Rant runtime that handles block resolution.
+The component of the Ranty runtime that handles block resolution.
 
 ### Shadowing
 
@@ -166,7 +166,7 @@ A splice is a **setter** that modifies a **slice** of an ordered collection.
 
 Varity is the classification of a function parameter relating to the number of values it expects and can accept.
 
-Rant has four varity types:
+Ranty has four varity types:
 * **Required** (accepts one value)
 * **Optional** (accepts zero or one values)
 * **Optional-variadic** (accepts zero or more values)

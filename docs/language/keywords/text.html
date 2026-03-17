@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>@text - Rant Reference</title>
+        <title>@text - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -181,7 +181,7 @@
 This feature eliminates the need to apply hints to every occurrence of a value that you know should <em>always</em> be hinted.</p>
 <h2 id="auto-hinting-a-variable"><a class="header" href="#auto-hinting-a-variable">Auto-hinting a variable</a></h2>
 <p>To auto-hint a variable, add <code>@text</code> at the start of the definition.</p>
-<pre><code class="language-rant">&lt;@text $first-name = John&gt;
+<pre><code class="language-ranty">&lt;@text $first-name = John&gt;
 &lt;@text $last-name = Smith&gt;
 
 &lt;first-name&gt; &lt;last-name&gt;
@@ -189,7 +189,7 @@ This feature eliminates the need to apply hints to every occurrence of a value t
 <p>This prints <code>John Smith</code>. Without auto-hinting, the output would be <code>JohnSmith</code>.</p>
 <h2 id="auto-hinting-a-function"><a class="header" href="#auto-hinting-a-function">Auto-hinting a function</a></h2>
 <p>To auto-hint a (named) function, add <code>@text</code> between the signature and body of its definition.</p>
-<pre><code class="language-rant">[$adjective] @text {
+<pre><code class="language-ranty">[$adjective] @text {
     {cursed|blessed}
 }
 
@@ -201,13 +201,13 @@ Have a [adjective] day!
 <p>A piped function call will only become auto-hinted if the last function in the chain is auto-hinted.</p>
 <h2 id="auto-hinting-a-parameter"><a class="header" href="#auto-hinting-a-parameter">Auto-hinting a parameter</a></h2>
 <p>To auto-hint a parameter, add <code>@text</code> before the parameter name.</p>
-<pre><code class="language-rant">[$full-name: @text first; @text last] {
+<pre><code class="language-ranty">[$full-name: @text first; @text last] {
     &lt;first&gt; &lt;last&gt;
 }
 
 [full-name: Robin; Pederson]
 </code></pre>
-<p>This prints <code>Robin Pederson</code>. Without auto-hinting, it would print <code>RobinPederson</code>.</p>
+<p>This prints <code>the original author of Rant</code>. Without auto-hinting, it would print <code>theoriginalauthorofRant</code>.</p>
 <h2 id="remarks"><a class="header" href="#remarks">Remarks</a></h2>
 <p>Auto-hinting can be overridden on an element by sinking it.</p>
 

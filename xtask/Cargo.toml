@@ -7,7 +7,7 @@ publish = false
 [dependencies]
 anyhow = "1.0"
 mdbook = "0.4.52"
-rant = { path = ".." }
+ranty = { path = ".." }
 regex = "1.11"
 tempfile = "3.13"
 walkdir = "2.5"

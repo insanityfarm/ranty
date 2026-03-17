@@ -6,7 +6,7 @@ Output modifiers are block elements that transform the caller's current output b
 
 `@edit` consumes the caller's current output, optionally binds it to a local name, and replaces it with the modifier body.
 
-```rant example
+```ranty example
 "example" { @edit x: `<x> `<x> }
 ```
 
@@ -16,7 +16,7 @@ example example
 
 If no binding name is supplied, the previous output is discarded and only the modifier result is kept.
 
-```rant example
+```ranty example
 "example" { @edit: "overwritten" }
 ```
 
@@ -30,7 +30,7 @@ overwritten
 
 ## Example: accumulating across repeats
 
-```rant example
+```ranty example
 [%factorial: n] {
   1 [rep: <n>] {@edit x: <x> * [step]}
 }

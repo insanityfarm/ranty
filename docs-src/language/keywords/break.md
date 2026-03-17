@@ -6,7 +6,7 @@ With an expression, `@break value` becomes the repeater result. Without an expre
 
 It can exit through nested blocks owned by the repeater, but it does not cross function boundaries. Using it where no repeater is reachable raises a control-flow runtime error.
 
-```rant
+```ranty
 [rep:3]{
   before
   { @break stop }

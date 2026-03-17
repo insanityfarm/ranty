@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Glossary - Rant Reference</title>
+        <title>Glossary - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -191,13 +191,13 @@ They are stored in frames in the <strong>attribute stack</strong>.</p>
 <p>A function that reads or writes an <strong>attribute</strong>.</p>
 <p>Attribute functions can only modify the attributes in the topmost frame.</p>
 <h3 id="attribute-stack"><a class="header" href="#attribute-stack">Attribute stack</a></h3>
-<p>Rant maintains an "attribute stack" that stores <strong>attributes</strong> and provides them to <strong>blocks</strong>.
+<p>Ranty maintains an "attribute stack" that stores <strong>attributes</strong> and provides them to <strong>blocks</strong>.
 When a block starts resolving, it consumes the attributes in the topmost frame of the attribute stack, replacing them with their default values.</p>
 <p>The user can add and remove frames from the attribute stack to preserve attribute frames for later use.</p>
 <h3 id="auto-hinting"><a class="header" href="#auto-hinting">Auto-hinting</a></h3>
 <p>Auto-hinting refers to using the <code>@text</code> keyword to mark variables, function parameters, and function return values as text, eliminating the need to add hints to each usage of them.</p>
 <h3 id="block"><a class="header" href="#block">Block</a></h3>
-<p>A block is a section of a Rant program subdivided into zero or more parts.
+<p>A block is a section of a Ranty program subdivided into zero or more parts.
 Blocks act as variable scopes and can be combined with various constructs to produce a wide variety of behaviors.</p>
 <h3 id="closure"><a class="header" href="#closure">Closure</a></h3>
 <p>A closure is a function that captures one or more variables from its enclosing scope.</p>
@@ -211,13 +211,13 @@ The block resolves to the final key or index that will be inserted into the path
 <h3 id="nothing"><a class="header" href="#nothing">Nothing</a></h3>
 <p>Nothing refers to the name and value of the <code>nothing</code> type.</p>
 <h3 id="expression"><a class="header" href="#expression">Expression</a></h3>
-<p>An expression is a sequence of Rant <strong>expression units</strong>.</p>
+<p>An expression is a sequence of Ranty <strong>expression units</strong>.</p>
 <h3 id="expression-unit"><a class="header" href="#expression-unit">Expression unit</a></h3>
-<p>An expression unit is the smallest component of a Rant program. Examples of expression units inclide fragments, accessors, function calls, and blocks.</p>
+<p>An expression unit is the smallest component of a Ranty program. Examples of expression units inclide fragments, accessors, function calls, and blocks.</p>
 <h3 id="formatter"><a class="header" href="#formatter">Formatter</a></h3>
 <p>A formatter is a runtime component that passively changes the output in some way.</p>
 <h3 id="fragment"><a class="header" href="#fragment">Fragment</a></h3>
-<p>A fragment is a sequence of any non-whitespace, non-reserved characters found in a Rant program.</p>
+<p>A fragment is a sequence of any non-whitespace, non-reserved characters found in a Ranty program.</p>
 <h3 id="function-percolation"><a class="header" href="#function-percolation">Function percolation</a></h3>
 <p>Function percolation is the ability of function calls to access functions from parent scopes despite <strong>shadowing</strong> by non-function variables.
 It is an implicit form of <strong>descoping</strong>.</p>
@@ -239,7 +239,7 @@ It is an implicit form of <strong>descoping</strong>.</p>
 <h3 id="map"><a class="header" href="#map">Map</a></h3>
 <p>A map is a collection of key-value pairs, also known as an "associative array".</p>
 <h3 id="module"><a class="header" href="#module">Module</a></h3>
-<p>A module is a library of Rant functions that can be loaded into another program with <code>@require</code>.</p>
+<p>A module is a library of Ranty functions that can be loaded into another program with <code>@require</code>.</p>
 <h3 id="pipeval"><a class="header" href="#pipeval">Pipeval</a></h3>
 <p>Pipeval is short for "Pipe value" and refers to the return value of a piped function that has been passed to the next function in a piped call.</p>
 <h3 id="prototype"><a class="header" href="#prototype">Prototype</a></h3>
@@ -249,9 +249,9 @@ It is an implicit form of <strong>descoping</strong>.</p>
 <h3 id="repeater"><a class="header" href="#repeater">Repeater</a></h3>
 <p>A looping block that uses <strong>attributes</strong>. Blocks can be made to loop by setting the repetition count with <code>[rep]</code>.</p>
 <h3 id="resolution"><a class="header" href="#resolution">Resolution</a></h3>
-<p>Resolution refers to the process of Rant selecting which branch to run on a <strong>block</strong>.</p>
+<p>Resolution refers to the process of Ranty selecting which branch to run on a <strong>block</strong>.</p>
 <h3 id="resolver"><a class="header" href="#resolver">Resolver</a></h3>
-<p>The component of the Rant runtime that handles block resolution.</p>
+<p>The component of the Ranty runtime that handles block resolution.</p>
 <h3 id="shadowing"><a class="header" href="#shadowing">Shadowing</a></h3>
 <p>A variable is <strong>shadowed</strong> (hidden) when it is overridden by a variable of the same name in a child scope.</p>
 <h3 id="setter"><a class="header" href="#setter">Setter</a></h3>
@@ -264,7 +264,7 @@ It is an implicit form of <strong>descoping</strong>.</p>
 <p>A splice is a <strong>setter</strong> that modifies a <strong>slice</strong> of an ordered collection.</p>
 <h3 id="varity"><a class="header" href="#varity">Varity</a></h3>
 <p>Varity is the classification of a function parameter relating to the number of values it expects and can accept.</p>
-<p>Rant has four varity types:</p>
+<p>Ranty has four varity types:</p>
 <ul>
 <li><strong>Required</strong> (accepts one value)</li>
 <li><strong>Optional</strong> (accepts zero or one values)</li>
@@ -276,7 +276,7 @@ It is an implicit form of <strong>descoping</strong>.</p>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="rant-3-vs-4.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="rant-3-vs-ranty.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -287,7 +287,7 @@ It is an implicit form of <strong>descoping</strong>.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="rant-3-vs-4.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="rant-3-vs-ranty.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

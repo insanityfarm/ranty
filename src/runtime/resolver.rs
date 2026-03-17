@@ -1,9 +1,9 @@
 use super::{RuntimeError, RuntimeErrorType, RuntimeResult, StackFrameFlavor};
 use crate::{
     lang::{Block, BlockElement, BlockProtection},
-    rng::RantRng,
-    runtime_error, RantFunction, RantFunctionHandle, RantFunctionInterface, RantSelectorHandle,
-    RantValue, SelectorError, SelectorMode,
+    rng::RantyRng,
+    runtime_error, RantyFunction, RantyFunctionHandle, RantyFunctionInterface, RantySelectorHandle,
+    RantyValue, SelectorError, SelectorMode,
 };
 use smallvec::SmallVec;
 use std::{mem, ops::Index, rc::Rc};
@@ -14,7 +14,7 @@ const BLOCK_STACK_INLINE_COUNT: usize = 4;
 
 /// Manages block selection and execution behavior.
 pub struct Resolver {
-    rng: Rc<RantRng>,
+    rng: Rc<RantyRng>,
     base_attrs: AttributeFrame,
     attr_override_stack: Vec<AttributeFrame>,
     block_stack: SmallVec<[BlockState; BLOCK_STACK_INLINE_COUNT]>,
@@ -27,11 +27,11 @@ pub enum BlockAction {
     /// Call the mutator function and pass in the current element as a callback.
     MutateElement {
         elem: Rc<BlockElement>,
-        elem_func: RantFunctionHandle,
-        mutator_func: RantFunctionHandle,
+        elem_func: RantyFunctionHandle,
+        mutator_func: RantyFunctionHandle,
     },
     /// Run the separator.
-    Separator(RantValue),
+    Separator(RantyValue),
 }
 
 #[derive(Debug)]
@@ -103,7 +103,7 @@ pub struct BlockState {
     /// Element weights associated with the block
     weights: Option<Weights>,
     /// Resolved `@on` trigger values associated with block elements.
-    match_triggers: Option<Vec<Option<RantValue>>>,
+    match_triggers: Option<Vec<Option<RantyValue>>>,
     /// Flag to short-circuit the block
     force_stop: bool,
     /// The attributes associated with the block
@@ -121,8 +121,8 @@ pub struct BlockState {
 impl BlockState {
     fn select_match_index(
         &self,
-        selector: &crate::RantSelector,
-        rng: &RantRng,
+        selector: &crate::RantySelector,
+        rng: &RantyRng,
     ) -> Result<usize, SelectorError> {
         let match_value = selector
             .match_value()
@@ -169,7 +169,7 @@ impl BlockState {
     }
 
     #[inline]
-    pub fn next_element(&mut self, rng: &RantRng) -> Result<Option<BlockAction>, SelectorError> {
+    pub fn next_element(&mut self, rng: &RantyRng) -> Result<Option<BlockAction>, SelectorError> {
         if self.is_done()
             || self.elements.is_empty()
             || self
@@ -203,12 +203,12 @@ impl BlockState {
 
             // If the mutator function is set, generate mutated elements
             if let Some(mutator_func) = self.attrs.mutator.as_ref() {
-                let elem_func = RantFunction {
+                let elem_func = RantyFunction {
                     captured_vars: vec![],
                     min_arg_count: 0,
                     vararg_start_index: 0,
                     params: Rc::new(vec![]),
-                    body: RantFunctionInterface::User(next_elem_seq),
+                    body: RantyFunctionInterface::User(next_elem_seq),
                     flavor: Some(if self.is_repeater() {
                         StackFrameFlavor::RepeaterElement
                     } else {
@@ -312,7 +312,7 @@ impl Reps {
 }
 
 impl Resolver {
-    pub fn new(rng: &Rc<RantRng>) -> Self {
+    pub fn new(rng: &Rc<RantyRng>) -> Self {
         Self {
             rng: rng.clone(),
             base_attrs: Default::default(),
@@ -329,7 +329,7 @@ impl Resolver {
         &mut self,
         block: &Block,
         weights: Option<Weights>,
-        match_triggers: Option<Vec<Option<RantValue>>>,
+        match_triggers: Option<Vec<Option<RantyValue>>>,
     ) -> RuntimeResult<()> {
         let attrs = match block.protection {
             Some(protection) => match protection {
@@ -476,11 +476,11 @@ pub struct AttributeFrame {
     /// Repetition value
     pub reps: Reps,
     /// Separator value
-    pub separator: RantValue,
+    pub separator: RantyValue,
     /// Active selector
-    pub selector: Option<RantSelectorHandle>,
+    pub selector: Option<RantySelectorHandle>,
     /// Mutator function
-    pub mutator: Option<RantFunctionHandle>,
+    pub mutator: Option<RantyFunctionHandle>,
 }
 
 impl AttributeFrame {
@@ -529,7 +529,7 @@ impl Default for AttributeFrame {
             prev_condval: None,
             skip_propagate_condval: false,
             reps: Reps::Once,
-            separator: RantValue::Nothing,
+            separator: RantyValue::Nothing,
             selector: None,
             mutator: None,
         }

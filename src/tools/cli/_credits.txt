@@ -12,13 +12,14 @@
                       RR                   RRRRRRRRR
                         RRRRRRRRRRRRRRRRRRRRRR
 
-             Designed and developed by Robin Pederson
+             Built on the work of the original author of Rant
 
 Over the years, there have been many developers and community members 
-whose efforts and feedback helped to shape Rant into what it is today.
+whose efforts and feedback helped to shape Ranty into what it is today.
 
 In particular, I want to thank:
 
+the original author of Rant
 Ashley Rogers (@dialupnoises)
 Dr. Sajid Farooq
 Tamme Schichler (@Tamschi)

@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Standard Library - Rant Reference</title>
+        <title>Standard Library - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -175,8 +175,8 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="rant-standard-library"><a class="header" href="#rant-standard-library">Rant Standard Library</a></h1>
-<p>The Rant Standard Library contains the builtin functions and constants loaded into a fresh <code>Rant</code> context.</p>
+                        <h1 id="ranty-standard-library"><a class="header" href="#ranty-standard-library">Ranty Standard Library</a></h1>
+<p>The Ranty Standard Library contains the builtin functions and constants loaded into a fresh <code>Ranty</code> context.</p>
 <h2 id="categories"><a class="header" href="#categories">Categories</a></h2>
 <p>The detailed reference pages below remain the canonical prose documentation for each category. The generated inventory that follows is rebuilt from the current export surface on every docs build and is used by the audit checks to catch drift.</p>
 <ul>
@@ -196,7 +196,7 @@
 </ul>
 <h2 id="stdlib-inventory"><a class="header" href="#stdlib-inventory">Stdlib Inventory</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Symbol</th><th>Category</th><th>Call Form</th><th>Summary</th><th>Canonical Location</th></tr></thead><tbody>
-<tr><td><code>BUILD_VERSION</code></td><td>Constants</td><td><code>BUILD_VERSION</code></td><td>The build version of the Rant library being used.</td><td><a href="stdlib/constants.html#build_version">stdlib/constants.md#build_version</a></td></tr>
+<tr><td><code>BUILD_VERSION</code></td><td>Constants</td><td><code>BUILD_VERSION</code></td><td>The build version of the Ranty library being used.</td><td><a href="stdlib/constants.html#build_version">stdlib/constants.md#build_version</a></td></tr>
 <tr><td><code>EPSILON</code></td><td>Constants</td><td><code>EPSILON</code></td><td>The smallest possible <code>float</code> value greater than zero.</td><td><a href="stdlib/constants.html#epsilon">stdlib/constants.md#epsilon</a></td></tr>
 <tr><td><code>INFINITY</code></td><td>Constants</td><td><code>INFINITY</code></td><td>The floating-point special value for positive infinity.</td><td><a href="stdlib/constants.html#infinity">stdlib/constants.md#infinity</a></td></tr>
 <tr><td><code>MAX_FLOAT</code></td><td>Constants</td><td><code>MAX_FLOAT</code></td><td>The largest representable finite value of the <code>float</code> type.</td><td><a href="stdlib/constants.html#max_float">stdlib/constants.md#max_float</a></td></tr>
@@ -205,7 +205,7 @@
 <tr><td><code>MIN_INT</code></td><td>Constants</td><td><code>MIN_INT</code></td><td>The smallest representable value of the <code>int</code> type.</td><td><a href="stdlib/constants.html#min_int">stdlib/constants.md#min_int</a></td></tr>
 <tr><td><code>NAN</code></td><td>Constants</td><td><code>NAN</code></td><td>The floating-point special value for NaN (Not a Number).</td><td><a href="stdlib/constants.html#nan">stdlib/constants.md#nan</a></td></tr>
 <tr><td><code>NEG_INFINITY</code></td><td>Constants</td><td><code>NEG_INFINITY</code></td><td>The floating-point special value for negative infinity.</td><td><a href="stdlib/constants.html#neg_infinity">stdlib/constants.md#neg_infinity</a></td></tr>
-<tr><td><code>RANT_VERSION</code></td><td>Constants</td><td><code>RANT_VERSION</code></td><td>The version of the Rant language currently being used.</td><td><a href="stdlib/constants.html#rant_version">stdlib/constants.md#rant_version</a></td></tr>
+<tr><td><code>RANTY_VERSION</code></td><td>Constants</td><td><code>RANTY_VERSION</code></td><td>The version of the Ranty language currently being used.</td><td><a href="stdlib/constants.html#ranty_version">stdlib/constants.md#ranty_version</a></td></tr>
 <tr><td><code>abs</code></td><td>Math</td><td><code>[%abs: num]</code></td><td>Prints the absolute value of <code>num</code>.</td><td><a href="stdlib/math.html#abs">stdlib/math.md#abs</a></td></tr>
 <tr><td><code>acos</code></td><td>Math</td><td><code>[%acos: x]</code></td><td>Calculates the arccosine (in radians) of <code>x</code>.</td><td><a href="stdlib/math.html#acos">stdlib/math.md#acos</a></td></tr>
 <tr><td><code>add</code></td><td>Math</td><td><code>[%add: lhs; rhs]</code></td><td>Adds two values and prints the sum.</td><td><a href="stdlib/math.html#add">stdlib/math.md#add</a></td></tr>
@@ -359,7 +359,7 @@
 <tr><td><code>take</code></td><td>Collections</td><td><code>[%take: collection; pos]</code></td><td>Removes the value at <code>pos</code> from a list or map and prints it.</td><td><a href="stdlib/collections.html#take">stdlib/collections.md#take</a></td></tr>
 <tr><td><code>tan</code></td><td>Math</td><td><code>[%tan: x]</code></td><td>Calculates the tangent of <code>x</code>.</td><td><a href="stdlib/math.html#tan">stdlib/math.md#tan</a></td></tr>
 <tr><td><code>tap</code></td><td>General</td><td><code>[%tap: ...]</code></td><td>Consumes arguments and produces no output. This is useful as a no-op sink in pipe chains.</td><td><a href="stdlib/general.html#tap">stdlib/general.md#tap</a></td></tr>
-<tr><td><code>to-bool</code></td><td>Conversion</td><td><code>[%to-bool: value]</code></td><td>Converts <code>value</code> to a boolean using Rant's runtime truthiness rules.</td><td><a href="stdlib/conversion.html#to-bool">stdlib/conversion.md#to-bool</a></td></tr>
+<tr><td><code>to-bool</code></td><td>Conversion</td><td><code>[%to-bool: value]</code></td><td>Converts <code>value</code> to a boolean using Ranty's runtime truthiness rules.</td><td><a href="stdlib/conversion.html#to-bool">stdlib/conversion.md#to-bool</a></td></tr>
 <tr><td><code>to-float</code></td><td>Conversion</td><td><code>[%to-float: value]</code></td><td>Attempts to convert <code>value</code> to a <code>float</code> value and prints the result. If the conversion fails, prints nothing.</td><td><a href="stdlib/conversion.html#to-float">stdlib/conversion.md#to-float</a></td></tr>
 <tr><td><code>to-int</code></td><td>Conversion</td><td><code>[%to-int: value]</code></td><td>Attempts to convert <code>value</code> to an <code>int</code> value and prints the result. If the conversion fails, prints nothing.</td><td><a href="stdlib/conversion.html#to-int">stdlib/conversion.md#to-int</a></td></tr>
 <tr><td><code>to-list</code></td><td>Conversion</td><td><code>[%to-list: value]</code></td><td>Attempts to convert <code>value</code> to a <code>list</code> and prints the result. If the conversion fails, prints nothing.</td><td><a href="stdlib/conversion.html#to-list">stdlib/conversion.md#to-list</a></td></tr>

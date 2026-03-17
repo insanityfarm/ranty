@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>range - Rant Reference</title>
+        <title>range - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -184,7 +184,7 @@
 </ol>
 <p>As such, very large ranges can be stored, indexed, and enumerated without needing to pre-allocate all possible values in memory.</p>
 <p>Ranges are created with the built-in <code>[range]</code> function:</p>
-<pre><code class="language-rant"># Print numbers 0 through 4
+<pre><code class="language-ranty"># Print numbers 0 through 4
 [cat: **[range: 0; 5]; \n]
 
 ##
@@ -197,7 +197,7 @@
 ##
 </code></pre>
 <p>Backwards ranges are possible, too; just use a start bound larger than the end bound:</p>
-<pre><code class="language-rant"># Print numbers 4 through 0
+<pre><code class="language-ranty"># Print numbers 4 through 0
 [cat: **[range: 4; -1]; \n]
 
 ##
@@ -210,7 +210,7 @@
 ##
 </code></pre>
 <p>By default, <code>[range]</code> uses an interval of 1, but you can change this by adding a third argument:</p>
-<pre><code class="language-rant"># Print every second number between 0 and 9
+<pre><code class="language-ranty"># Print every second number between 0 and 9
 [cat: **[range: 0; 10; 2]; \n]
 
 ##

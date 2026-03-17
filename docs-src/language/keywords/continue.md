@@ -6,7 +6,7 @@ With an expression, `@continue value` passes that value to the repeater for the 
 
 It can cross nested blocks that belong to the same repeater, but it does not cross function boundaries. Using it where no repeater is reachable raises a control-flow runtime error.
 
-```rant
+```ranty
 [rep:3]{
   before
   { @continue next }

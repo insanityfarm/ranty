@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>@weight - Rant Reference</title>
+        <title>@weight - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -181,7 +181,7 @@
 <p>When writing a block with randomized selection, you may sometimes want to make some elements more or less likely to be selected.
 This is where <code>@weight</code> comes in: by adding the <code>@weight</code> charm to a block element, you can specify the probability of it being selected.</p>
 <p>The below snippet demonstrates the effect of block weights by generating a list of 20 random items of different rarities.</p>
-<pre><code class="language-rant">[rep:20][sep:\n]
+<pre><code class="language-ranty">[rep:20][sep:\n]
 {
     {
         # Larger weights are more likely to be selected

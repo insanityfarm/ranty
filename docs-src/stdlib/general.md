@@ -2,7 +2,7 @@
 
 ## alt
 
-```rant
+```ranty
 [%alt: a; ...rest]
 ```
 
@@ -10,7 +10,7 @@ Prints the first argument that is not `nothing`.
 
 ## call
 
-```rant
+```ranty
 [%call: func; args?]
 ```
 
@@ -18,7 +18,7 @@ Calls `func` with an optional list of argument values.
 
 ## cat
 
-```rant
+```ranty
 [%cat: ...values]
 ```
 
@@ -26,7 +26,7 @@ Prints each argument into the current scope.
 
 ## either
 
-```rant
+```ranty
 [%either: condition; true-value; false-value]
 ```
 
@@ -34,7 +34,7 @@ Prints `true-value` when `condition` is true, otherwise `false-value`.
 
 ## len
 
-```rant
+```ranty
 [%len: value]
 ```
 
@@ -42,7 +42,7 @@ Prints the length of a string, list, map, range, or other length-aware value.
 
 ## type
 
-```rant
+```ranty
 [%type: value]
 ```
 
@@ -50,7 +50,7 @@ Prints the runtime type name of `value`.
 
 ## seed
 
-```rant
+```ranty
 [%seed]
 ```
 
@@ -58,7 +58,7 @@ Prints the currently active RNG seed as an `int`.
 
 ## tap
 
-```rant
+```ranty
 [%tap: ...]
 ```
 
@@ -66,7 +66,7 @@ Consumes arguments and produces no output. This is useful as a no-op sink in pip
 
 ## print
 
-```rant
+```ranty
 [%print: ...values]
 ```
 
@@ -74,7 +74,7 @@ Prints values directly into the caller's output scope.
 
 ## range
 
-```rant
+```ranty
 [%range: a; b?; step?]
 ```
 
@@ -82,7 +82,7 @@ Builds a half-open integer range.
 
 ## require
 
-```rant
+```ranty
 [%require: module-path]
 ```
 
@@ -90,7 +90,7 @@ Imports a module through the active module resolver.
 
 ## irange
 
-```rant
+```ranty
 [%irange: a; b?; step?]
 ```
 
@@ -98,7 +98,7 @@ Builds an inclusive integer range.
 
 ## fork
 
-```rant
+```ranty
 [%fork: seed?]
 ```
 
@@ -106,7 +106,7 @@ Pushes a derived RNG onto the RNG stack. Integer and string seeds are both suppo
 
 ## unfork
 
-```rant
+```ranty
 [%unfork]
 ```
 
@@ -114,7 +114,7 @@ Pops the most recent derived RNG and resumes the previous RNG state.
 
 ## try
 
-```rant
+```ranty
 [%try: context; handler?]
 ```
 
@@ -122,7 +122,7 @@ Runs `context` and optionally dispatches runtime failures to `handler`.
 
 ## ds-request
 
-```rant
+```ranty
 [%ds-request: id; ...args]
 ```
 
@@ -130,7 +130,7 @@ Calls a registered data source by ID and prints its result.
 
 ## ds-query-sources
 
-```rant
+```ranty
 [%ds-query-sources]
 ```
 
@@ -138,7 +138,7 @@ Prints the list of currently registered data-source IDs.
 
 ## proto
 
-```rant
+```ranty
 [%proto: map]
 ```
 
@@ -149,7 +149,7 @@ They do not merge physically into the map, and they are not treated as bound obj
 
 ### Example
 
-```rant
+```ranty
 <$obj = (::)>
 <$proto = (:: flavor = vanilla)>
 [set-proto: <obj>; <proto>]
@@ -167,7 +167,7 @@ They do not merge physically into the map, and they are not treated as bound obj
 
 ## set-proto
 
-```rant
+```ranty
 [%set-proto: map; proto?]
 ```
 
@@ -176,11 +176,11 @@ Sets or clears the prototype map for `map`.
 Pass `<>` to clear the current prototype.
 
 Prototype assignment is validated eagerly.
-If a call to `[set-proto]` would create a cycle, Rant raises a runtime error instead of allowing the assignment.
+If a call to `[set-proto]` would create a cycle, Ranty raises a runtime error instead of allowing the assignment.
 
 ### Examples
 
-```rant
+```ranty
 # Attach a prototype
 <$obj = (::)>
 <$proto = (:: flavor = vanilla)>
@@ -189,7 +189,7 @@ If a call to `[set-proto]` would create a cycle, Rant raises a runtime error ins
 # -> vanilla
 ```
 
-```rant
+```ranty
 # Clear a prototype
 <$obj = (::)>
 <$proto = (:: flavor = vanilla)>
@@ -199,7 +199,7 @@ If a call to `[set-proto]` would create a cycle, Rant raises a runtime error ins
 # -> missing
 ```
 
-```rant
+```ranty
 # Cycles are rejected
 <$a = (::)>
 <$b = (::)>
@@ -209,7 +209,7 @@ If a call to `[set-proto]` would create a cycle, Rant raises a runtime error ins
 
 ## error
 
-```rant
+```ranty
 [%error: message?]
 ```
 

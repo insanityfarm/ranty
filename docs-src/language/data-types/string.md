@@ -2,7 +2,7 @@
 
 The `string` type represents an immutable, ordered collection of zero or more characters (graphemes).
 
-```rant
+```ranty
 # Text is dynamically converted to a string
 This text will become a string.
 
@@ -16,7 +16,7 @@ Strings can be indexed and sliced just like other ordered collections.
 
 When you index a string, it will return another string containing just that character:
 
-```rant
+```ranty
 <@text $a = "example">
 
 "text:"         <a>\n

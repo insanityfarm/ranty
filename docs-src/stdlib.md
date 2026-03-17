@@ -1,6 +1,6 @@
-# Rant Standard Library
+# Ranty Standard Library
 
-The Rant Standard Library contains the builtin functions and constants loaded into a fresh `Rant` context.
+The Ranty Standard Library contains the builtin functions and constants loaded into a fresh `Ranty` context.
 
 ## Categories
 The detailed reference pages below remain the canonical prose documentation for each category. The generated inventory that follows is rebuilt from the current export surface on every docs build and is used by the audit checks to catch drift.

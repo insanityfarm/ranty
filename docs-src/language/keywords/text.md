@@ -9,7 +9,7 @@ This feature eliminates the need to apply hints to every occurrence of a value t
 
 To auto-hint a variable, add `@text` at the start of the definition.
 
-```rant
+```ranty
 <@text $first-name = John>
 <@text $last-name = Smith>
 
@@ -22,7 +22,7 @@ This prints `John Smith`. Without auto-hinting, the output would be `JohnSmith`.
 
 To auto-hint a (named) function, add `@text` between the signature and body of its definition.
 
-```rant
+```ranty
 [$adjective] @text {
     {cursed|blessed}
 }
@@ -42,7 +42,7 @@ A piped function call will only become auto-hinted if the last function in the c
 
 To auto-hint a parameter, add `@text` before the parameter name.
 
-```rant
+```ranty
 [$full-name: @text first; @text last] {
     <first> <last>
 }
@@ -50,7 +50,7 @@ To auto-hint a parameter, add `@text` before the parameter name.
 [full-name: Robin; Pederson]
 ```
 
-This prints `Robin Pederson`. Without auto-hinting, it would print `RobinPederson`.
+This prints `the original author of Rant`. Without auto-hinting, it would print `theoriginalauthorofRant`.
 
 ## Remarks
 

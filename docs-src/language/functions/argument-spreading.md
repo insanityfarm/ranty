@@ -1,18 +1,18 @@
 # Argument spreading
 
 **Argument spreading** generally refers to deconstructing a collection and dynamically passing its elements as separate arguments into a function call.
-Rant expands on this concept by allowing you to spread arguments across not just one, but *two* different axes.
+Ranty expands on this concept by allowing you to spread arguments across not just one, but *two* different axes.
 
-In total, Rant supports three different spread operations: **parametric**, **temporal**, and **complex**.
+In total, Ranty supports three different spread operations: **parametric**, **temporal**, and **complex**.
 
 <br/>
 
-![Rant 4 spread operator infographic](../../img/rant-spread-op-infographic.png)
+![Ranty spread operator infographic](../../img/ranty-spread-op-infographic.png)
 
 ## Parametric spread
 
 The **parametric spread operator** lets you use a list to pass multiple arguments at once to a single function call.
-This operation is referred to in Rant as "parametric spreading" or simply "spreading."
+This operation is referred to in Ranty as "parametric spreading" or simply "spreading."
 
 Spreading is mostly useful for cases where the contents of a list need to be passed to a variadic parameter,
 but it will work on any other parameter (required, optional, or variadic).
@@ -23,7 +23,7 @@ As long as the final argument list meets the requirements of the target function
 
 Argument spreading is performed by prefixing an argument with `*`, as seen below:
 
-```rant
+```ranty
 <$extras = (baz; qux)>
 [cat: foo; bar; * <extras>; boo]
 # Expands to: [cat: foo; bar; baz; qux; boo]
@@ -34,14 +34,14 @@ Attempting to spread a non-list will simply pass the value as a normal argument.
 
 ## Temporal spread
 
-Rant has a second spread operatior, the **temporal spread operator** (`**`), which behaves differently from a parametric spread.
+Ranty has a second spread operatior, the **temporal spread operator** (`**`), which behaves differently from a parametric spread.
 
 Instead of spreading across parameters, it spreads across time itself:
 the target function is called once **for each value** in the temporally spread list argument (known as a "temporal argument"), passing in the current list item as the argument value.
 This essentially turns the function call into a loop.
 
 This is best explained with the following example:
-```rant
+```ranty
 # Simple function that prints tab-separated values with a newline at the end
 [%println: cols*] {
     [join: <cols>; \t]\n
@@ -76,15 +76,15 @@ As with parametric spreading, using a temporal spread on a non-list argument sim
 ### Multiple temporal arguments
 
 A function call can have more than one temporal argument. When this happens,
-Rant will call the function once for each possible combination of values from all temporal arguments.
+Ranty will call the function once for each possible combination of values from all temporal arguments.
 
-When iterating through the combinations, Rant will increment the selection for the leftmost temporal argument first. 
+When iterating through the combinations, Ranty will increment the selection for the leftmost temporal argument first. 
 When it rolls back over to the first item, the selection of the second temporal argument is incremented, then the third, and so on.
 The total number of iterations will be equal to the product of the lengths of all temporal arguments.
 
 The following example demonstrates how this works:
 
-```rant
+```ranty
 # Print out every combination (disgusting or not) of two lists of seasonings
 [cat: ** (salt; pepper; sugar); \t; ** (cinnamon; cilantro; basil; cloves); \n]
 ```
@@ -112,7 +112,7 @@ Thankfully, this is easy to do with temporal arguments by adding a **label** to 
 
 To add a label to a temporal spread operator, simply add any sequence of alphanumeric characters, understores, and hyphens between the two `*` characters, like this:
 
-```rant
+```ranty
 [cat: *a* (1; 2; 3); *a* (A; B; C); \n]
 # Expands to:
 # -> [cat: 1; A; \n]
@@ -134,7 +134,7 @@ Temporal and parametric spread can be combined so that each iteration of a tempo
 
 To do this, just add `*` after the `**` or `*a*` in your temporal argument:
 
-```rant
+```ranty
 [irange: *** ((1; 10); (100; 110); (200; 210)) |> list]
 # Expands to:
 # -> [irange: 1; 10 |> list]

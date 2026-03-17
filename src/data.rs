@@ -5,16 +5,16 @@ use std::{
 
 use crate::{
     runtime::{IntoRuntimeResult, RuntimeError, RuntimeErrorType, RuntimeResult},
-    RantValue,
+    RantyValue,
 };
 
 /// Result type used for data source operations.
 pub type DataSourceResult<T> = Result<T, DataSourceError>;
 
-/// Trait for defining a Rant data source type.
+/// Trait for defining a Ranty data source type.
 ///
 /// ## Security
-/// This trait can potentially be used to grant Rant access to network, filesystem, or other sensitive resources.
+/// This trait can potentially be used to grant Ranty access to network, filesystem, or other sensitive resources.
 /// Please take care to ensure that such access is adequately sandboxed, has granular permissions,
 /// and that failed access to such resources is handled gracefully.
 pub trait DataSource: Debug {
@@ -29,8 +29,8 @@ pub trait DataSource: Debug {
 
     /// Requests some data from the data source.
     ///
-    /// This method is called by Rant's `[data]` funtion to interact with data sources.
-    fn request_data(&self, args: Vec<RantValue>) -> DataSourceResult<RantValue>;
+    /// This method is called by Ranty's `[data]` funtion to interact with data sources.
+    fn request_data(&self, args: Vec<RantyValue>) -> DataSourceResult<RantyValue>;
 }
 
 /// Error type for data source operations.

@@ -8,7 +8,7 @@ To use a fallback, it must be added to the end of the accessor, within the brack
 
 ### Example
 
-```rant
+```ranty
 # Store a value to use as a fallback
 <$fallback = "I don't exist!">
 

@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Operators - Rant Reference</title>
+        <title>Operators - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -176,49 +176,49 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="operators"><a class="header" href="#operators">Operators</a></h1>
-<p>Rant has several built-in arithmetic, logic, and comparison operators.</p>
+<p>Ranty has several built-in arithmetic, logic, and comparison operators.</p>
 <p>Throughout this page, the abbreviations RHS (right-hand side) and LHS (left-hand side) will be used to refer to binary operands.</p>
 <h2 id="arithmetic-operators"><a class="header" href="#arithmetic-operators">Arithmetic operators</a></h2>
 <h3 id="addition"><a class="header" href="#addition">Addition</a></h3>
 <p><code>+</code> <em>(binary infix operator)</em></p>
 <p>Returns the sum of the operands.</p>
-<pre><code class="language-rant">2 + 2
+<pre><code class="language-ranty">2 + 2
 # -&gt; 4
 </code></pre>
 <h3 id="subtraction"><a class="header" href="#subtraction">Subtraction</a></h3>
 <p><code>-</code> <em>(binary infix operator)</em></p>
 <p>Subtracts RHS from LHS and returns the result.</p>
-<pre><code class="language-rant">10 - 1
+<pre><code class="language-ranty">10 - 1
 # -&gt; 9
 </code></pre>
 <h3 id="multiplication"><a class="header" href="#multiplication">Multiplication</a></h3>
 <p><code>*</code> <em>(binary infix operator)</em></p>
 <p>Returns the product of the operands.</p>
-<pre><code class="language-rant">5 * 5
+<pre><code class="language-ranty">5 * 5
 # -&gt; 25
 </code></pre>
 <h3 id="division"><a class="header" href="#division">Division</a></h3>
 <p><code>/</code> <em>(binary infix operator)</em></p>
 <p>Divides LHS by RHS and returns the result.</p>
-<pre><code class="language-rant">48 / 16
+<pre><code class="language-ranty">48 / 16
 # -&gt; 3
 </code></pre>
 <h3 id="modulo"><a class="header" href="#modulo">Modulo</a></h3>
 <p><code>%</code> <em>(binary infix operator)</em></p>
 <p>Gets the remainder from dividing LHS by RHS and returns the result.</p>
-<pre><code class="language-rant">10 % 4
+<pre><code class="language-ranty">10 % 4
 # -&gt; 2
 </code></pre>
 <h3 id="exponentiation"><a class="header" href="#exponentiation">Exponentiation</a></h3>
 <p><code>**</code> <em>(binary infix operator)</em></p>
 <p>Raises LHS to the RHS power and returns the result.</p>
-<pre><code class="language-rant">2 ** 16
+<pre><code class="language-ranty">2 ** 16
 # -&gt; 65536
 </code></pre>
 <h3 id="negation"><a class="header" href="#negation">Negation</a></h3>
 <p><code>@neg</code> <em>(unary prefix operator)</em></p>
 <p>Gets the negated value of the operand and returns the result.</p>
-<pre><code class="language-rant">&lt;$x = 123&gt;
+<pre><code class="language-ranty">&lt;$x = 123&gt;
 @neg &lt;x&gt;
 # -&gt; -123
 </code></pre>
@@ -230,7 +230,7 @@
 Returns <code>@false</code> if both operands are <code>@false</code>, or if one is <code>@true</code> and the other <code>@false</code>.</p>
 <p>More generally: returns RHS if both LHS and RHS are truthy; otherwise, returns the first falsy value.</p>
 <p>This operator is short-circuiting: if LHS is falsy, RHS will not be evaluated.</p>
-<pre><code class="language-rant"># Logical AND using booleans
+<pre><code class="language-ranty"># Logical AND using booleans
 @true &amp; @true    # -&gt; @true
 @true &amp; @false   # -&gt; @false
 @false &amp; @true   # -&gt; @false
@@ -250,7 +250,7 @@ Returns <code>@false</code> if both operands are <code>@false</code>, or if one 
 Returns <code>@false</code> if both operands are <code>@false</code>.</p>
 <p>More generally: returns LHS if LHS is truthy; otherwise, returns RHS.</p>
 <p>This operator is short-circuiting: if LHS is truthy, RHS will not be evaluated.</p>
-<pre><code class="language-rant"># Logical OR using booleans
+<pre><code class="language-ranty"># Logical OR using booleans
 @true | @true     # -&gt; @true
 @true | @false    # -&gt; @true
 @false | @true    # -&gt; @true
@@ -268,7 +268,7 @@ Returns <code>@false</code> if both operands are <code>@false</code>.</p>
 <p><strong>Syntax note</strong></p>
 <p>In a block context, <code>|</code> will be treated as an element separator.
 To use it as an OR operator, enclose your expression in parentheses first.</p>
-<pre><code class="language-rant">foo | bar         # Logical OR
+<pre><code class="language-ranty">foo | bar         # Logical OR
 {foo | bar}       # Separates two block elements
 {(foo | bar)}     # Logical OR
 </code></pre>
@@ -276,7 +276,7 @@ To use it as an OR operator, enclose your expression in parentheses first.</p>
 <h3 id="logical-not"><a class="header" href="#logical-not">Logical NOT</a></h3>
 <p><code>@not</code> <em>(unary prefix operator)</em></p>
 <p>Returns <code>@false</code> if the operand is truthy; otherwise, returns <code>@true</code>.</p>
-<pre><code class="language-rant"># Logical NOT using booleans
+<pre><code class="language-ranty"># Logical NOT using booleans
 @not @true  # -&gt; @false
 @not @false # -&gt; @true
 
@@ -287,7 +287,7 @@ To use it as an OR operator, enclose your expression in parentheses first.</p>
 <h3 id="logical-xor"><a class="header" href="#logical-xor">Logical XOR</a></h3>
 <p><code>^</code> <em>(binary infix operator)</em></p>
 <p>Returns <code>@true</code> if exactly <em>one</em> of the two operands is truthy; otherwise, returns <code>@false</code>.</p>
-<pre><code class="language-rant"># Logical XOR using booleans
+<pre><code class="language-ranty"># Logical XOR using booleans
 @true ^ @true    # -&gt; @true
 @true ^ @false   # -&gt; @true
 @false ^ @true   # -&gt; @true
@@ -305,7 +305,7 @@ To use it as an OR operator, enclose your expression in parentheses first.</p>
 <h3 id="equality"><a class="header" href="#equality">Equality</a></h3>
 <p><code>@eq</code> <em>(binary infix operator)</em></p>
 <p>Returns <code>@true</code> if LHS is equal to RHS; otherwise, returns <code>@false</code>.</p>
-<pre><code class="language-rant">1 @eq 1     # -&gt; @true
+<pre><code class="language-ranty">1 @eq 1     # -&gt; @true
 1 @eq 1.0   # -&gt; @true
 0 @eq 1     # -&gt; @false
 1 @eq "1"   # -&gt; @false
@@ -313,7 +313,7 @@ To use it as an OR operator, enclose your expression in parentheses first.</p>
 <h3 id="inequality"><a class="header" href="#inequality">Inequality</a></h3>
 <p><code>@neq</code> <em>(binary infix operator)</em></p>
 <p>Returns <code>@true</code> if LHS is not equal to RHS; otherwise, returns <code>@false</code>.</p>
-<pre><code class="language-rant">1 @neq 1    # -&gt; @false
+<pre><code class="language-ranty">1 @neq 1    # -&gt; @false
 1 @neq 1.0  # -&gt; @false
 0 @neq 1    # -&gt; @true
 1 @neq "1"  # -&gt; @true
@@ -321,28 +321,28 @@ To use it as an OR operator, enclose your expression in parentheses first.</p>
 <h3 id="greater-than"><a class="header" href="#greater-than">Greater than</a></h3>
 <p><code>@gt</code> <em>(binary infix operator)</em></p>
 <p>Returns <code>@true</code> if LHS is greater than RHS; otherwise, returns <code>@false</code>.</p>
-<pre><code class="language-rant">1 @gt 1     # -&gt; @false
+<pre><code class="language-ranty">1 @gt 1     # -&gt; @false
 1 @gt 2     # -&gt; @false
 2 @gt 1     # -&gt; @true
 </code></pre>
 <h3 id="less-than"><a class="header" href="#less-than">Less than</a></h3>
 <p><code>@lt</code> <em>(binary infix operator)</em></p>
 <p>Returns <code>@true</code> if LHS is less than RHS; otherwise, returns <code>@false</code>.</p>
-<pre><code class="language-rant">1 @gt 1     # -&gt; @false
+<pre><code class="language-ranty">1 @gt 1     # -&gt; @false
 1 @gt 2     # -&gt; @true
 2 @gt 1     # -&gt; @false
 </code></pre>
 <h3 id="greater-than-or-equal"><a class="header" href="#greater-than-or-equal">Greater than or equal</a></h3>
 <p><code>@ge</code> <em>(binary infix operator)</em></p>
 <p>Returns <code>@true</code> if LHS is greater than or equal to RHS; otherwise, returns <code>@false</code>.</p>
-<pre><code class="language-rant">1 @gt 1     # -&gt; @true
+<pre><code class="language-ranty">1 @gt 1     # -&gt; @true
 1 @gt 2     # -&gt; @false
 2 @gt 1     # -&gt; @true
 </code></pre>
 <h3 id="less-than-or-equal"><a class="header" href="#less-than-or-equal">Less than or equal</a></h3>
 <p><code>@le</code> <em>(binary infix operator)</em></p>
 <p>Returns <code>@true</code> if LHS is less than or equal to RHS; otherwise, returns <code>@false</code>.</p>
-<pre><code class="language-rant">1 @gt 1     # -&gt; @true
+<pre><code class="language-ranty">1 @gt 1     # -&gt; @true
 1 @gt 2     # -&gt; @true
 2 @gt 1     # -&gt; @false
 </code></pre>

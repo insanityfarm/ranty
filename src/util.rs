@@ -1,4 +1,4 @@
-use crate::RantValue;
+use crate::RantyValue;
 
 /// Sorts `a` and `b` in ascending order and returns them as a `(min, max)` tuple.
 #[inline]
@@ -56,7 +56,7 @@ pub fn bf64(val: bool) -> f64 {
 }
 
 #[inline]
-pub fn max_rant_value<'a>(mut iter: impl Iterator<Item = &'a RantValue>) -> Option<&'a RantValue> {
+pub fn max_ranty_value<'a>(mut iter: impl Iterator<Item = &'a RantyValue>) -> Option<&'a RantyValue> {
     if let Some(mut max) = iter.next() {
         for val in iter {
             if val >= max {
@@ -70,7 +70,7 @@ pub fn max_rant_value<'a>(mut iter: impl Iterator<Item = &'a RantValue>) -> Opti
 }
 
 #[inline]
-pub fn min_rant_value<'a>(mut iter: impl Iterator<Item = &'a RantValue>) -> Option<&'a RantValue> {
+pub fn min_ranty_value<'a>(mut iter: impl Iterator<Item = &'a RantyValue>) -> Option<&'a RantyValue> {
     if let Some(mut min) = iter.next() {
         for val in iter {
             if val < min {

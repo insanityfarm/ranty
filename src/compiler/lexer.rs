@@ -102,7 +102,7 @@ pub enum ParsedEscape {
 }
 
 #[derive(Clone, Logos, Debug, PartialEq)]
-pub enum RantToken {
+pub enum RantyToken {
     /// Sequence of printable non-whitespace characters that isn't a number
     /// This regex is so crazy because simply doing [\w\-_]+ would accidentally capture negative numbers
     #[error]
@@ -315,12 +315,12 @@ pub enum RantToken {
     UnterminatedStringLiteral,
 }
 
-fn parse_temporal_spread_label(lex: &mut Lexer<RantToken>) -> InternalString {
+fn parse_temporal_spread_label(lex: &mut Lexer<RantyToken>) -> InternalString {
     let slice = lex.slice();
     InternalString::from(&slice[1..slice.len() - 1])
 }
 
-fn parse_string_literal(lex: &mut Lexer<RantToken>) -> InternalString {
+fn parse_string_literal(lex: &mut Lexer<RantyToken>) -> InternalString {
     let literal = lex.slice();
     let literal_content = &literal[1..literal.len() - 1];
     let mut string_content = InternalString::new();
@@ -341,7 +341,7 @@ fn parse_string_literal(lex: &mut Lexer<RantToken>) -> InternalString {
     string_content
 }
 
-fn parse_keyword(lex: &mut Lexer<RantToken>) -> KeywordInfo {
+fn parse_keyword(lex: &mut Lexer<RantyToken>) -> KeywordInfo {
     let kwd_literal = lex.slice();
     let kwd_content = &kwd_literal[1..];
     KeywordInfo {
@@ -351,14 +351,14 @@ fn parse_keyword(lex: &mut Lexer<RantToken>) -> KeywordInfo {
 }
 
 /// Filter function for whitespace lexer rule to exclude whitespace at start of source
-fn filter_bs(lex: &mut Lexer<RantToken>) -> Filter<()> {
+fn filter_bs(lex: &mut Lexer<RantyToken>) -> Filter<()> {
     if lex.span().start > 0 {
         return Filter::Emit(());
     }
     Filter::Skip
 }
 
-fn parse_escape(lex: &mut Lexer<RantToken>) -> ParsedEscape {
+fn parse_escape(lex: &mut Lexer<RantyToken>) -> ParsedEscape {
     let slice = lex.slice();
     ParsedEscape::Char(match slice.chars().nth(1).unwrap() {
         'r' => '\r',
@@ -372,7 +372,7 @@ fn parse_escape(lex: &mut Lexer<RantToken>) -> ParsedEscape {
     })
 }
 
-fn parse_byte_escape(lex: &mut Lexer<RantToken>) -> ParsedEscape {
+fn parse_byte_escape(lex: &mut Lexer<RantyToken>) -> ParsedEscape {
     let slice = &lex.slice()[2..];
     let c = u8::from_str_radix(slice, 16).ok().map(char::from);
     match c {
@@ -381,7 +381,7 @@ fn parse_byte_escape(lex: &mut Lexer<RantToken>) -> ParsedEscape {
     }
 }
 
-fn parse_unicode_escape(lex: &mut Lexer<RantToken>) -> ParsedEscape {
+fn parse_unicode_escape(lex: &mut Lexer<RantyToken>) -> ParsedEscape {
     let slice = &lex.slice()[2..];
     let c = u32::from_str_radix(slice, 16).ok().and_then(char::from_u32);
     match c {
@@ -390,7 +390,7 @@ fn parse_unicode_escape(lex: &mut Lexer<RantToken>) -> ParsedEscape {
     }
 }
 
-fn parse_unicode_unsized_escape(lex: &mut Lexer<RantToken>) -> ParsedEscape {
+fn parse_unicode_unsized_escape(lex: &mut Lexer<RantyToken>) -> ParsedEscape {
     let len = lex.slice().len();
     let codepoint_len = len - 4;
     let slice = &lex.slice()[3..(len - 1)];
@@ -404,7 +404,7 @@ fn parse_unicode_unsized_escape(lex: &mut Lexer<RantToken>) -> ParsedEscape {
     }
 }
 
-fn parse_float(lex: &mut Lexer<RantToken>) -> PositiveFloatToken {
+fn parse_float(lex: &mut Lexer<RantyToken>) -> PositiveFloatToken {
     let slice = lex.slice();
     match slice.parse() {
         Ok(f) => PositiveFloatToken::Value(f),
@@ -412,7 +412,7 @@ fn parse_float(lex: &mut Lexer<RantToken>) -> PositiveFloatToken {
     }
 }
 
-fn parse_integer(lex: &mut Lexer<RantToken>) -> PositiveIntegerToken {
+fn parse_integer(lex: &mut Lexer<RantyToken>) -> PositiveIntegerToken {
     let slice = lex.slice();
     match slice.parse() {
         Ok(i) => PositiveIntegerToken::Value(i),

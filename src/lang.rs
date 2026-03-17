@@ -1,6 +1,6 @@
-//! Contains Rant's syntax tree implementation and supporting data structures.
+//! Contains Ranty's syntax tree implementation and supporting data structures.
 
-use crate::{InternalString, RantProgramInfo, RantValue, RantValueType};
+use crate::{InternalString, RantyProgramInfo, RantyValue, RantyValueType};
 use std::{
     collections::HashMap,
     fmt::Display,
@@ -106,16 +106,16 @@ impl SliceExpr {
     /// Creates a static slice from a dynamic slice, using a callback to retrieve a static index for each dynamic index.
     ///
     /// If any of the dynamic indices evaluate to a non-integer, function returns `Err` with the incompatible type.
-    pub(crate) fn as_static_slice<F: FnMut(&Rc<Sequence>) -> RantValue>(
+    pub(crate) fn as_static_slice<F: FnMut(&Rc<Sequence>) -> RantyValue>(
         &self,
         mut index_converter: F,
-    ) -> Result<Slice, RantValueType> {
+    ) -> Result<Slice, RantyValueType> {
         macro_rules! convert_index {
             ($index:expr) => {
                 match $index {
                     SliceIndex::Static(i) => *i,
                     SliceIndex::Dynamic(expr) => match index_converter(expr) {
-                        RantValue::Int(i) => i,
+                        RantyValue::Int(i) => i,
                         other => return Err(other.get_type()),
                     },
                 }
@@ -353,20 +353,20 @@ impl Display for AccessPath {
     }
 }
 
-/// A series of Rant expressions to be executed in order.
+/// A series of Ranty expressions to be executed in order.
 #[derive(Debug)]
 pub struct Sequence {
     elements: Vec<Rc<Expression>>,
     /// An optional name for the sequence.
     pub name: Option<InternalString>,
     /// Information about where the sequence came from, such as its source file.
-    pub origin: Rc<RantProgramInfo>,
+    pub origin: Rc<RantyProgramInfo>,
 }
 
 impl Sequence {
     /// Creates a new sequence.
     #[inline]
-    pub fn new(seq: Vec<Rc<Expression>>, origin: &Rc<RantProgramInfo>) -> Self {
+    pub fn new(seq: Vec<Rc<Expression>>, origin: &Rc<RantyProgramInfo>) -> Self {
         Self {
             elements: seq,
             name: None,
@@ -376,7 +376,7 @@ impl Sequence {
 
     /// Creates a new sequence with a single element.
     #[inline]
-    pub fn one(rst: Expression, origin: &Rc<RantProgramInfo>) -> Self {
+    pub fn one(rst: Expression, origin: &Rc<RantyProgramInfo>) -> Self {
         Self {
             elements: vec![Rc::new(rst)],
             name: None,
@@ -385,7 +385,7 @@ impl Sequence {
     }
 
     /// Creates an empty sequence.
-    pub fn empty(origin: &Rc<RantProgramInfo>) -> Self {
+    pub fn empty(origin: &Rc<RantyProgramInfo>) -> Self {
         Self::new(vec![], origin)
     }
 
@@ -422,7 +422,7 @@ impl DerefMut for Sequence {
     }
 }
 
-/// A block is an ordered collection of one or more Rant expressions.
+/// A block is an ordered collection of one or more Ranty expressions.
 #[derive(Debug)]
 pub struct Block {
     /// Determines whether the block uses weights.
@@ -650,7 +650,7 @@ pub struct TemporalSpreadState {
 impl TemporalSpreadState {
     /// Creates a new `TemporalSpreadState`.
     #[inline]
-    pub fn new(arg_exprs: &[ArgumentExpr], args: &[RantValue]) -> Self {
+    pub fn new(arg_exprs: &[ArgumentExpr], args: &[RantyValue]) -> Self {
         let mut counters = Vec::with_capacity(args.len());
         let mut arg_labels: HashMap<usize, usize> = Default::default();
         for (i, expr) in arg_exprs.iter().enumerate() {
@@ -715,7 +715,7 @@ impl TemporalSpreadState {
     }
 }
 
-/// Describes a Rant function definition.
+/// Describes a Ranty function definition.
 #[derive(Debug, Clone)]
 pub struct FunctionDef {
     /// The path to the function to define.
@@ -730,7 +730,7 @@ pub struct FunctionDef {
     pub body: Rc<Sequence>,
 }
 
-/// Describes a Rant lambda.
+/// Describes a Ranty lambda.
 #[derive(Debug, Clone)]
 pub struct LambdaExpr {
     /// The body of the lambda.
@@ -861,14 +861,14 @@ impl AttributeKeyword {
     }
 }
 
-/// Defines Rant expression tree node types. These are directly executable by the VM.
+/// Defines Ranty expression tree node types. These are directly executable by the VM.
 #[derive(Debug)]
 pub enum Expression {
     /// No Operation
     Nop,
     /// Program sequence
     Sequence(Rc<Sequence>),
-    /// Rant block containing zero or more sequences
+    /// Ranty block containing zero or more sequences
     Block(Rc<Block>),
     /// List initializer
     ListInit(Rc<Vec<Rc<Sequence>>>),

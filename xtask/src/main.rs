@@ -8,7 +8,7 @@ use std::process::{Command, Stdio};
 
 use anyhow::{bail, Context, Result};
 use mdbook::MDBook;
-use rant::Rant;
+use ranty::Ranty;
 use regex::Regex;
 use walkdir::WalkDir;
 
@@ -296,7 +296,7 @@ fn build_cli_binary(repo: &Path) -> Result<()> {
     run_command(
         repo,
         "cargo",
-        &["build", "--quiet", "--features", "cli", "--bin", "rant"],
+        &["build", "--quiet", "--features", "cli", "--bin", "ranty"],
     )
 }
 
@@ -480,8 +480,8 @@ fn markdown_files(root: &Path) -> Vec<PathBuf> {
 }
 
 fn exported_symbols() -> Vec<String> {
-    let rant = Rant::new();
-    let mut names: Vec<_> = rant.global_names().map(str::to_owned).collect();
+    let ranty = Ranty::new();
+    let mut names: Vec<_> = ranty.global_names().map(str::to_owned).collect();
     names.sort();
     names
 }
@@ -589,7 +589,7 @@ fn split_sections(text: &str) -> Vec<Section<'_>> {
 fn section_from_lines<'a>(heading: &'a str, lines: &[&'a str]) -> Section<'a> {
     let mut first_rant_block = None;
     let mut in_rant_block = false;
-    let mut rant_block = String::new();
+    let mut ranty_block = String::new();
     let mut paragraph_lines = vec![];
     let mut paragraphs = vec![];
 
@@ -599,22 +599,22 @@ fn section_from_lines<'a>(heading: &'a str, lines: &[&'a str]) -> Section<'a> {
             if in_rant_block {
                 in_rant_block = false;
                 if first_rant_block.is_none() {
-                    first_rant_block = Some(rant_block.trim().to_owned());
+                    first_rant_block = Some(ranty_block.trim().to_owned());
                 }
-                rant_block.clear();
+                ranty_block.clear();
                 continue;
             }
 
             let info = trimmed.trim_start_matches("```").trim();
-            if info.starts_with("rant") {
+            if info.starts_with("ranty") {
                 in_rant_block = true;
             }
             continue;
         }
 
         if in_rant_block {
-            rant_block.push_str(line);
-            rant_block.push('\n');
+            ranty_block.push_str(line);
+            ranty_block.push('\n');
             continue;
         }
 
@@ -705,7 +705,7 @@ fn parse_examples(docs_src: &Path) -> Result<Vec<Example>> {
 }
 
 fn is_rant_example_start(line: &str) -> bool {
-    line.starts_with("```") && line.contains("rant") && line.contains("example")
+    line.starts_with("```") && line.contains("ranty") && line.contains("example")
 }
 
 fn is_expected_text_start(line: &str) -> bool {
@@ -729,7 +729,7 @@ fn cli_binary_path(repo: &Path) -> PathBuf {
     let exe_suffix = env::consts::EXE_SUFFIX;
     repo.join("target")
         .join("debug")
-        .join(format!("rant{exe_suffix}"))
+        .join(format!("ranty{exe_suffix}"))
 }
 
 fn category_name_for(rel_path: &str) -> Option<&'static str> {
@@ -1140,7 +1140,7 @@ const REQUIRED_DOCS: &[RequiredDoc] = &[
         path: "docs-src/compiler-messages.md",
     },
     RequiredDoc {
-        summary_entry: "Comparison of Rant 3 and 4",
-        path: "docs-src/rant-3-vs-4.md",
+        summary_entry: "Comparison of Rant 3 and Ranty",
+        path: "docs-src/rant-3-vs-ranty.md",
     },
 ];

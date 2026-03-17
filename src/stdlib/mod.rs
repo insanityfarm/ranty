@@ -1,9 +1,9 @@
-//! The Rant standard library.
+//! The Ranty standard library.
 
 #![allow(unused_variables)]
 #![allow(clippy::unnecessary_wraps)]
 
-use crate::convert::TryIntoRant;
+use crate::convert::TryIntoRanty;
 use crate::convert::*;
 use crate::runtime::*;
 use crate::*;
@@ -28,7 +28,7 @@ use self::{
     general::*, generate::*, math::*, proto::*, strings::*, verify::*,
 };
 
-pub(crate) type RantStdResult = Result<(), RuntimeError>;
+pub(crate) type RantyStdResult = Result<(), RuntimeError>;
 
 #[macro_export]
 macro_rules! runtime_error {
@@ -55,16 +55,16 @@ macro_rules! runtime_error {
   };
 }
 
-pub fn load_stdlib(context: &mut Rant) {
+pub fn load_stdlib(context: &mut Ranty) {
     macro_rules! load_func {
         ($fname:ident) => {{
-            let func = $fname.into_rant_func();
+            let func = $fname.into_ranty_func();
             let name = stringify!($fname).trim_end_matches('_').replace("_", "-");
-            context.set_global_force(name.as_str(), RantValue::Function(Rc::new(func)), true);
+            context.set_global_force(name.as_str(), RantyValue::Function(Rc::new(func)), true);
         }};
         ($fname:ident, $id:literal) => {{
-            let func = $fname.into_rant_func();
-            context.set_global_force($id, RantValue::Function(Rc::new(func)), true);
+            let func = $fname.into_ranty_func();
+            context.set_global_force($id, RantyValue::Function(Rc::new(func)), true);
         }};
     }
 
@@ -266,21 +266,21 @@ pub fn load_stdlib(context: &mut Rant) {
 
     // Constants
     context.set_global_force(
-        "RANT_VERSION",
-        RantValue::String(RANT_LANG_VERSION.into()),
+        "RANTY_VERSION",
+        RantyValue::String(RANTY_LANG_VERSION.into()),
         true,
     );
     context.set_global_force(
         "BUILD_VERSION",
-        RantValue::String(BUILD_VERSION.into()),
+        RantyValue::String(BUILD_VERSION.into()),
         true,
     );
-    context.set_global_force("EPSILON", RantValue::EPSILON, true);
-    context.set_global_force("MIN_FLOAT", RantValue::MIN_FLOAT, true);
-    context.set_global_force("MAX_FLOAT", RantValue::MAX_FLOAT, true);
-    context.set_global_force("MIN_INT", RantValue::MIN_INT, true);
-    context.set_global_force("MAX_INT", RantValue::MAX_INT, true);
-    context.set_global_force("INFINITY", RantValue::INFINITY, true);
-    context.set_global_force("NEG_INFINITY", RantValue::NEG_INFINITY, true);
-    context.set_global_force("NAN", RantValue::NAN, true);
+    context.set_global_force("EPSILON", RantyValue::EPSILON, true);
+    context.set_global_force("MIN_FLOAT", RantyValue::MIN_FLOAT, true);
+    context.set_global_force("MAX_FLOAT", RantyValue::MAX_FLOAT, true);
+    context.set_global_force("MIN_INT", RantyValue::MIN_INT, true);
+    context.set_global_force("MAX_INT", RantyValue::MAX_INT, true);
+    context.set_global_force("INFINITY", RantyValue::INFINITY, true);
+    context.set_global_force("NEG_INFINITY", RantyValue::NEG_INFINITY, true);
+    context.set_global_force("NAN", RantyValue::NAN, true);
 }

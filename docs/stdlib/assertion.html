@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Assertion - Rant Reference</title>
+        <title>Assertion - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -177,7 +177,7 @@
                     <main>
                         <h1 id="assertion"><a class="header" href="#assertion">Assertion</a></h1>
 <h2 id="assert"><a class="header" href="#assert">assert</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%assert: condition; message?]
 
 </code></pre>
@@ -190,7 +190,7 @@ The condition to check.</p>
 <p><strong><code>message</code></strong> ← <code>string</code> <em>(optional)</em> <br/>
 The error message to display if the condition is not satisfied.</p>
 <h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
-<pre><code class="language-rant"># does absolutely nothing
+<pre><code class="language-ranty"># does absolutely nothing
 [assert: @true]
 
 # [assertion error] assertion failed: condition was false
@@ -200,14 +200,14 @@ The error message to display if the condition is not satisfied.</p>
 [assert: @false; "ooooops!"] 
 </code></pre>
 <h2 id="assert-not"><a class="header" href="#assert-not">assert-not</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%assert-not: condition; message?]
 
 </code></pre>
 <p>Verifies that <code>condition</code> is false before continuing program execution.</p>
 <p>Like <code>[assert]</code>, a custom error message can be provided.</p>
 <h2 id="assert-eq"><a class="header" href="#assert-eq">assert-eq</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%assert-eq: actual; expected; message?]
 
 </code></pre>
@@ -221,7 +221,7 @@ The expected value to test against.</p>
 <p><strong><code>message</code></strong> ← <code>string</code> <br/>
 The error message to display if the condition is not satisfied.</p>
 <h2 id="assert-neq"><a class="header" href="#assert-neq">assert-neq</a></h2>
-<pre><code class="language-rant">
+<pre><code class="language-ranty">
 [%assert-neq: actual; unexpected; message?]
 
 </code></pre>

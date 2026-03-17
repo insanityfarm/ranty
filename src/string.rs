@@ -4,18 +4,18 @@ use once_cell::sync::OnceCell;
 use smallvec::SmallVec;
 use unicode_segmentation::UnicodeSegmentation;
 
-use crate::{util, InternalString, RantList, RantTuple, RantValue};
+use crate::{util, InternalString, RantyList, RantyTuple, RantyValue};
 
 type Graphemes = SmallVec<[(usize, usize); 1]>;
 
-/// Represents Rant's `string` type.
+/// Represents Ranty's `string` type.
 #[derive(Debug, Default)]
-pub struct RantString {
+pub struct RantyString {
     raw: InternalString,
     graphemes: OnceCell<Option<Graphemes>>,
 }
 
-impl RantString {
+impl RantyString {
     /// Creates a new, empty string.
     #[inline]
     pub fn new() -> Self {
@@ -41,7 +41,7 @@ impl RantString {
     }
 }
 
-impl RantString {
+impl RantyString {
     #[inline]
     pub(crate) fn graphemes(&self) -> &Graphemes {
         self.graphemes
@@ -80,41 +80,41 @@ impl RantString {
 
     /// Gets the grapheme string at the specified index.
     #[inline]
-    pub fn grapheme_at(&self, index: usize) -> Option<RantString> {
+    pub fn grapheme_at(&self, index: usize) -> Option<RantyString> {
         if index >= self.len() {
             return None;
         }
 
         let (start, end) = self.graphemes()[index];
-        Some(RantString::from(&self.raw[start..end]))
+        Some(RantyString::from(&self.raw[start..end]))
     }
 
-    /// Splits the string into individual graphemes and returns them as a Rant list.
+    /// Splits the string into individual graphemes and returns them as a Ranty list.
     #[inline]
-    pub fn to_rant_list(&self) -> RantList {
+    pub fn to_ranty_list(&self) -> RantyList {
         let n = self.len();
-        let mut list = RantList::with_capacity(n);
+        let mut list = RantyList::with_capacity(n);
         for i in 0..n {
             let c = self.grapheme_at(i).unwrap();
-            list.push(RantValue::String(c));
+            list.push(RantyValue::String(c));
         }
         list
     }
 
-    /// Splits the string into individual graphemes and returns them as a Rant tuple.
+    /// Splits the string into individual graphemes and returns them as a Ranty tuple.
     #[inline]
-    pub fn to_rant_tuple(&self) -> RantTuple {
+    pub fn to_ranty_tuple(&self) -> RantyTuple {
         let n = self.len();
         let mut items = Vec::with_capacity(n);
         for i in 0..n {
             let c = self.grapheme_at(i).unwrap();
-            items.push(RantValue::String(c));
+            items.push(RantyValue::String(c));
         }
-        RantTuple::from(items)
+        RantyTuple::from(items)
     }
 
     /// Gets the string at the specified slice.
-    pub fn to_slice(&self, start: Option<usize>, end: Option<usize>) -> Option<RantString> {
+    pub fn to_slice(&self, start: Option<usize>, end: Option<usize>) -> Option<RantyString> {
         let graphemes = self.graphemes();
         let len = graphemes.len();
 
@@ -162,7 +162,7 @@ impl RantString {
     }
 }
 
-impl Clone for RantString {
+impl Clone for RantyString {
     #[inline]
     fn clone(&self) -> Self {
         Self {
@@ -172,7 +172,7 @@ impl Clone for RantString {
     }
 }
 
-impl RantString {
+impl RantyString {
     #[inline]
     pub fn len(&self) -> usize {
         self.graphemes().len()
@@ -184,38 +184,38 @@ impl RantString {
     }
 }
 
-impl From<InternalString> for RantString {
+impl From<InternalString> for RantyString {
     fn from(s: InternalString) -> Self {
         Self::from_str(s.as_str())
     }
 }
 
-impl From<&str> for RantString {
+impl From<&str> for RantyString {
     fn from(s: &str) -> Self {
         Self::from_str(s)
     }
 }
 
-impl From<String> for RantString {
+impl From<String> for RantyString {
     fn from(s: String) -> Self {
         Self::from_str(&s)
     }
 }
 
-impl From<&String> for RantString {
+impl From<&String> for RantyString {
     fn from(s: &String) -> Self {
         Self::from_str(s)
     }
 }
 
-impl From<char> for RantString {
+impl From<char> for RantyString {
     fn from(c: char) -> Self {
         Self::from_char(c)
     }
 }
 
-impl Add for RantString {
-    type Output = RantString;
+impl Add for RantyString {
+    type Output = RantyString;
 
     fn add(self, rhs: Self) -> Self::Output {
         Self {
@@ -225,19 +225,19 @@ impl Add for RantString {
     }
 }
 
-impl Display for RantString {
+impl Display for RantyString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", &self.raw)
     }
 }
 
-impl PartialEq for RantString {
+impl PartialEq for RantyString {
     fn eq(&self, other: &Self) -> bool {
         self.raw == other.raw
     }
 }
 
-impl PartialOrd for RantString {
+impl PartialOrd for RantyString {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         self.raw.partial_cmp(&other.raw)
     }

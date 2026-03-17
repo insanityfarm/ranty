@@ -20,7 +20,7 @@ If the block is weighted, the final choice is made using the weights inside the 
 Each block element may use at most one `@on` and one `@weight`. When both are present, they can
 appear in either order after any optional `@edit` prefix.
 
-```rant example
+```ranty example
 [match: foo]{yes @on foo|no @on bar|fallback}
 ```
 

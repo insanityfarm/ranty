@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Attributes - Rant Reference</title>
+        <title>Attributes - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="Stable Rant 4.0 language, runtime, CLI, and standard-library reference.">
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -138,10 +138,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Rant Reference</h1>
+                    <h1 class="menu-title">Ranty Reference</h1>
 
                     <div class="right-buttons">
-                        <a href="https://github.com/rant-lang/rant" title="Git repository" aria-label="Git repository">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
 
@@ -190,7 +190,7 @@ Each frame of the attribute stack stores a full set of attributes.</p>
 <li>angle-bracket accessors such as <code>&lt;@rep = 3&gt;</code> and <code>&lt;@sel&gt;</code></li>
 </ul>
 <p>The mutable attribute keywords also support immediate-block sugar:</p>
-<pre><code class="language-rant example">@rep 3: {x}
+<pre><code class="language-ranty example">@rep 3: {x}
 </code></pre>
 <pre><code class="language-text expected">xxx
 </code></pre>
@@ -200,7 +200,7 @@ Each frame of the attribute stack stores a full set of attributes.</p>
 <p>By setting the repetitions attribute, you can control how many times the next encountered block will run.
 This attribute is set with the <code>[rep]</code> function or with <code>@rep</code>.</p>
 <h3 id="example"><a class="header" href="#example">Example</a></h3>
-<pre><code class="language-rant">[rep:10]{[step]\n}
+<pre><code class="language-ranty">[rep:10]{[step]\n}
 # Output:
 # 1
 # 2
@@ -217,19 +217,19 @@ This attribute is set with the <code>[rep]</code> function or with <code>@rep</c
 <p>The separator attribute controls what is printed between each block repetition.
 It is set using the <code>[sep]</code> function or <code>@sep</code>.</p>
 <h3 id="example-1"><a class="header" href="#example-1">Example</a></h3>
-<pre><code class="language-rant">[rep:4][sep:" and "]
+<pre><code class="language-ranty">[rep:4][sep:" and "]
 It just keeps {going}...
 
 # Output:
 # It just keeps going and going and going and going...
 </code></pre>
 <p>The <code>@sep</code> keyword can also be read and written through accessor syntax:</p>
-<pre><code class="language-rant example">&lt;@sep = ","&gt;[rep:3][sep:&lt;@sep&gt;]{x}
+<pre><code class="language-ranty example">&lt;@sep = ","&gt;[rep:3][sep:&lt;@sep&gt;]{x}
 </code></pre>
 <pre><code class="language-text expected">x,x,x
 </code></pre>
 <h2 id="selectors"><a class="header" href="#selectors">Selectors</a></h2>
-<p>The selector attribute controls how Rant chooses which branch of a block to take. It does this using a special state machine object, which must be created separately but can be shared between blocks to coordinate their behavior.
+<p>The selector attribute controls how Ranty chooses which branch of a block to take. It does this using a special state machine object, which must be created separately but can be shared between blocks to coordinate their behavior.
 You can set it with <code>[sel]</code>, <code>[match]</code>, <code>@sel</code>, or <code>&lt;@sel = ...&gt;</code>.</p>
 <h3 id="selector-modes"><a class="header" href="#selector-modes">Selector modes</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Mode</th><th>Description</th></tr></thead><tbody>
@@ -252,7 +252,7 @@ You can set it with <code>[sel]</code>, <code>[match]</code>, <code>@sel</code>,
 </tbody></table>
 </div>
 <h3 id="example-2"><a class="header" href="#example-2">Example</a></h3>
-<pre><code class="language-rant"># Print every element of the block in a random order with no duplicates
+<pre><code class="language-ranty"># Print every element of the block in a random order with no duplicates
 
 &lt;$s=[mksel:deck]&gt;  # Create a "deck" selector
 [sel:&lt;s&gt;]          # Apply the selector
@@ -265,7 +265,7 @@ You can set it with <code>[sel]</code>, <code>[match]</code>, <code>@sel</code>,
 </code></pre>
 <h3 id="match-selection"><a class="header" href="#match-selection">Match selection</a></h3>
 <p>Match selectors choose from elements tagged with <code>@on</code>.</p>
-<pre><code class="language-rant example">[match: foo]{yes @on foo|no @on bar|fallback}
+<pre><code class="language-ranty example">[match: foo]{yes @on foo|no @on bar|fallback}
 </code></pre>
 <pre><code class="language-text expected">yes
 </code></pre>
@@ -276,7 +276,7 @@ When the block is weighted, weights are applied inside the chosen pool.</p>
 <p>The mutator attribute allows the user to supply a function (known as the "mutator function") that is called in place of each iteration of the block.
 The mutator function accepts the current block element as a callback parameter, which it can then call to produce output for that iteration.</p>
 <p>This is extremely useful for applying filters or post-processing to a block at a per-iteration level.</p>
-<pre><code class="language-rant">[rep: all]
+<pre><code class="language-ranty">[rep: all]
 [sep: \n]
 [mut: [?:elem] { [elem]! }] # Just adds an exclamation point
 [mksel: forward |&gt; sel]
@@ -285,7 +285,7 @@ The mutator function accepts the current block element as a callback parameter, 
 }
 </code></pre>
 <p>You can also choose how many times you want to run the element, or even not run it at all.</p>
-<pre><code class="language-rant"># Without mutator
+<pre><code class="language-ranty"># Without mutator
 [rep: all]
 [sep: \s]
 [sel: forward]
@@ -302,7 +302,7 @@ The mutator function accepts the current block element as a callback parameter, 
 # -&gt; theeht quickkciuq brownnworb foxxof
 </code></pre>
 <p>The <code>@mut</code> keyword supports the same attribute state:</p>
-<pre><code class="language-rant example">@mut [?: elem] { [elem]! }: {foo}
+<pre><code class="language-ranty example">@mut [?: elem] { [elem]! }: {foo}
 </code></pre>
 <pre><code class="language-text expected">foo!
 </code></pre>

@@ -2,7 +2,7 @@
 
 ## is-some
 
-```rant
+```ranty
 
 [%is-some: value] 
 
@@ -19,7 +19,7 @@ The value to check.
 
 ## is-between
 
-```rant
+```ranty
 
 [%is-between: value; a; b]
 
@@ -42,7 +42,7 @@ The second bound.
 
 ## is-bool
 
-```rant
+```ranty
 
 [%is-bool: value]
 
@@ -59,7 +59,7 @@ The value to check.
 
 ## is-nothing
 
-```rant
+```ranty
 
 [%is-nothing: value]
 
@@ -76,7 +76,7 @@ The value to check.
 
 ## is-even
 
-```rant
+```ranty
 
 [%is-even: number]
 
@@ -92,7 +92,7 @@ The number to check.
 
 ## is-factor
 
-```rant
+```ranty
 
 [%is-factor: value; factor]
 
@@ -104,7 +104,7 @@ Returns `@true` if `value` is evenly divisible by `factor`.
 
 ## is-float
 
-```rant
+```ranty
 
 [%is-float: value]
 
@@ -121,7 +121,7 @@ The value to check.
 
 ## is-int
 
-```rant
+```ranty
 
 [%is-int: value]
 
@@ -138,7 +138,7 @@ The value to check.
 
 ## is-nan
 
-```rant
+```ranty
 
 [%is-nan: value]
 
@@ -155,7 +155,7 @@ The value to check.
 
 ## is-number
 
-```rant
+```ranty
 
 [%is-number: value]
 
@@ -171,7 +171,7 @@ The value to check.
 
 ## is
 
-```rant
+```ranty
 
 [%is: value; type-name]
 
@@ -183,7 +183,7 @@ Returns `@true` when `value`'s runtime type name exactly matches `type-name`.
 
 ## is-odd
 
-```rant
+```ranty
 
 [%is-odd: number]
 
@@ -200,7 +200,7 @@ The value to check.
 
 ## is-string
 
-```rant
+```ranty
 
 [%is-string: value]
 

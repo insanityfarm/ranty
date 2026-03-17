@@ -2,7 +2,7 @@ use super::output::OutputWriter;
 use crate::runtime::*;
 use crate::{
     lang::{Expression, Sequence},
-    Rant, RantValue,
+    Ranty, RantyValue,
 };
 use fnv::FnvBuildHasher;
 use quickscope::ScopeMap;
@@ -13,7 +13,7 @@ type CallStackVector<I> = SmallVec<[StackFrame<I>; super::CALL_STACK_INLINE_COUN
 /// Represents a call stack and its associated locals.
 pub struct CallStack<I> {
     frames: CallStackVector<I>,
-    locals: ScopeMap<InternalString, RantVar, FnvBuildHasher>,
+    locals: ScopeMap<InternalString, RantyVar, FnvBuildHasher>,
 }
 
 impl<I> Default for CallStack<I> {
@@ -128,10 +128,10 @@ impl<I> CallStack<I> {
     #[inline]
     pub fn set_var_value(
         &mut self,
-        context: &mut Rant,
+        context: &mut Ranty,
         id: &str,
         access: VarAccessMode,
-        val: RantValue,
+        val: RantyValue,
     ) -> RuntimeResult<()> {
         match access {
             VarAccessMode::Local => {
@@ -185,11 +185,11 @@ impl<I> CallStack<I> {
     #[inline]
     pub fn get_var_value(
         &self,
-        context: &Rant,
+        context: &Ranty,
         id: &str,
         access: VarAccessMode,
         prefer_function: bool,
-    ) -> RuntimeResult<RantValue> {
+    ) -> RuntimeResult<RantyValue> {
         macro_rules! percolating_func_lookup {
       ($value_iter:expr) => {
         if let Some(mut vars) = $value_iter {
@@ -251,10 +251,10 @@ impl<I> CallStack<I> {
     /// Gets a mutable reference to a variable.
     pub fn get_var_mut<'a>(
         &'a mut self,
-        context: &'a mut Rant,
+        context: &'a mut Ranty,
         id: &str,
         access: VarAccessMode,
-    ) -> RuntimeResult<&'a mut RantVar> {
+    ) -> RuntimeResult<&'a mut RantyVar> {
         match access {
             VarAccessMode::Local => {
                 if let Some(var) = self.locals.get_mut(id) {
@@ -286,7 +286,7 @@ impl<I> CallStack<I> {
     /// ## Notes
     ///
     /// This function does not perform any identifier validation.
-    pub fn def_local_var(&mut self, id: &str, var: RantVar) -> RuntimeResult<()> {
+    pub fn def_local_var(&mut self, id: &str, var: RantyVar) -> RuntimeResult<()> {
         self.locals.define(InternalString::from(id), var);
         Ok(())
     }
@@ -299,10 +299,10 @@ impl<I> CallStack<I> {
     #[inline]
     pub fn def_var_value(
         &mut self,
-        context: &mut Rant,
+        context: &mut Ranty,
         id: &str,
         access: VarAccessMode,
-        val: RantValue,
+        val: RantyValue,
         is_const: bool,
     ) -> RuntimeResult<()> {
         // REPL-style execution can opt into persisting root-scope definitions as globals.
@@ -332,9 +332,9 @@ impl<I> CallStack<I> {
                 }
 
                 let variable = if is_const {
-                    RantVar::ByValConst(val)
+                    RantyVar::ByValConst(val)
                 } else {
-                    RantVar::ByVal(val)
+                    RantyVar::ByVal(val)
                 };
                 self.locals.define(InternalString::from(id), variable);
                 return Ok(());
@@ -352,9 +352,9 @@ impl<I> CallStack<I> {
                 }
 
                 let variable = if is_const {
-                    RantVar::ByValConst(val)
+                    RantyVar::ByValConst(val)
                 } else {
-                    RantVar::ByVal(val)
+                    RantyVar::ByVal(val)
                 };
                 self.locals
                     .define_parent(InternalString::from(id), variable, descope_count);
@@ -421,7 +421,7 @@ pub struct StackFrame<I> {
     /// Debug cursor (line/col)
     debug_cursor: (usize, usize),
     /// Origin of sequence
-    origin: Rc<RantProgramInfo>,
+    origin: Rc<RantyProgramInfo>,
     /// A usage hint provided by the program element that created the frame.
     flavor: StackFrameFlavor,
 }
@@ -445,7 +445,7 @@ impl<I> StackFrame<I> {
     pub(crate) fn with_extended_config(
         sequence: Option<Rc<Sequence>>,
         prev_output: Option<&OutputWriter>,
-        origin: Rc<RantProgramInfo>,
+        origin: Rc<RantyProgramInfo>,
         has_scope: bool,
         debug_pos: (usize, usize),
         flavor: StackFrameFlavor,
@@ -525,21 +525,21 @@ impl<I> StackFrame<I> {
     }
 
     #[inline]
-    pub fn render_and_reset_output(&mut self) -> RantValue {
+    pub fn render_and_reset_output(&mut self) -> RantyValue {
         let mut other = OutputWriter::new(Some(&self.output));
         std::mem::swap(&mut self.output, &mut other);
         other.render_value()
     }
 
     #[inline]
-    pub fn render_and_reset_modifier_input(&mut self) -> RantValue {
+    pub fn render_and_reset_modifier_input(&mut self) -> RantyValue {
         let mut other = OutputWriter::new(Some(&self.output));
         std::mem::swap(&mut self.output, &mut other);
         other.render_modifier_input()
     }
 
     #[inline(always)]
-    pub fn origin(&self) -> &Rc<RantProgramInfo> {
+    pub fn origin(&self) -> &Rc<RantyProgramInfo> {
         &self.origin
     }
 
@@ -597,13 +597,13 @@ impl<I> StackFrame<I> {
 
     /// Writes a value to the frame's output.
     #[inline]
-    pub fn write<T: IntoRant>(&mut self, val: T) {
-        self.output.write_value(val.into_rant());
+    pub fn write<T: IntoRanty>(&mut self, val: T) {
+        self.output.write_value(val.into_ranty());
     }
 
     /// Consumes the frame's output and returns the final value generated by it.
     #[inline]
-    pub fn into_output(self) -> RantValue {
+    pub fn into_output(self) -> RantyValue {
         self.output.render_value()
     }
 }
