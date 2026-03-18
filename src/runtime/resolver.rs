@@ -1,5 +1,6 @@
 use super::{RuntimeError, RuntimeErrorType, RuntimeResult, StackFrameFlavor};
 use crate::{
+    gc,
     lang::{Block, BlockElement, BlockProtection},
     rng::RantyRng,
     runtime_error, RantyFunction, RantyFunctionHandle, RantyFunctionInterface, RantySelectorHandle,
@@ -217,8 +218,8 @@ impl BlockState {
                 };
                 return Ok(Some(BlockAction::MutateElement {
                     elem: next_elem,
-                    mutator_func: Rc::clone(mutator_func),
-                    elem_func: Rc::new(elem_func),
+                    mutator_func: mutator_func.clone(),
+                    elem_func: gc::alloc(elem_func),
                 }));
             }
 

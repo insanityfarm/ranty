@@ -1,26 +1,37 @@
-use crate::{RantyTuple, RantyTupleHandle, RantyValue};
+use crate::gc::{self, Cc, Finalize, Trace};
+use crate::{value_eq, RantyTuple, RantyTupleHandle, RantyValue};
 use std::{
     cell::RefCell,
     iter::FromIterator,
     ops::{Add, Deref, DerefMut},
-    rc::Rc,
 };
 
 /// Reference handle for a Ranty list
-#[derive(Debug, Clone, PartialEq)]
-pub struct RantyListHandle(Rc<RefCell<RantyList>>);
+#[derive(Debug, Clone, Trace, Finalize)]
+#[rust_cc(unsafe_no_drop)]
+pub struct RantyListHandle(Cc<RefCell<RantyList>>);
 
 impl RantyListHandle {
     /// Makes a copy of the underlying list and returns a handle containing it.
     pub fn cloned(&self) -> Self {
-        Self(Rc::new(RefCell::new((*self.0.borrow()).clone())))
+        Self(gc::alloc(RefCell::new((*self.0.borrow()).clone())))
+    }
+
+    #[inline]
+    pub(crate) fn ptr_id(&self) -> usize {
+        (&*self.0 as *const RefCell<RantyList>) as usize
+    }
+
+    #[inline]
+    pub(crate) fn downgrade(&self) -> crate::gc::Weak<RefCell<RantyList>> {
+        self.0.downgrade()
     }
 }
 
 impl From<RantyList> for RantyListHandle {
     #[inline]
     fn from(list: RantyList) -> Self {
-        Self(Rc::new(RefCell::new(list)))
+        Self(gc::alloc(RefCell::new(list)))
     }
 }
 
@@ -32,8 +43,16 @@ impl Deref for RantyListHandle {
     }
 }
 
+impl PartialEq for RantyListHandle {
+    fn eq(&self, other: &Self) -> bool {
+        let mut state = value_eq::ValueEqState::default();
+        state.eq_list_handles(self, other)
+    }
+}
+
 /// Represents Ranty's `list` type, which stores an ordered, mutable collection of values.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Trace, Finalize)]
+#[rust_cc(unsafe_no_drop)]
 pub struct RantyList(Vec<RantyValue>);
 
 impl RantyList {
@@ -82,6 +101,12 @@ impl From<Vec<RantyValue>> for RantyList {
 impl Default for RantyList {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl PartialEq for RantyList {
+    fn eq(&self, other: &Self) -> bool {
+        value_eq::list_values_equal(self, other)
     }
 }
 

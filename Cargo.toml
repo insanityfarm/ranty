@@ -9,7 +9,7 @@ homepage = "https://github.com/insanityfarm/ranty"
 keywords = ["ranty", "templating", "procedural", "generation", "procgen"]
 categories = ["text-processing", "game-development", "template-engine"]
 readme = "README.md"
-rust-version = "1.61.0"
+rust-version = "1.65.0"
 include = [
   "**/*.rs", 
   "Cargo.toml",
@@ -56,6 +56,7 @@ rand = "0.8.3"                    # RNG utilities used throughout Ranty.
 rand_xoshiro = "0.6.0"            # RNG implementation used by the Ranty runtime.
 smallvec = "1.6.1"                # List optimization used throughout Ranty.
 smartstring = "1.0.1"             # String optimization used throughout Ranty.
+rust-cc = { version = "0.6.2", default-features = false, features = ["derive", "finalization", "std", "weak-ptrs"] }
 unicode-segmentation = "1.7.1"    # Used by Ranty to index strings by grapheme cluster.
 
 # CLI

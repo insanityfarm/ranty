@@ -4,14 +4,18 @@ use once_cell::sync::OnceCell;
 use smallvec::SmallVec;
 use unicode_segmentation::UnicodeSegmentation;
 
+use crate::gc::{Finalize, Trace};
 use crate::{util, InternalString, RantyList, RantyTuple, RantyValue};
 
 type Graphemes = SmallVec<[(usize, usize); 1]>;
 
 /// Represents Ranty's `string` type.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Trace, Finalize)]
+#[rust_cc(unsafe_no_drop)]
 pub struct RantyString {
+    #[rust_cc(ignore)]
     raw: InternalString,
+    #[rust_cc(ignore)]
     graphemes: OnceCell<Option<Graphemes>>,
 }
 

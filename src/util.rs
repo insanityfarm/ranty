@@ -56,7 +56,9 @@ pub fn bf64(val: bool) -> f64 {
 }
 
 #[inline]
-pub fn max_ranty_value<'a>(mut iter: impl Iterator<Item = &'a RantyValue>) -> Option<&'a RantyValue> {
+pub fn max_ranty_value<'a>(
+    mut iter: impl Iterator<Item = &'a RantyValue>,
+) -> Option<&'a RantyValue> {
     if let Some(mut max) = iter.next() {
         for val in iter {
             if val >= max {
@@ -70,7 +72,9 @@ pub fn max_ranty_value<'a>(mut iter: impl Iterator<Item = &'a RantyValue>) -> Op
 }
 
 #[inline]
-pub fn min_ranty_value<'a>(mut iter: impl Iterator<Item = &'a RantyValue>) -> Option<&'a RantyValue> {
+pub fn min_ranty_value<'a>(
+    mut iter: impl Iterator<Item = &'a RantyValue>,
+) -> Option<&'a RantyValue> {
     if let Some(mut min) = iter.next() {
         for val in iter {
             if val < min {

@@ -75,7 +75,10 @@ pub(crate) fn get_selector_attr_value(selector: Option<&RantySelectorHandle>) ->
         .unwrap_or(RantyValue::Nothing)
 }
 
-pub(crate) fn set_selector_attr(attrs: &mut AttributeFrame, selector: RantyValue) -> RantyStdResult {
+pub(crate) fn set_selector_attr(
+    attrs: &mut AttributeFrame,
+    selector: RantyValue,
+) -> RantyStdResult {
     attrs.selector = match selector {
         RantyValue::Selector(handle) => Some(handle),
         val @ RantyValue::String(_) => {
@@ -167,7 +170,10 @@ pub fn step_count(vm: &mut VM, _: ()) -> RantyStdResult {
     Ok(())
 }
 
-pub fn mksel(vm: &mut VM, (mode, match_value): (SelectorMode, Option<RantyValue>)) -> RantyStdResult {
+pub fn mksel(
+    vm: &mut VM,
+    (mode, match_value): (SelectorMode, Option<RantyValue>),
+) -> RantyStdResult {
     let sel = match mode {
         SelectorMode::Match => {
             let match_value = match_value.ok_or_else(|| RuntimeError {
@@ -208,7 +214,10 @@ pub fn sel(vm: &mut VM, selector: Option<RantyValue>) -> RantyStdResult {
     Ok(())
 }
 
-pub fn sel_skip(vm: &mut VM, (selector, n): (RantySelectorHandle, Option<usize>)) -> RantyStdResult {
+pub fn sel_skip(
+    vm: &mut VM,
+    (selector, n): (RantySelectorHandle, Option<usize>),
+) -> RantyStdResult {
     let mut sel = selector.borrow_mut();
     if sel.mode() == SelectorMode::Match {
         return Err(RuntimeError {

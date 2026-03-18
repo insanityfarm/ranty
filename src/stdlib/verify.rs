@@ -51,7 +51,10 @@ pub fn is_number(vm: &mut VM, value: RantyValue) -> RantyStdResult {
     Ok(())
 }
 
-pub fn is_between(vm: &mut VM, (value, a, b): (RantyValue, RantyValue, RantyValue)) -> RantyStdResult {
+pub fn is_between(
+    vm: &mut VM,
+    (value, a, b): (RantyValue, RantyValue, RantyValue),
+) -> RantyStdResult {
     let (a, b) = util::minmax(a, b);
     let result = value >= a && value <= b;
     vm.cur_frame_mut().write(result);

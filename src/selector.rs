@@ -1,18 +1,25 @@
-use std::{cell::RefCell, error::Error, fmt::Display, ops::Deref, rc::Rc};
+use std::{cell::RefCell, error::Error, fmt::Display, ops::Deref};
 
 use crate::{
+    gc::{self, Cc, Context, Finalize, Trace},
     rng::RantyRng,
     runtime::{IntoRuntimeResult, RuntimeError},
     RantyValue, TryFromRanty, ValueError,
 };
 
 /// Reference handle for a Ranty selector.
-#[derive(Debug, Clone)]
-pub struct RantySelectorHandle(Rc<RefCell<RantySelector>>);
+#[derive(Debug, Clone, Trace, Finalize)]
+#[rust_cc(unsafe_no_drop)]
+pub struct RantySelectorHandle(Cc<RefCell<RantySelector>>);
 
 impl RantySelectorHandle {
     pub fn cloned(&self) -> Self {
-        Self(Rc::new(RefCell::new((*self.0.borrow()).clone())))
+        Self(gc::alloc(RefCell::new((*self.0.borrow()).clone())))
+    }
+
+    #[inline]
+    pub(crate) fn ptr_id(&self) -> usize {
+        (&*self.0 as *const RefCell<RantySelector>) as usize
     }
 }
 
@@ -26,18 +33,19 @@ impl Deref for RantySelectorHandle {
 
 impl PartialEq for RantySelectorHandle {
     fn eq(&self, other: &Self) -> bool {
-        self.0.as_ptr() == other.0.as_ptr()
+        Cc::ptr_eq(&self.0, &other.0)
     }
 }
 
 impl From<RantySelector> for RantySelectorHandle {
     fn from(sel: RantySelector) -> Self {
-        Self(Rc::new(RefCell::new(sel)))
+        Self(gc::alloc(RefCell::new(sel)))
     }
 }
 
 /// Represents a Ranty selector instance used by the resolver to select block branches.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Trace, Finalize)]
+#[rust_cc(unsafe_no_drop)]
 pub struct RantySelector {
     /// Mode of the selector
     mode: SelectorMode,
@@ -430,6 +438,13 @@ pub enum SelectorMode {
     /// Selects among block elements tagged with matching `@on` values.
     Match,
 }
+
+unsafe impl Trace for SelectorMode {
+    #[inline(always)]
+    fn trace(&self, _: &mut Context<'_>) {}
+}
+
+impl Finalize for SelectorMode {}
 
 impl TryFromRanty for SelectorMode {
     fn try_from_ranty(val: RantyValue) -> Result<Self, ValueError> {

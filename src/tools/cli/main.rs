@@ -204,10 +204,7 @@ fn select_launch_mode(eval: Option<&str>, file: Option<&str>, stdin_is_tty: bool
 }
 
 fn repl(ranty: &mut Ranty, opts: &RantyCliOptions) {
-    println!(
-        "{}",
-        format!("Ranty {}", ranty::BUILD_VERSION).white()
-    );
+    println!("{}", format!("Ranty {}", ranty::BUILD_VERSION).white());
     println!(
         "{}",
         "Write an expression and press Enter to run it."

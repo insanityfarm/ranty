@@ -26,7 +26,10 @@ pub fn mul(vm: &mut VM, (lhs, rhs): (RantyValue, RantyValue)) -> RantyStdResult 
 /// `[$mul-add: lhs (any); mhs (any); rhs (any)]`
 ///
 /// Multiplies two values, then adds a third value to the result.
-pub fn mul_add(vm: &mut VM, (lhs, mhs, rhs): (RantyValue, RantyValue, RantyValue)) -> RantyStdResult {
+pub fn mul_add(
+    vm: &mut VM,
+    (lhs, mhs, rhs): (RantyValue, RantyValue, RantyValue),
+) -> RantyStdResult {
     vm.cur_frame_mut().write(lhs * mhs + rhs);
     Ok(())
 }

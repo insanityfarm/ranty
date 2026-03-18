@@ -9,7 +9,8 @@ fn compile_and_run_file(path: &Path, ranty: &mut Ranty) -> Result<String, String
     let program = ranty
         .compile_file_quiet(path)
         .map_err(|err| format!("compile failed: {err}"))?;
-    ranty.run(&program)
+    ranty
+        .run(&program)
         .map(|value| value.to_string())
         .map_err(|err| err.to_string())
 }

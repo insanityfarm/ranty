@@ -24,7 +24,7 @@ pub fn call(
     vm: &mut VM,
     (func, args): (RantyFunctionHandle, Option<Vec<RantyValue>>),
 ) -> RantyStdResult {
-    vm.push_val(RantyValue::Function(Rc::clone(&func)))?;
+    vm.push_val(RantyValue::Function(func.clone()))?;
     let argc = args.as_ref().map(|args| args.len()).unwrap_or(0);
     if let Some(mut args) = args {
         for arg in args.drain(..).rev() {

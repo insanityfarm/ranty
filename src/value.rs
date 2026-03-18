@@ -1,7 +1,8 @@
+use crate::gc::{Finalize, Trace};
 use crate::runtime::*;
 use crate::util::*;
 use crate::{
-    collections::*, FromRantyArgs, IntoRanty, IntoRantyFunction, RantySelectorHandle, TryFromRanty,
+    collections::*, gc, value_eq, FromRantyArgs, IntoRanty, RantySelectorHandle, TryFromRanty,
 };
 use crate::{lang::Slice, util, RantyFunction, RantyString};
 use cast::*;
@@ -11,7 +12,6 @@ use std::ops::Deref;
 use std::{
     fmt::{Debug, Display},
     ops::{Add, Div, Mul, Neg, Not, Rem, Sub},
-    rc::Rc,
 };
 
 pub const TYPENAME_STRING: &str = "string";
@@ -74,8 +74,8 @@ pub type ValueSliceResult = Result<RantyValue, SliceError>;
 /// The result type used by Ranty value slice write operations.
 pub type ValueSliceSetResult = Result<(), SliceError>;
 
-/// Type alias for `Rc<RantyFunction>`
-pub type RantyFunctionHandle = Rc<RantyFunction>;
+/// Type alias for the GC-managed function handle type.
+pub type RantyFunctionHandle = gc::Cc<RantyFunction>;
 
 /// Ranty's "nothing" value.
 pub struct RantyNothing;
@@ -140,7 +140,8 @@ impl Display for RantyValueType {
 /// Calling `clone()` on a by-ref Ranty value type (such as `list`) will only clone its handle; both copies will point to the same contents.
 ///
 /// If you want to shallow-copy a by-ref value, use the `shallow_copy` method instead.
-#[derive(Clone)]
+#[derive(Clone, Trace, Finalize)]
+#[rust_cc(unsafe_no_drop)]
 pub enum RantyValue {
     /// A Ranty value of type `string`. Passed by-value.
     String(RantyString),
@@ -210,10 +211,18 @@ impl RantyValue {
 #[allow(clippy::len_without_is_empty)]
 impl RantyValue {
     #[inline]
-    pub fn from_func<P: FromRantyArgs, F: 'static + Fn(&mut VM, P) -> Result<(), RuntimeError>>(
-        func: F,
+    pub fn from_func<P: FromRantyArgs>(func: fn(&mut VM, P) -> Result<(), RuntimeError>) -> Self {
+        Self::Function(gc::alloc(RantyFunction::from_native(func)))
+    }
+
+    #[inline]
+    pub fn from_captured_func<P: FromRantyArgs>(
+        captures: Vec<RantyValue>,
+        func: fn(&mut VM, P, &[RantyValue]) -> Result<(), RuntimeError>,
     ) -> Self {
-        Self::Function(RantyFunctionHandle::new(func.into_ranty_func()))
+        Self::Function(gc::alloc(RantyFunction::from_captured_native(
+            captures, func,
+        )))
     }
 
     /// Interprets this value as a boolean value according to Ranty's truthiness rules.
@@ -979,21 +988,7 @@ impl Display for RantyValue {
 
 impl PartialEq for RantyValue {
     fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Self::Nothing, Self::Nothing) => true,
-            (Self::String(a), Self::String(b)) => a == b,
-            (Self::Int(a), Self::Int(b)) => a == b,
-            (Self::Int(a), Self::Float(b)) => *a as f64 == *b,
-            (Self::Float(a), Self::Float(b)) => a == b,
-            (Self::Float(a), Self::Int(b)) => *a == *b as f64,
-            (Self::Boolean(a), Self::Boolean(b)) => a == b,
-            (Self::Range(ra), Self::Range(rb)) => ra == rb,
-            (Self::List(a), Self::List(b)) => a.eq(b),
-            (Self::Tuple(a), Self::Tuple(b)) => a.eq(b),
-            (Self::Map(a), Self::Map(b)) => a.eq(b),
-            (Self::Selector(a), Self::Selector(b)) => a == b,
-            _ => false,
-        }
+        value_eq::values_equal(self, other)
     }
 }
 

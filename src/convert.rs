@@ -16,7 +16,6 @@ use cast::*;
 use std::{
     convert::TryInto,
     ops::{Deref, DerefMut},
-    rc::Rc,
 };
 
 /// Enables infallible conversion into a `RantyValue`.
@@ -333,7 +332,10 @@ impl TryFromRanty for f64 {
 
 impl<T: IntoRanty> IntoRanty for Vec<T> {
     fn into_ranty(mut self) -> RantyValue {
-        let list = self.drain(..).map(|v| v.into_ranty()).collect::<RantyList>();
+        let list = self
+            .drain(..)
+            .map(|v| v.into_ranty())
+            .collect::<RantyList>();
         RantyValue::List(list.into_handle())
     }
 }
@@ -663,33 +665,8 @@ pub trait IntoRantyFunction<Params: FromRantyArgs> {
     fn into_ranty_func(self) -> RantyFunction;
 }
 
-impl<Params: FromRantyArgs, Function: 'static + Fn(&mut VM, Params) -> RantyStdResult>
-    IntoRantyFunction<Params> for Function
-{
+impl<Params: FromRantyArgs> IntoRantyFunction<Params> for fn(&mut VM, Params) -> RantyStdResult {
     fn into_ranty_func(self) -> RantyFunction {
-        let body = RantyFunctionInterface::Foreign(Rc::new(move |vm, args| {
-            self(vm, Params::from_ranty_args(args).into_runtime_result()?)
-        }));
-
-        let params = Rc::new(Params::as_ranty_params());
-
-        RantyFunction {
-            body,
-            captured_vars: vec![],
-            min_arg_count: params.iter().take_while(|p| p.is_required()).count(),
-            vararg_start_index: params
-                .iter()
-                .enumerate()
-                .find_map(|(i, p)| {
-                    if p.varity.is_variadic() {
-                        Some(i)
-                    } else {
-                        None
-                    }
-                })
-                .unwrap_or_else(|| params.len()),
-            params,
-            flavor: None,
-        }
+        RantyFunction::from_native(self)
     }
 }

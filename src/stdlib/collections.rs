@@ -111,7 +111,7 @@ pub fn filter(
 
         let src_clone = RantyListHandle::clone(&src);
         let predicate_arg = src_ref.get(index).cloned().unwrap_or_default();
-        let predicate_clone = Rc::clone(&predicate);
+        let predicate_clone = predicate.clone();
 
         // Prepare next iteration
         vm.cur_frame_mut().push_intent(Intent::RuntimeCall {
@@ -144,7 +144,10 @@ pub fn filter(
     Ok(())
 }
 
-pub fn map(vm: &mut VM, (list, map_func): (RantyListHandle, RantyFunctionHandle)) -> RantyStdResult {
+pub fn map(
+    vm: &mut VM,
+    (list, map_func): (RantyListHandle, RantyFunctionHandle),
+) -> RantyStdResult {
     let is_list_empty = list.borrow().is_empty();
     if is_list_empty {
         vm.cur_frame_mut().write(list);
@@ -175,7 +178,7 @@ pub fn map(vm: &mut VM, (list, map_func): (RantyListHandle, RantyFunctionHandle)
 
         let src_clone = RantyListHandle::clone(&src);
         let map_func_arg = src_ref.get(index).cloned().unwrap_or_default();
-        let map_func_clone = Rc::clone(&map_func);
+        let map_func_clone = map_func.clone();
 
         // Prepare next iteration
         vm.cur_frame_mut().push_intent(Intent::RuntimeCall {
@@ -235,9 +238,11 @@ pub fn zip(
             return Ok(());
         }
 
-        let (src_a_clone, src_b_clone) =
-            (RantyListHandle::clone(&src_a), RantyListHandle::clone(&src_b));
-        let zip_func_clone = Rc::clone(&zip_func);
+        let (src_a_clone, src_b_clone) = (
+            RantyListHandle::clone(&src_a),
+            RantyListHandle::clone(&src_b),
+        );
+        let zip_func_clone = zip_func.clone();
 
         // Prepare next iteration
         vm.cur_frame_mut().push_intent(Intent::RuntimeCall {
@@ -437,7 +442,10 @@ pub fn augment_thru(
     Ok(())
 }
 
-pub fn augment(vm: &mut VM, (to_map, from_map): (RantyMapHandle, RantyMapHandle)) -> RantyStdResult {
+pub fn augment(
+    vm: &mut VM,
+    (to_map, from_map): (RantyMapHandle, RantyMapHandle),
+) -> RantyStdResult {
     let to_map = to_map.cloned();
     let to_map_ref_clone = RantyMapHandle::clone(&to_map);
     augment_self(vm, (to_map_ref_clone, from_map))?;

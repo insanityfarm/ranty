@@ -813,10 +813,9 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
                                             );
                                         }
                                         whitespace!(ignore next);
-                                        if !self
-                                            .reader
-                                            .eat_where(|t| matches!(t, Some((RantyToken::Colon, _))))
-                                        {
+                                        if !self.reader.eat_where(|t| {
+                                            matches!(t, Some((RantyToken::Colon, _)))
+                                        }) {
                                             self.report_error(
                                                 Problem::ExpectedToken(":".to_owned()),
                                                 &self.reader.last_token_span(),

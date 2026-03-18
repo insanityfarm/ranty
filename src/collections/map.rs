@@ -1,14 +1,26 @@
+use crate::gc::{self, Cc, Context, Finalize, Trace};
 use crate::{InternalString, RantyList, RantyValue};
 use fnv::FnvHashMap;
-use std::{borrow::Cow, cell::RefCell, ops::Deref, rc::Rc};
+use std::{borrow::Cow, cell::RefCell, ops::Deref};
 
 /// Reference handle for a Ranty map
-#[derive(Debug, Clone)]
-pub struct RantyMapHandle(Rc<RefCell<RantyMap>>);
+#[derive(Debug, Clone, Trace, Finalize)]
+#[rust_cc(unsafe_no_drop)]
+pub struct RantyMapHandle(Cc<RefCell<RantyMap>>);
 
 impl RantyMapHandle {
     pub fn cloned(&self) -> Self {
-        Self(Rc::new(RefCell::new((*self.0.borrow()).clone())))
+        Self(gc::alloc(RefCell::new((*self.0.borrow()).clone())))
+    }
+
+    #[inline]
+    pub(crate) fn ptr_id(&self) -> usize {
+        (&*self.0 as *const RefCell<RantyMap>) as usize
+    }
+
+    #[inline]
+    pub(crate) fn downgrade(&self) -> crate::gc::Weak<RefCell<RantyMap>> {
+        self.0.downgrade()
     }
 
     pub fn would_create_proto_cycle(&self, proto: &RantyMapHandle) -> bool {
@@ -25,14 +37,14 @@ impl RantyMapHandle {
 
 impl PartialEq for RantyMapHandle {
     fn eq(&self, other: &Self) -> bool {
-        self.0.as_ptr() == other.0.as_ptr()
+        Cc::ptr_eq(&self.0, &other.0)
     }
 }
 
 impl From<RantyMap> for RantyMapHandle {
     #[inline]
     fn from(map: RantyMap) -> Self {
-        Self(Rc::new(RefCell::new(map)))
+        Self(gc::alloc(RefCell::new(map)))
     }
 }
 
@@ -167,3 +179,14 @@ impl Default for RantyMap {
         RantyMap::new()
     }
 }
+
+unsafe impl Trace for RantyMap {
+    fn trace(&self, ctx: &mut Context<'_>) {
+        self.proto.trace(ctx);
+        for value in self.map.values() {
+            value.trace(ctx);
+        }
+    }
+}
+
+impl Finalize for RantyMap {}

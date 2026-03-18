@@ -1,3 +1,4 @@
+use crate::gc::{Finalize, Trace};
 use crate::{util, RantyList, RantyTuple, RantyValue};
 use std::{cmp::Ordering, fmt::Display};
 
@@ -5,7 +6,8 @@ use std::{cmp::Ordering, fmt::Display};
 ///
 /// Includes a `step` value which specifies how far apart adjacent values in the range should be.
 /// If the size of the range isn't evenly divisible by `step`, the ending step will be smaller.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Trace, Finalize)]
+#[rust_cc(unsafe_no_drop)]
 pub struct RantyRange {
     start: i64,
     end: i64,

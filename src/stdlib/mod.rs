@@ -5,9 +5,9 @@
 
 use crate::convert::TryIntoRanty;
 use crate::convert::*;
+use crate::gc;
 use crate::runtime::*;
 use crate::*;
-use std::rc::Rc;
 
 mod assertion;
 pub(crate) mod block;
@@ -58,13 +58,19 @@ macro_rules! runtime_error {
 pub fn load_stdlib(context: &mut Ranty) {
     macro_rules! load_func {
         ($fname:ident) => {{
-            let func = $fname.into_ranty_func();
             let name = stringify!($fname).trim_end_matches('_').replace("_", "-");
-            context.set_global_force(name.as_str(), RantyValue::Function(Rc::new(func)), true);
+            context.set_global_force(
+                name.as_str(),
+                RantyValue::Function(gc::alloc(RantyFunction::from_native($fname))),
+                true,
+            );
         }};
         ($fname:ident, $id:literal) => {{
-            let func = $fname.into_ranty_func();
-            context.set_global_force($id, RantyValue::Function(Rc::new(func)), true);
+            context.set_global_force(
+                $id,
+                RantyValue::Function(gc::alloc(RantyFunction::from_native($fname))),
+                true,
+            );
         }};
     }
 

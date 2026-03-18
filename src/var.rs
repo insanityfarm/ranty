@@ -1,21 +1,23 @@
-use std::{cell::RefCell, mem, ops::Deref, rc::Rc};
+use std::{cell::RefCell, mem, ops::Deref};
 
+use crate::gc::{self, Finalize, Trace};
 use crate::RantyValue;
 
 /// Represents a Ranty variable of one of two flavors: **by-value** or **by-reference**.
 ///
 /// ## Cloning
 /// The `Clone` implementation for this type does not copy any data in `ByRef*` variants; it only copies the reference.
-#[derive(Debug)]
+#[derive(Debug, Trace, Finalize)]
+#[rust_cc(unsafe_no_drop)]
 pub enum RantyVar {
     /// By-value variable
     ByVal(RantyValue),
     /// By-value constant
     ByValConst(RantyValue),
     /// By-ref variable
-    ByRef(Rc<RefCell<RantyValue>>),
+    ByRef(crate::gc::Cc<RefCell<RantyValue>>),
     /// By-ref constant
-    ByRefConst(Rc<RantyValue>),
+    ByRefConst(crate::gc::Cc<RantyValue>),
 }
 
 impl Default for RantyVar {
@@ -29,9 +31,9 @@ impl Clone for RantyVar {
     fn clone(&self) -> Self {
         match self {
             Self::ByVal(val) => Self::ByVal(val.clone()),
-            Self::ByRef(val_ref) => Self::ByRef(Rc::clone(val_ref)),
+            Self::ByRef(val_ref) => Self::ByRef(val_ref.clone()),
             Self::ByValConst(val) => Self::ByValConst(val.clone()),
-            Self::ByRefConst(val_ref) => Self::ByRefConst(Rc::clone(val_ref)),
+            Self::ByRefConst(val_ref) => Self::ByRefConst(val_ref.clone()),
         }
     }
 }
@@ -62,8 +64,8 @@ impl RantyVar {
             return;
         }
         match mem::take(self) {
-            Self::ByVal(val) => *self = Self::ByRef(Rc::new(RefCell::new(val))),
-            Self::ByValConst(val) => *self = Self::ByRefConst(Rc::new(val)),
+            Self::ByVal(val) => *self = Self::ByRef(gc::alloc(RefCell::new(val))),
+            Self::ByValConst(val) => *self = Self::ByRefConst(gc::alloc(val)),
             _ => unreachable!(),
         }
     }

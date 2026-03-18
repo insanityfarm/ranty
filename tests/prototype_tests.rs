@@ -136,12 +136,10 @@ fn lookup_only_utilities_remain_own_only() {
 #[test]
 fn direct_prototype_cycles_are_rejected() {
     assert_matches!(
-        run(
-            r#"
+        run(r#"
             <$obj = (::)>
             [set-proto: <obj>; <obj>]
-            "#
-        ),
+            "#),
         Err(RuntimeError {
             error_type: RuntimeErrorType::ArgumentError,
             ..
@@ -152,16 +150,14 @@ fn direct_prototype_cycles_are_rejected() {
 #[test]
 fn indirect_prototype_cycles_are_rejected() {
     assert_matches!(
-        run(
-            r#"
+        run(r#"
             <$obj = (::)>
             <$proto = (::)>
             <$base = (::)>
             [set-proto: <obj>; <proto>]
             [set-proto: <proto>; <base>]
             [set-proto: <base>; <obj>]
-            "#
-        ),
+            "#),
         Err(RuntimeError {
             error_type: RuntimeErrorType::ArgumentError,
             ..

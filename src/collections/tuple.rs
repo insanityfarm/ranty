@@ -1,25 +1,36 @@
-use crate::{RantyList, RantyListHandle, RantyValue};
+use crate::gc::{self, Cc, Finalize, Trace};
+use crate::{value_eq, RantyList, RantyListHandle, RantyValue};
 use std::{
     iter::FromIterator,
     ops::{Add, Deref},
-    rc::Rc,
 };
 
 /// Reference handle for a Ranty tuple
-#[derive(Debug, Clone, PartialEq)]
-pub struct RantyTupleHandle(Rc<RantyTuple>);
+#[derive(Debug, Clone, Trace, Finalize)]
+#[rust_cc(unsafe_no_drop)]
+pub struct RantyTupleHandle(Cc<RantyTuple>);
 
 impl RantyTupleHandle {
     /// Makes a copy of the underlying tuple and returns a handle containing it.
     pub fn cloned(&self) -> Self {
-        Self(Rc::new((*self.0).clone()))
+        Self(gc::alloc((*self.0).clone()))
+    }
+
+    #[inline]
+    pub(crate) fn ptr_id(&self) -> usize {
+        (&*self.0 as *const RantyTuple) as usize
+    }
+
+    #[inline]
+    pub(crate) fn downgrade(&self) -> crate::gc::Weak<RantyTuple> {
+        self.0.downgrade()
     }
 }
 
 impl From<RantyTuple> for RantyTupleHandle {
     #[inline]
     fn from(tuple: RantyTuple) -> Self {
-        Self(Rc::new(tuple))
+        Self(gc::alloc(tuple))
     }
 }
 
@@ -31,8 +42,16 @@ impl Deref for RantyTupleHandle {
     }
 }
 
+impl PartialEq for RantyTupleHandle {
+    fn eq(&self, other: &Self) -> bool {
+        let mut state = value_eq::ValueEqState::default();
+        state.eq_tuple_handles(self, other)
+    }
+}
+
 /// Represents Ranty's `tuple` type, which stores an ordered, immutable collection of values.
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, Trace, Finalize, Default)]
+#[rust_cc(unsafe_no_drop)]
 pub struct RantyTuple(Vec<RantyValue>);
 
 impl RantyTuple {
@@ -70,6 +89,12 @@ impl RantyTuple {
 impl From<Vec<RantyValue>> for RantyTuple {
     fn from(values: Vec<RantyValue>) -> Self {
         Self(values)
+    }
+}
+
+impl PartialEq for RantyTuple {
+    fn eq(&self, other: &Self) -> bool {
+        value_eq::tuple_values_equal(self, other)
     }
 }
 

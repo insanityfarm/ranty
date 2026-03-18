@@ -318,7 +318,10 @@ fn zip_with_native_callback() {
 
 #[test]
 fn zip_with_user_callback() {
-    test_ranty_file!("sources/collections/zip_with_user_callback.ranty", "5, 7, 9");
+    test_ranty_file!(
+        "sources/collections/zip_with_user_callback.ranty",
+        "5, 7, 9"
+    );
 }
 
 #[test]

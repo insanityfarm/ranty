@@ -5,6 +5,7 @@ pub(crate) mod resolver;
 mod stack;
 
 use self::resolver::*;
+use crate::gc;
 use crate::lang::*;
 use crate::util::*;
 use crate::*;
@@ -689,7 +690,7 @@ impl<'ranty> VM<'ranty> {
                                 steps,
                                 step_index,
                                 state: InvokePipeStepState::PostTemporalCall {
-                                    step_function: Rc::clone(&step_function),
+                                    step_function: step_function.clone(),
                                     temporal_state,
                                     args,
                                 },
@@ -773,7 +774,7 @@ impl<'ranty> VM<'ranty> {
 
                     if temporal_state.increment() {
                         self.cur_frame_mut().push_intent(Intent::CallTemporal {
-                            func: Rc::clone(&func),
+                            func: func.clone(),
                             arg_exprs,
                             args,
                             temporal_state,
@@ -1280,11 +1281,14 @@ impl<'ranty> VM<'ranty> {
                             VarAccessMode::Local,
                         )?;
                         var.make_by_ref();
-                        captured_vars.push((capture_id.clone(), var.clone()));
+                        captured_vars.push(CapturedVar {
+                            name: capture_id.clone(),
+                            var: var.clone(),
+                        });
                     }
 
                     // Build function
-                    let func = RantyValue::Function(Rc::new(RantyFunction {
+                    let func = RantyValue::Function(gc::alloc(RantyFunction {
                         body: RantyFunctionInterface::User(Rc::clone(body)),
                         captured_vars,
                         min_arg_count: params.iter().take_while(|p| p.is_required()).count(),
@@ -1334,10 +1338,13 @@ impl<'ranty> VM<'ranty> {
                             VarAccessMode::Local,
                         )?;
                         var.make_by_ref();
-                        captured_vars.push((capture_id.clone(), var.clone()));
+                        captured_vars.push(CapturedVar {
+                            name: capture_id.clone(),
+                            var: var.clone(),
+                        });
                     }
 
-                    let func = RantyValue::Function(Rc::new(RantyFunction {
+                    let func = RantyValue::Function(gc::alloc(RantyFunction {
                         body: RantyFunctionInterface::User(Rc::clone(body)),
                         captured_vars,
                         min_arg_count: params.iter().take_while(|p| p.is_required()).count(),
@@ -1886,9 +1893,16 @@ impl<'ranty> VM<'ranty> {
         // Call the function
         match &func.body {
             RantyFunctionInterface::Foreign(foreign_func) => {
-                let foreign_func = Rc::clone(foreign_func);
+                let foreign_func = foreign_func.clone();
                 self.push_native_call_frame(
-                    Box::new(move |vm| foreign_func(vm, args)),
+                    Box::new(move |vm| unsafe {
+                        (foreign_func.callback)(
+                            vm,
+                            args,
+                            foreign_func.captures.as_slice(),
+                            foreign_func.callback_data,
+                        )
+                    }),
                     StackFrameFlavor::NativeCall,
                 )?;
             }
@@ -1917,9 +1931,9 @@ impl<'ranty> VM<'ranty> {
                 )?;
 
                 // Pass captured vars to the function scope
-                for (capture_name, capture_var) in func.captured_vars.iter() {
+                for captured in func.captured_vars.iter() {
                     self.call_stack
-                        .def_local_var(capture_name.as_str(), RantyVar::clone(capture_var))?;
+                        .def_local_var(captured.name.as_str(), RantyVar::clone(&captured.var))?;
                 }
 
                 // Pass the args to the function scope
@@ -1955,7 +1969,7 @@ impl<'ranty> VM<'ranty> {
                 // Evaluate default args if needed
                 if needs_default_args {
                     self.cur_frame_mut().push_intent(Intent::CreateDefaultArgs {
-                        context: Rc::clone(&func),
+                        context: func.clone(),
                         default_arg_exprs,
                         eval_index: 0,
                     });

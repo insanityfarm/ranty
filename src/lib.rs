@@ -38,6 +38,7 @@ mod collections;
 mod convert;
 mod format;
 mod func;
+mod gc;
 mod lang;
 mod modres;
 mod rng;
@@ -46,7 +47,11 @@ mod stdlib;
 mod string;
 mod util;
 mod value;
+mod value_eq;
 mod var;
+
+#[cfg(test)]
+mod gc_tests;
 
 // Re-exports
 pub use crate::collections::*;
@@ -95,6 +100,11 @@ pub const RANTY_SUPPORTED_FILE_EXTENSIONS: [&str; 2] =
 
 /// Name of global variable that stores cached modules.
 pub(crate) const MODULES_CACHE_KEY: &str = "__MODULES";
+
+/// Immediately runs cycle collection for the current thread's Ranty heap.
+pub fn collect_garbage() {
+    gc::collect();
+}
 
 fn normalize_module_cache_path<P: AsRef<Path>>(path: P) -> String {
     path.as_ref()
@@ -463,7 +473,10 @@ impl Ranty {
 
     /// Runs a program and returns the output value.
     pub fn run(&mut self, program: &RantyProgram) -> RuntimeResult<RantyValue> {
-        VM::new(self.rng.clone(), self, program).run()
+        let _gc_guard = gc::AllocationThresholdGuard::new(self.options.gc_allocation_threshold);
+        let result = VM::new(self.rng.clone(), self, program).run();
+        gc::collect();
+        result
     }
 
     /// Runs a program with the specified arguments and returns the output value.
@@ -471,7 +484,16 @@ impl Ranty {
     where
         A: Into<Option<HashMap<String, RantyValue>>>,
     {
-        VM::new(self.rng.clone(), self, program).run_with(args)
+        let _gc_guard = gc::AllocationThresholdGuard::new(self.options.gc_allocation_threshold);
+        let result = VM::new(self.rng.clone(), self, program).run_with(args);
+        gc::collect();
+        result
+    }
+
+    /// Immediately runs cycle collection for the current thread's Ranty heap.
+    #[inline]
+    pub fn collect_garbage(&self) {
+        gc::collect();
     }
 
     pub fn try_load_global_module(&mut self, module_path: &str) -> Result<(), ModuleLoadError> {
@@ -558,6 +580,8 @@ pub struct RantyOptions {
     pub top_level_defs_are_globals: bool,
     /// The initial seed to pass to the RNG. Defaults to 0.
     pub seed: u64,
+    /// The number of GC-managed allocations allowed between automatic cycle-collection passes.
+    pub gc_allocation_threshold: usize,
 }
 
 impl Default for RantyOptions {
@@ -567,6 +591,7 @@ impl Default for RantyOptions {
             debug_mode: false,
             top_level_defs_are_globals: false,
             seed: 0,
+            gc_allocation_threshold: gc::DEFAULT_ALLOCATION_THRESHOLD,
         }
     }
 }
