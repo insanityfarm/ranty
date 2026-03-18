@@ -67,6 +67,11 @@ impl RantyFunction {
         matches!(self.body, RantyFunctionInterface::Foreign(_))
     }
 
+    #[inline]
+    pub fn has_lazy_params(&self) -> bool {
+        self.params.iter().any(|param| param.is_lazy)
+    }
+
     pub fn from_native<P: FromRantyArgs>(func: fn(&mut VM, P) -> RantyStdResult) -> Self {
         fn erased<P: FromRantyArgs>(
             vm: &mut VM,

@@ -191,6 +191,32 @@ breaking this order will cause a compiler error.</p>
     )
 }
 </code></pre>
+<h2 id="default-values"><a class="header" href="#default-values">Default values</a></h2>
+<p>Optional parameters can also define a default expression directly in the signature:</p>
+<pre><code class="language-ranty">[$gen-pet: name; species ? "dog"] {
+    (::
+        name = &lt;name&gt;;
+        species = &lt;species&gt;;
+    )
+}
+</code></pre>
+<p>For ordinary parameters, this default is eager: if the caller omits <code>species</code>, Ranty evaluates <code>"dog"</code> immediately when the call is bound.</p>
+<h2 id="lazy-optional-parameters"><a class="header" href="#lazy-optional-parameters">Lazy optional parameters</a></h2>
+<p>Prefix an optional parameter with <code>@lazy</code> to defer the caller's argument until the parameter is first accessed:</p>
+<pre><code class="language-ranty">[$show-subtitle: @lazy subtitle?] {
+    &lt;subtitle ? "(none)"&gt;
+}
+</code></pre>
+<p>If <code>subtitle</code> is omitted here, it is still absent and the fallback remains necessary.
+<code>@lazy</code> changes when a provided value is evaluated; it does not make missing optional parameters automatically exist.</p>
+<p>Lazy optional parameters can also have lazy defaults:</p>
+<pre><code class="language-ranty">[$title-line: @lazy title ? [pick-title]] {
+    Title: &lt;title&gt;
+}
+</code></pre>
+<p>If <code>title</code> is omitted, <code>[pick-title]</code> is captured and deferred until <code>&lt;title&gt;</code> is first accessed.
+If <code>title</code> is never read, the default expression never runs.</p>
+<p>See also <a href="../functions.html#lazy-parameters">Lazy parameters</a> and <a href="../accessors/fallbacks.html">Fallbacks</a>.</p>
 
                     </main>
 

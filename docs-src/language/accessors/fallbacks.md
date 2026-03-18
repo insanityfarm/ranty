@@ -6,6 +6,11 @@ A fallback expression only runs if the data requested by the associated getter i
 
 To use a fallback, it must be added to the end of the accessor, within the brackets, with a leading `?` character as shown below.
 
+Fallbacks are still relevant when using lazy bindings:
+
+* getter fallbacks use `?`, while lazy definitions use `?=`; the forms are related in spelling only
+* omitted optional `@lazy` parameters without defaults are still absent and should be read with a fallback
+
 ### Example
 
 ```ranty
@@ -26,3 +31,13 @@ To use a fallback, it must be added to the end of the accessor, within the brack
 # Getting `foo` without a fallback here would crash the program
 <foo> # error
 ```
+
+This also applies to optional lazy parameters:
+
+```ranty
+[$card: @lazy subtitle?] {
+    <subtitle ? "(no subtitle)">
+}
+```
+
+See also [Lazy definitions](../accessors.md#lazy-definitions) and [Lazy parameters](../functions.md#lazy-parameters).

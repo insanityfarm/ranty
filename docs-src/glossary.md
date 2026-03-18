@@ -76,6 +76,10 @@ An expression unit is the smallest component of a Ranty program. Examples of exp
 
 A formatter is a runtime component that passively changes the output in some way.
 
+### Forcing
+
+Forcing is the act of evaluating a lazy binding so that its value becomes available.
+
 ### Fragment
 
 A fragment is a sequence of any non-whitespace, non-reserved characters found in a Ranty program.
@@ -106,6 +110,10 @@ Identifiers enforce specific formatting requirements to ensure consistency:
 
 A lambda expression is an anonymous (nameless) function.
 
+### Lazy binding
+
+A lazy binding is a variable, constant, or function parameter whose value is deferred until first access.
+
 ### List
 
 A list is an ordered collection of values, accessible by index.
@@ -113,6 +121,10 @@ A list is an ordered collection of values, accessible by index.
 ### Map
 
 A map is a collection of key-value pairs, also known as an "associative array".
+
+### Memoization
+
+Memoization is the process of storing the result of a completed computation so later accesses can reuse it instead of recomputing it.
 
 ### Module
 

@@ -1,8 +1,8 @@
 use super::output::OutputWriter;
 use crate::runtime::*;
 use crate::{
-    lang::{Expression, Sequence},
-    Ranty, RantyValue,
+    lang::{Expression, Identifier, Sequence},
+    CapturedVar, Ranty, RantyValue,
 };
 use fnv::FnvBuildHasher;
 use quickscope::ScopeMap;
@@ -281,6 +281,66 @@ impl<I> CallStack<I> {
         })
     }
 
+    #[inline]
+    pub fn get_var_cloned(&self, context: &Ranty, id: &str, access: VarAccessMode) -> Option<RantyVar> {
+        match access {
+            VarAccessMode::Local => {
+                if let Some(var) = self.locals.get(id) {
+                    return Some(var.clone());
+                }
+            }
+            VarAccessMode::Descope(n) => {
+                if let Some(var) = self.locals.get_parent(id, n) {
+                    return Some(var.clone());
+                }
+            }
+            VarAccessMode::ExplicitGlobal => {}
+        }
+
+        context.get_global_var(id).cloned()
+    }
+
+    #[inline]
+    pub fn get_visible_var_clones(
+        &self,
+        context: &Ranty,
+        id: &str,
+        access: VarAccessMode,
+    ) -> Vec<RantyVar> {
+        let mut vars = match access {
+            VarAccessMode::Local => self
+                .locals
+                .get_all(id)
+                .map(|vars| vars.cloned().collect())
+                .unwrap_or_default(),
+            VarAccessMode::Descope(n) => self
+                .locals
+                .get_parents(id, n)
+                .map(|vars| vars.cloned().collect())
+                .unwrap_or_default(),
+            VarAccessMode::ExplicitGlobal => vec![],
+        };
+
+        if let Some(global) = context.get_global_var(id) {
+            vars.push(global.clone());
+        }
+
+        vars
+    }
+
+    pub(crate) fn capture_visible_vars(&mut self) -> Vec<CapturedVar> {
+        self.locals
+            .iter_mut()
+            .map(|(name, var)| {
+                var.make_by_ref();
+                CapturedVar {
+                    name: Identifier::new(name.clone()),
+                    var: var.clone(),
+                }
+            })
+            .collect()
+    }
+
     /// Defines a local variable of the specified name.
     ///
     /// ## Notes
@@ -288,6 +348,72 @@ impl<I> CallStack<I> {
     /// This function does not perform any identifier validation.
     pub fn def_local_var(&mut self, id: &str, var: RantyVar) -> RuntimeResult<()> {
         self.locals.define(InternalString::from(id), var);
+        Ok(())
+    }
+
+    /// Defines a variable of the specified name using the provided storage.
+    pub fn def_var(
+        &mut self,
+        context: &mut Ranty,
+        id: &str,
+        access: VarAccessMode,
+        variable: RantyVar,
+    ) -> RuntimeResult<()> {
+        // REPL-style execution can opt into persisting root-scope definitions as globals.
+        let access = if context.options().top_level_defs_are_globals {
+            match access {
+                VarAccessMode::Local if self.locals.depth() <= 2 => VarAccessMode::ExplicitGlobal,
+                VarAccessMode::Descope(n) if self.locals.depth().saturating_sub(n) <= 2 => {
+                    VarAccessMode::ExplicitGlobal
+                }
+                other => other,
+            }
+        } else {
+            access
+        };
+
+        match access {
+            VarAccessMode::Local => {
+                if let Some(v) = self.locals.get(id) {
+                    if v.is_const() && self.locals.depth_of(id) == Some(0) {
+                        runtime_error!(
+                            RuntimeErrorType::InvalidAccess,
+                            "attempted to redefine local constant '{}'",
+                            id
+                        );
+                    }
+                }
+
+                self.locals.define(InternalString::from(id), variable);
+                return Ok(());
+            }
+            VarAccessMode::Descope(descope_count) => {
+                if let Some((v, vd)) = self.locals.get_parent_depth(id, descope_count) {
+                    if v.is_const() && vd == descope_count {
+                        runtime_error!(
+                            RuntimeErrorType::InvalidAccess,
+                            "attempted to redefine parent constant '{}'",
+                            id
+                        );
+                    }
+                }
+
+                self.locals
+                    .define_parent(InternalString::from(id), variable, descope_count);
+                return Ok(());
+            }
+            VarAccessMode::ExplicitGlobal => {}
+        }
+
+        if context.has_global(id) && context.get_global_var(id).is_some_and(|v| v.is_const()) {
+            runtime_error!(
+                RuntimeErrorType::InvalidAccess,
+                "attempted to redefine global constant '{}'",
+                id
+            );
+        }
+
+        context.set_global_var(id, variable);
         Ok(())
     }
 
@@ -305,78 +431,16 @@ impl<I> CallStack<I> {
         val: RantyValue,
         is_const: bool,
     ) -> RuntimeResult<()> {
-        // REPL-style execution can opt into persisting root-scope definitions as globals.
-        let access = if context.options().top_level_defs_are_globals {
-            match access {
-                VarAccessMode::Local if self.locals.depth() <= 2 => VarAccessMode::ExplicitGlobal,
-                VarAccessMode::Descope(n) if self.locals.depth().saturating_sub(n) <= 2 => {
-                    VarAccessMode::ExplicitGlobal
-                }
-                other => other,
-            }
-        } else {
-            access
-        };
-
-        match access {
-            VarAccessMode::Local => {
-                // Don't allow redefs of local constants
-                if let Some(v) = self.locals.get(id) {
-                    if v.is_const() && self.locals.depth_of(id) == Some(0) {
-                        runtime_error!(
-                            RuntimeErrorType::InvalidAccess,
-                            "attempted to redefine local constant '{}'",
-                            id
-                        );
-                    }
-                }
-
-                let variable = if is_const {
-                    RantyVar::ByValConst(val)
-                } else {
-                    RantyVar::ByVal(val)
-                };
-                self.locals.define(InternalString::from(id), variable);
-                return Ok(());
-            }
-            VarAccessMode::Descope(descope_count) => {
-                // Don't allow redefs of parent constants
-                if let Some((v, vd)) = self.locals.get_parent_depth(id, descope_count) {
-                    if v.is_const() && vd == descope_count {
-                        runtime_error!(
-                            RuntimeErrorType::InvalidAccess,
-                            "attempted to redefine parent constant '{}'",
-                            id
-                        );
-                    }
-                }
-
-                let variable = if is_const {
-                    RantyVar::ByValConst(val)
-                } else {
-                    RantyVar::ByVal(val)
-                };
-                self.locals
-                    .define_parent(InternalString::from(id), variable, descope_count);
-                return Ok(());
-            }
-            VarAccessMode::ExplicitGlobal => {}
-        }
-
-        // Don't allow redefs of global constants
-        if !(if is_const {
-            context.set_global_const(id, val)
-        } else {
-            context.set_global(id, val)
-        }) {
-            runtime_error!(
-                RuntimeErrorType::InvalidAccess,
-                "attempted to redefine global constant '{}'",
-                id
-            );
-        }
-
-        Ok(())
+        self.def_var(
+            context,
+            id,
+            access,
+            if is_const {
+                RantyVar::ByValConst(val)
+            } else {
+                RantyVar::ByVal(val)
+            },
+        )
     }
 
     /// Scans ("tastes") the stack from the top looking for the first occurrence of the specified frame flavor.

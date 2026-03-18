@@ -196,6 +196,53 @@ You can leave the assignment part out and it will be initialized to nothing.</p>
 # Define a variable `name` and assign it the string "Nick"
 &lt;$name = Nick&gt;
 </code></pre>
+<h3 id="lazy-definitions"><a class="header" href="#lazy-definitions">Lazy definitions</a></h3>
+<p>Use <code>?=</code> instead of <code>=</code> to define a variable or constant whose initializer should be deferred until the value is first accessed.</p>
+<pre><code class="language-ranty">&lt;$config ?= [load-config]&gt;
+
+# Nothing has run yet
+&lt;config&gt;   # [load-config] runs here
+&lt;config&gt;   # cached result is reused
+</code></pre>
+<p>Lazy definitions use call-by-need semantics:</p>
+<ul>
+<li>the initializer does not run when the definition is created</li>
+<li>the initializer runs the first time the binding is read, indexed, keyed, or called</li>
+<li>the successful result is memoized and reused for the rest of the binding's lifetime</li>
+</ul>
+<p>If you overwrite a lazy variable before it is forced, the original initializer is discarded without running:</p>
+<pre><code class="language-ranty">&lt;$secret ?= [load-secret]&gt;
+&lt;secret = demo&gt;
+&lt;secret&gt; # -&gt; "demo"
+</code></pre>
+<p>Constants can also be lazy:</p>
+<pre><code class="language-ranty">&lt;%rules ?= [load-rules]&gt;
+&lt;rules&gt;     # forces once
+&lt;rules&gt;     # reuses cached value
+&lt;rules = x&gt; # error: constants still cannot be reassigned
+</code></pre>
+<p>Lazy initializers capture local variables by reference, just like closures:</p>
+<pre><code class="language-ranty">&lt;$value = 1&gt;
+&lt;$lazy ?= &lt;value&gt;&gt;
+&lt;value = 2&gt;
+&lt;lazy&gt; # -&gt; "2"
+</code></pre>
+<p>Any access rooted at the lazy binding forces it first, including child access and function lookup:</p>
+<pre><code class="language-ranty">&lt;$items ?= [make-items]&gt;
+&lt;items/0&gt;
+
+&lt;$handler ?= [make-handler]&gt;
+[handler]
+</code></pre>
+<p>Self-referential lazy bindings are not allowed and raise a runtime error when forced:</p>
+<pre><code class="language-ranty">&lt;$x ?= &lt;x&gt;&gt;
+&lt;x&gt; # runtime error: LAZY_BINDING_CYCLE_ERROR
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong></p>
+<p><code>?=</code> is only valid on definitions. In getters, <code>?</code> still starts a <a href="./accessors/fallbacks.html">fallback expression</a>.</p>
+<p>See also <a href="./functions.html#lazy-parameters">Lazy parameters</a> and <a href="./functions.html#closures">Closures</a>.</p>
+</blockquote>
 <h2 id="setters"><a class="header" href="#setters">Setters</a></h2>
 <p>A <strong>setter</strong> modifies an existing variable or value.</p>
 <pre><code class="language-ranty"># Define a variable

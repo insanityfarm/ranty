@@ -103,6 +103,12 @@ pub struct UnwindState {
     pub temp_pipeval_stack_size: usize,
 }
 
+#[derive(Clone)]
+enum PreparedArg {
+    Value(RantyValue),
+    Thunk(LazyThunk),
+}
+
 impl<'ranty> VM<'ranty> {
     /// Runs the program.
     pub(crate) fn run(&mut self) -> RuntimeResult<RantyValue> {
@@ -438,6 +444,24 @@ impl<'ranty> VM<'ranty> {
                     arg_eval_count,
                     is_temporal,
                 } => {
+                    if arg_eval_count == 0 && !is_temporal {
+                        let func = match self.pop_val()? {
+                            RantyValue::Function(func) => func,
+                            other => runtime_error!(
+                                RuntimeErrorType::CannotInvokeValue,
+                                format!("cannot call '{}' value", other.type_name())
+                            ),
+                        };
+
+                        if !func.is_native() && func.has_lazy_params() {
+                            self.cur_frame_mut().push_intent(Intent::PrintLast);
+                            self.invoke_user_func_lazy(func, Rc::clone(&arg_exprs))?;
+                            return Ok(true);
+                        }
+
+                        self.push_val(RantyValue::Function(func))?;
+                    }
+
                     // First, evaluate all arguments
                     if arg_eval_count < arg_exprs.len() {
                         let arg_expr = arg_exprs.get(arg_exprs.len() - arg_eval_count - 1).unwrap();
@@ -1201,14 +1225,25 @@ impl<'ranty> VM<'ranty> {
                 }
                 Expression::Define(def) => {
                     if let Some(val_expr) = &def.value {
-                        // If a value is present, it needs to be evaluated first
-                        self.cur_frame_mut().push_intent(Intent::DefVar {
-                            vname: def.name.clone(),
-                            access_kind: def.access_mode,
-                            is_const: def.is_const,
-                        });
-                        self.push_frame(Rc::clone(val_expr), true)?;
-                        return Ok(true);
+                        if def.is_lazy {
+                            let thunk =
+                                self.make_lazy_thunk(Some(def.name.clone()), Rc::clone(val_expr));
+                            self.call_stack.def_var(
+                                self.engine,
+                                def.name.as_str(),
+                                def.access_mode,
+                                RantyVar::new_lazy(thunk, def.is_const),
+                            )?;
+                        } else {
+                            // If a value is present, it needs to be evaluated first
+                            self.cur_frame_mut().push_intent(Intent::DefVar {
+                                vname: def.name.clone(),
+                                access_kind: def.access_mode,
+                                is_const: def.is_const,
+                            });
+                            self.push_frame(Rc::clone(val_expr), true)?;
+                            return Ok(true);
+                        }
                     } else {
                         // If there's no assignment, just set it to empty value
                         self.def_var_value(
@@ -1821,6 +1856,288 @@ impl<'ranty> VM<'ranty> {
         Ok(())
     }
 
+    fn push_captured_vars(&mut self, captured_vars: &[CapturedVar]) -> RuntimeResult<()> {
+        for captured in captured_vars {
+            self.call_stack
+                .def_local_var(captured.name.as_str(), RantyVar::clone(&captured.var))?;
+        }
+        Ok(())
+    }
+
+    fn run_until_stack_len(&mut self, target_len: usize) -> RuntimeResult<()> {
+        while self.call_stack.len() > target_len {
+            match self.tick() {
+                Ok(true) | Ok(false) => {}
+                Err(err) => {
+                    if let Some(unwind) = self.unwind() {
+                        if let Some(handler) = unwind.handler {
+                            self.call_func(
+                                handler,
+                                vec![RantyValue::String(err.to_string().into())],
+                                false,
+                            )?;
+                            continue;
+                        }
+                    }
+                    return Err(err);
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn eval_sequence_now(
+        &mut self,
+        sequence: Rc<Sequence>,
+        flavor: StackFrameFlavor,
+        captured_vars: &[CapturedVar],
+        captured_pipeval: Option<RantyValue>,
+    ) -> RuntimeResult<RantyValue> {
+        let target_len = self.call_stack.len();
+        self.push_frame_flavored(sequence, flavor)?;
+        self.push_captured_vars(captured_vars)?;
+
+        let has_pipeval = captured_pipeval.is_some();
+        if let Some(pipeval) = captured_pipeval {
+            self.pipeval_overlay_stack.push(pipeval);
+        }
+
+        let result = (|| {
+            self.run_until_stack_len(target_len)?;
+            self.pop_val()
+        })();
+
+        if has_pipeval {
+            self.pipeval_overlay_stack.pop();
+        }
+
+        result
+    }
+
+    fn make_lazy_thunk(&mut self, name: Option<Identifier>, expr: Rc<Sequence>) -> LazyThunk {
+        LazyThunk {
+            name,
+            expr,
+            captured_vars: self.call_stack.capture_visible_vars(),
+            captured_pipeval: self.pipeval_overlay_stack.last().cloned(),
+        }
+    }
+
+    fn eval_lazy_thunk_now(&mut self, thunk: &LazyThunk) -> RuntimeResult<RantyValue> {
+        self.eval_sequence_now(
+            Rc::clone(&thunk.expr),
+            StackFrameFlavor::ArgumentExpression,
+            thunk.captured_vars.as_slice(),
+            thunk.captured_pipeval.clone(),
+        )
+    }
+
+    fn force_lazy_state(
+        &mut self,
+        state: crate::gc::Cc<std::cell::RefCell<LazyState>>,
+    ) -> RuntimeResult<RantyValue> {
+        let thunk = {
+            let mut state_ref = state.borrow_mut();
+            match &*state_ref {
+                LazyState::Ready(val) => return Ok(val.clone()),
+                LazyState::Evaluating(thunk) => {
+                    runtime_error!(
+                        RuntimeErrorType::LazyBindingCycle,
+                        format!(
+                            "lazy binding '{}' recursively depends on itself",
+                            thunk.name.as_ref().map(|id| id.as_str()).unwrap_or("<anonymous>")
+                        )
+                    );
+                }
+                LazyState::Pending(thunk) => {
+                    let thunk = thunk.clone();
+                    *state_ref = LazyState::Evaluating(thunk.clone());
+                    thunk
+                }
+            }
+        };
+
+        match self.eval_lazy_thunk_now(&thunk) {
+            Ok(value) => {
+                state.replace(LazyState::Ready(value.clone()));
+                Ok(value)
+            }
+            Err(err) => {
+                state.replace(LazyState::Pending(thunk));
+                Err(err)
+            }
+        }
+    }
+
+    fn read_var_value(&mut self, var: &RantyVar) -> RuntimeResult<RantyValue> {
+        if let Some(state) = var.as_lazy_state() {
+            self.force_lazy_state(state)
+        } else {
+            Ok(var.value_cloned())
+        }
+    }
+
+    fn push_user_function_frame(
+        &mut self,
+        func: &RantyFunctionHandle,
+        user_func: Rc<Sequence>,
+    ) -> RuntimeResult<()> {
+        self.push_frame_flavored(
+            user_func,
+            func.flavor.unwrap_or(StackFrameFlavor::FunctionBody),
+        )?;
+        self.push_captured_vars(func.captured_vars.as_slice())
+    }
+
+    fn prepare_lazy_invoke_args(
+        &mut self,
+        arg_exprs: Rc<Vec<ArgumentExpr>>,
+    ) -> RuntimeResult<Vec<PreparedArg>> {
+        let mut prepared = vec![];
+        for arg_expr in arg_exprs.iter() {
+            match arg_expr.spread_mode {
+                ArgumentSpreadMode::NoSpread => {
+                    prepared.push(PreparedArg::Thunk(
+                        self.make_lazy_thunk(None, Rc::clone(&arg_expr.expr)),
+                    ));
+                }
+                ArgumentSpreadMode::Parametric => {
+                    let arg = self.eval_sequence_now(
+                        Rc::clone(&arg_expr.expr),
+                        StackFrameFlavor::ArgumentExpression,
+                        &[],
+                        None,
+                    )?;
+                    let mut expanded = vec![];
+                    if !expand_parametric_spread_arg(&mut expanded, &arg)? {
+                        expanded.push(arg);
+                    }
+                    prepared.extend(expanded.into_iter().map(PreparedArg::Value));
+                }
+                ArgumentSpreadMode::Temporal { .. } => {
+                    runtime_error!(
+                        RuntimeErrorType::InternalError,
+                        "temporal arguments should not reach lazy invocation preparation"
+                    );
+                }
+            }
+        }
+        Ok(prepared)
+    }
+
+    fn bind_user_function_args(
+        &mut self,
+        func: &RantyFunctionHandle,
+        mut prepared_args: Vec<PreparedArg>,
+    ) -> RuntimeResult<()> {
+        let argc = prepared_args.len();
+        if func.is_variadic() {
+            if argc < func.min_arg_count {
+                runtime_error!(
+                    RuntimeErrorType::ArgumentMismatch,
+                    format!(
+                        "arguments don't match; expected at least {}, found {}",
+                        func.min_arg_count, argc
+                    )
+                )
+            }
+        } else if argc < func.min_arg_count || argc > func.params.len() {
+            runtime_error!(
+                RuntimeErrorType::ArgumentMismatch,
+                format!(
+                    "arguments don't match; expected {}, found {}",
+                    func.min_arg_count, argc
+                )
+            )
+        }
+
+        let user_func = match &func.body {
+            RantyFunctionInterface::User(user_func) => Rc::clone(user_func),
+            _ => {
+                runtime_error!(
+                    RuntimeErrorType::InternalError,
+                    "attempted to bind user-function args for a native function"
+                );
+            }
+        };
+
+        self.push_user_function_frame(func, user_func)?;
+
+        let mut prepared_iter = prepared_args.drain(..);
+        for param in func.params.iter() {
+            if param.varity.is_variadic() {
+                let mut values = vec![];
+                for arg in prepared_iter.by_ref() {
+                    values.push(match arg {
+                        PreparedArg::Value(value) => value,
+                        PreparedArg::Thunk(thunk) => self.eval_lazy_thunk_now(&thunk)?,
+                    });
+                }
+                self.call_stack.def_local_var(
+                    param.name.as_str(),
+                    RantyVar::ByValConst(RantyList::from(values).into_ranty()),
+                )?;
+                continue;
+            }
+
+            if let Some(arg) = prepared_iter.next() {
+                if param.is_lazy {
+                    let var = match arg {
+                        PreparedArg::Value(value) => RantyVar::ByValConst(value),
+                        PreparedArg::Thunk(mut thunk) => {
+                            thunk.name = Some(param.name.clone());
+                            RantyVar::new_lazy(thunk, true)
+                        }
+                    };
+                    self.call_stack.def_local_var(param.name.as_str(), var)?;
+                } else {
+                    let value = match arg {
+                        PreparedArg::Value(value) => value,
+                        PreparedArg::Thunk(thunk) => self.eval_lazy_thunk_now(&thunk)?,
+                    };
+                    self.call_stack
+                        .def_local_var(param.name.as_str(), RantyVar::ByValConst(value))?;
+                }
+                continue;
+            }
+
+            if !param.is_optional() {
+                continue;
+            }
+
+            if let Some(default_arg_expr) = &param.default_value_expr {
+                if param.is_lazy {
+                    let thunk =
+                        self.make_lazy_thunk(Some(param.name.clone()), Rc::clone(default_arg_expr));
+                    self.call_stack
+                        .def_local_var(param.name.as_str(), RantyVar::new_lazy(thunk, true))?;
+                } else {
+                    let default_arg = self.eval_sequence_now(
+                        Rc::clone(default_arg_expr),
+                        StackFrameFlavor::ArgumentExpression,
+                        &[],
+                        None,
+                    )?;
+                    self.call_stack.def_local_var(
+                        param.name.as_str(),
+                        RantyVar::ByValConst(default_arg),
+                    )?;
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    fn invoke_user_func_lazy(
+        &mut self,
+        func: RantyFunctionHandle,
+        arg_exprs: Rc<Vec<ArgumentExpr>>,
+    ) -> RuntimeResult<()> {
+        let prepared_args = self.prepare_lazy_invoke_args(arg_exprs)?;
+        self.bind_user_function_args(&func, prepared_args)
+    }
+
     #[inline(always)]
     pub fn push_getter_intents(
         &mut self,
@@ -1907,6 +2224,13 @@ impl<'ranty> VM<'ranty> {
                 )?;
             }
             RantyFunctionInterface::User(user_func) => {
+                if func.has_lazy_params() {
+                    return self.bind_user_function_args(
+                        &func,
+                        args.into_iter().map(PreparedArg::Value).collect(),
+                    );
+                }
+
                 // Split args at vararg
                 let mut args_iter = args.drain(..);
                 let mut args_nonvariadic = vec![];
@@ -1925,16 +2249,7 @@ impl<'ranty> VM<'ranty> {
                     .then(|| args_iter.collect::<RantyList>().into_ranty());
 
                 // Push the function onto the call stack
-                self.push_frame_flavored(
-                    Rc::clone(user_func),
-                    func.flavor.unwrap_or(StackFrameFlavor::FunctionBody),
-                )?;
-
-                // Pass captured vars to the function scope
-                for captured in func.captured_vars.iter() {
-                    self.call_stack
-                        .def_local_var(captured.name.as_str(), RantyVar::clone(&captured.var))?;
-                }
+                self.push_user_function_frame(&func, Rc::clone(user_func))?;
 
                 // Pass the args to the function scope
                 let mut needs_default_args = false;
@@ -2125,7 +2440,7 @@ impl<'ranty> VM<'ranty> {
     }
 
     #[inline]
-    fn get_pipeval(&self) -> RuntimeResult<RantyValue> {
+    fn get_pipeval(&mut self) -> RuntimeResult<RantyValue> {
         self.pipeval_overlay_stack
             .last()
             .cloned()
@@ -2436,13 +2751,49 @@ impl<'ranty> VM<'ranty> {
     /// Gets the value of an existing variable.
     #[inline(always)]
     pub fn get_var_value(
-        &self,
+        &mut self,
         varname: &str,
         access: VarAccessMode,
         prefer_function: bool,
     ) -> RuntimeResult<RantyValue> {
-        self.call_stack
-            .get_var_value(self.engine, varname, access, prefer_function)
+        if prefer_function {
+            let mut vars = self
+                .call_stack
+                .get_visible_var_clones(self.engine, varname, access)
+                .into_iter();
+
+            if let Some(first_var) = vars.next() {
+                let first_value = self.read_var_value(&first_var)?;
+                if first_value.is_callable() {
+                    return Ok(first_value);
+                }
+
+                for var in vars {
+                    let value = self.read_var_value(&var)?;
+                    if value.is_callable() {
+                        return Ok(value);
+                    }
+                }
+
+                return Ok(first_value);
+            }
+        } else if let Some(var) = self.call_stack.get_var_cloned(self.engine, varname, access) {
+            return self.read_var_value(&var);
+        }
+
+        Err(RuntimeError {
+            error_type: RuntimeErrorType::InvalidAccess,
+            description: Some(format!(
+                "{} '{}' not found",
+                if prefer_function {
+                    "function"
+                } else {
+                    "variable"
+                },
+                varname
+            )),
+            stack_trace: None,
+        })
     }
 
     #[inline]

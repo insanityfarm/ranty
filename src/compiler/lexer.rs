@@ -19,6 +19,7 @@ pub const KW_SEL: &str = "sel";
 pub const KW_MUT: &str = "mut";
 pub const KW_STEP: &str = "step";
 pub const KW_TOTAL: &str = "total";
+pub const KW_LAZY: &str = "lazy";
 
 // Value constant keywords
 pub const KW_TRUE: &str = "true";
@@ -58,6 +59,7 @@ pub fn is_valid_keyword_name(kw_name: &str) -> bool {
             | KW_MUT
             | KW_STEP
             | KW_TOTAL
+            | KW_LAZY
             | KW_TRUE
             | KW_FALSE
             | KW_TEXT
@@ -220,6 +222,10 @@ pub enum RantyToken {
     /// `=`
     #[token("=")]
     Equals,
+
+    /// `?=`
+    #[token("?=", priority = 2)]
+    QuestionEquals,
 
     /// `?`
     #[token("?")]

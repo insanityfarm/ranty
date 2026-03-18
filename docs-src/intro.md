@@ -19,7 +19,7 @@ This documentation is a reference for the language features, standard library, a
 
 If you want to see this documentation in your language, please [file an issue](https://github.com/insanityfarm/ranty/issues) and we'll work towards an official translation.
 
-## Other helpful resources (TODO!)
+## Other helpful resources
 
 For Rust API documentation, see [docs.rs](https://docs.rs/rant) (at this time, the link is for Rant 4, not Ranty).
 

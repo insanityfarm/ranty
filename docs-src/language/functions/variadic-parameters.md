@@ -13,3 +13,6 @@ Functions may only have up to one variadic parameter, and it must appear last in
 
 [how-many: foo; bar; baz] # Outputs "3"
 ```
+
+`@lazy` cannot be combined with `*` or `+`.
+If you need lazy evaluation, accept a single lazy parameter and decide inside the function how to realize it.

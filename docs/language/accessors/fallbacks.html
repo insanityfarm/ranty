@@ -179,6 +179,11 @@
 <p>A <strong>fallback</strong>, (or <strong>fallback expression</strong>) is an optional component of a getter that can return a default value if the getter fails (such as due to a missing variable, index, or key).</p>
 <p>A fallback expression only runs if the data requested by the associated getter is not found; otherwise, it is ignored completely.</p>
 <p>To use a fallback, it must be added to the end of the accessor, within the brackets, with a leading <code>?</code> character as shown below.</p>
+<p>Fallbacks are still relevant when using lazy bindings:</p>
+<ul>
+<li>getter fallbacks use <code>?</code>, while lazy definitions use <code>?=</code>; the forms are related in spelling only</li>
+<li>omitted optional <code>@lazy</code> parameters without defaults are still absent and should be read with a fallback</li>
+</ul>
 <h3 id="example"><a class="header" href="#example">Example</a></h3>
 <pre><code class="language-ranty"># Store a value to use as a fallback
 &lt;$fallback = "I don't exist!"&gt;
@@ -197,6 +202,12 @@
 # Getting `foo` without a fallback here would crash the program
 &lt;foo&gt; # error
 </code></pre>
+<p>This also applies to optional lazy parameters:</p>
+<pre><code class="language-ranty">[$card: @lazy subtitle?] {
+    &lt;subtitle ? "(no subtitle)"&gt;
+}
+</code></pre>
+<p>See also <a href="../accessors.html#lazy-definitions">Lazy definitions</a> and <a href="../functions.html#lazy-parameters">Lazy parameters</a>.</p>
 
                     </main>
 

@@ -64,6 +64,10 @@ pub enum RuntimeErrorType {
     ///
     /// Ranty error ID: `INVALID_OP_ERROR`
     InvalidOperation,
+    /// Lazy binding evaluation recursively depended on itself
+    ///
+    /// Ranty error ID: `LAZY_BINDING_CYCLE_ERROR`
+    LazyBindingCycle,
     /// Internal VM error, usually indicating a bug or corrupted data
     ///
     /// Ranty error ID: `INTERNAL_ERROR`
@@ -133,6 +137,7 @@ impl RuntimeErrorType {
             Self::StackUnderflow => "STACK_UNDERFLOW_ERROR",
             Self::InvalidAccess => "INVALID_ACCESS_ERROR",
             Self::InvalidOperation => "INVALID_OP_ERROR",
+            Self::LazyBindingCycle => "LAZY_BINDING_CYCLE_ERROR",
             Self::InternalError => "INTERNAL_ERROR",
             Self::ArgumentMismatch => "ARG_MISMATCH_ERROR",
             Self::ArgumentError => "ARG_ERROR",

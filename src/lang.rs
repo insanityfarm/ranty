@@ -746,6 +746,8 @@ pub struct LambdaExpr {
 pub struct Parameter {
     /// The name of the parameter
     pub name: Identifier,
+    /// Will the parameter be evaluated lazily?
+    pub is_lazy: bool,
     /// The varity of the parameter
     pub varity: Varity,
     /// The default value of the parameter.
@@ -764,6 +766,11 @@ impl Parameter {
     pub fn is_optional(&self) -> bool {
         use Varity::*;
         matches!(self.varity, Optional)
+    }
+
+    #[inline]
+    pub fn has_lazy_default(&self) -> bool {
+        self.is_lazy && self.default_value_expr.is_some()
     }
 }
 
@@ -828,6 +835,8 @@ pub struct Definition {
     pub name: Identifier,
     /// Will it be a constant?
     pub is_const: bool,
+    /// Will the definition value be evaluated lazily?
+    pub is_lazy: bool,
     /// The access mode for the variable to define.
     pub access_mode: VarAccessMode,
     /// The value to assign to the newly created variable.

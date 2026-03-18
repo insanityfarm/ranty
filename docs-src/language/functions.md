@@ -66,6 +66,9 @@ To define a function, we need the following:
 }
 ```
 
+Parameters can also be marked optional with `?`, lazy with `@lazy`, or variadic with `*` / `+`.
+See the sections below for the detailed rules and interactions.
+
 Like other variables, functions can also be made constant by using `%` in place of `$` when defining them:
 
 ```ranty
@@ -93,7 +96,7 @@ Like other variables, functions can also be made constant by using `%` in place 
 
 You can also specify a custom default value for an optional parameter by adding an expression after the `?` modifier.
 
-Each time the function is called without that parameter, Ranty will run its default value expression and use its output as the argument.
+For ordinary parameters, the default expression is eager: each time the function is called without that parameter, Ranty runs the expression immediately and uses its output as the argument.
 
 ```ranty
 # Modification of the previous [gen-pet] to use a default value instead of calling [alt]
@@ -108,6 +111,72 @@ Each time the function is called without that parameter, Ranty will run its defa
 > **Note:**
 >
 > Default argument expressions can capture external variables just like the body of the function they're attached to.
+
+#### Lazy parameters
+
+Place `@lazy` before a parameter name to defer evaluation of the caller's argument until the parameter is first accessed.
+
+```ranty
+[$ignore: @lazy value] {
+    done
+}
+
+[ignore: [expensive-call]]
+```
+
+In the example above, `[expensive-call]` is never evaluated because the function body never reads `<value>`.
+
+Lazy parameters are call-by-need:
+
+* the caller's argument expression is captured instead of evaluated immediately
+* the first read forces the argument
+* the result is memoized, so later reads reuse the same value
+
+```ranty
+[$dup: @lazy x] {
+    <x>,<x>
+}
+
+[dup: [build-value]]
+```
+
+`@lazy` also works with optional parameters and defaults:
+
+```ranty
+[$greet: @lazy name ? [pick-name]] {
+    Hello, <name>!
+}
+```
+
+If `[pick-name]` is needed, it is still deferred until `<name>` is first accessed.
+If the caller supplies `name`, the default expression is ignored completely.
+
+An optional lazy parameter without a default is still absent when omitted, just like any other optional parameter:
+
+```ranty
+[$show-subtitle: @lazy subtitle?] {
+    <subtitle ? "(none)">
+}
+```
+
+Lazy parameters can also be captured by returned closures, and they capture outer variables by reference:
+
+```ranty
+[$defer: @lazy x] {
+    [?] { <x> }
+}
+
+<$value = 1>
+<$reader = [defer: <value>]>
+<value = 2>
+[reader] # -> "2"
+```
+
+`@lazy` is supported on user-defined function and lambda parameters, but not on variadic parameters.
+
+> **See also:**
+>
+> [Lazy definitions](./accessors.md#lazy-definitions), [Optional parameters](./functions/optional-parameters.md), [Lambdas](./functions/lambdas.md), and [Variadic parameters](./functions/variadic-parameters.md).
 
 
 
@@ -151,6 +220,9 @@ even if the original variable falls out of scope, the closure still keeps it ali
 
 Capturing is only supported on variables accessed locally from the function body or default argument expressions.
 Descoped and explicit global accessors do not capture variables.
+
+The same by-reference capture behavior is used by lazy definition initializers and lazy parameter/default thunks.
+If a captured variable changes before a lazy binding is first forced, the forced value observes the latest captured state.
 
 ## Calling shadowed functions
 

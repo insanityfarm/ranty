@@ -197,6 +197,10 @@ The body of a lambda can also capture variables from its environment, just like 
 <p>If you want to add parameters to a lambda, just specify the parameters after the colon as you would with a normal function definition:</p>
 <pre><code class="language-ranty">[?: param1; param2] { ... }
 </code></pre>
+<p>Lambda parameters support the same modifiers as named functions, including <code>@lazy</code> and optional defaults:</p>
+<pre><code class="language-ranty">[?: @lazy name ? "friend"] { Hello, &lt;name&gt;! }
+</code></pre>
+<p>See <a href="../functions.html#lazy-parameters">Lazy parameters</a> for the full evaluation rules.</p>
 <h2 id="calling-an-anonymous-function"><a class="header" href="#calling-an-anonymous-function">Calling an anonymous function</a></h2>
 <p>Since lambdas produce <code>function</code> objects just like named functions, the call syntax is very similar. Simple use an anonymous access path to supply the function in the call.</p>
 <pre><code class="language-ranty"># Define a function that returns a parameterless function

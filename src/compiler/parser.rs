@@ -1287,7 +1287,7 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
                 }),
 
                 // These symbols are only used in special contexts and can be safely printed
-                Question | Dollar | Equals | DoubleDot => no_flags!(on {
+                Question | QuestionEquals | Dollar | Equals | DoubleDot => no_flags!(on {
                   whitespace!(allow);
                   is_seq_text = true;
                   let frag = self.reader.last_token_string();
@@ -2118,7 +2118,21 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
                 // Read the params
                 'read_params: loop {
                     self.reader.skip_ws();
-                    let is_auto_hinted = self.reader.eat_kw(KW_TEXT);
+                    let mut is_auto_hinted = false;
+                    let mut is_lazy = false;
+                    loop {
+                        if !is_auto_hinted && self.reader.eat_kw(KW_TEXT) {
+                            is_auto_hinted = true;
+                            self.reader.skip_ws();
+                            continue;
+                        }
+                        if !is_lazy && self.reader.eat_kw(KW_LAZY) {
+                            is_lazy = true;
+                            self.reader.skip_ws();
+                            continue;
+                        }
+                        break;
+                    }
 
                     match self.reader.next_solid() {
                         // Regular parameter
@@ -2166,6 +2180,13 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
 
                             let is_param_variadic = varity.is_variadic();
 
+                            if is_lazy && is_param_variadic {
+                                self.report_error(
+                                    Problem::LazyParameterNotSupportedOnVariadic,
+                                    &full_param_span,
+                                );
+                            }
+
                             // Check for varity issues
                             if is_sig_variadic && is_param_variadic {
                                 // Soft error on multiple variadics
@@ -2210,6 +2231,7 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
 
                                 let opt_param = Parameter {
                                     name: param_name,
+                                    is_lazy,
                                     varity: Varity::Optional,
                                     default_value_expr: (!default_value_seq.is_empty())
                                         .then(|| Rc::new(default_value_seq)),
@@ -2234,6 +2256,7 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
 
                             let param = Parameter {
                                 name: param_name,
+                                is_lazy,
                                 varity,
                                 default_value_expr: None,
                             };
@@ -3529,6 +3552,7 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
                             );
                             add_accessor!(Expression::Define(Definition {
                                 is_const: is_const_def,
+                                is_lazy: false,
                                 access_mode,
                                 name: var_name,
                                 value: None
@@ -3547,6 +3571,7 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
                             );
                             add_accessor!(Expression::Define(Definition {
                                 is_const: is_const_def,
+                                is_lazy: false,
                                 access_mode,
                                 name: var_name,
                                 value: None
@@ -3554,7 +3579,7 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
                             continue 'read;
                         }
                         // Definition and assignment
-                        Equals => {
+                        token @ (Equals | QuestionEquals) => {
                             self.reader.skip_ws();
                             let ParsedSequence {
                                 sequence: setter_expr,
@@ -3576,6 +3601,7 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
                                 name: var_name,
                                 access_mode,
                                 is_const: is_const_def,
+                                is_lazy: matches!(token, QuestionEquals),
                                 value: Some(Rc::new(setter_expr)),
                             }));
 

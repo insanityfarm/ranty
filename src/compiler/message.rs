@@ -130,6 +130,7 @@ impl CompilerMessage {
 pub enum Problem {
     TemporalAssignPipeRedefinesVariable(String),
     TemporalAssignPipeRedefinesConstant(String),
+    LazyParameterNotSupportedOnVariadic,
     AccessPathStartsWithIndex,
     AccessPathStartsWithSlice,
     AnonValueAssignment,
@@ -237,6 +238,7 @@ impl Problem {
             Self::MultipleVariadicParams => rcode!(0026),
             Self::TemporalAssignPipeRedefinesVariable(_) => rcode!(0027),
             Self::TemporalAssignPipeRedefinesConstant(_) => rcode!(0028),
+            Self::LazyParameterNotSupportedOnVariadic => rcode!(0029),
 
             // Blocks (0040 - 0059)
             Self::DynamicKeyBlockMultiElement => rcode!(0040),
@@ -350,6 +352,7 @@ impl Problem {
       Self::OnNotAllowed => rmsg!("@on is not allowed in this context"),
       Self::TemporalAssignPipeRedefinesVariable(vname) => rmsg!("temporal assignment pipe could redefine variable '{}'", vname),
       Self::TemporalAssignPipeRedefinesConstant(vname) => rmsg!("temporal assignment pipe could redefine constant '{}'", vname),
+      Self::LazyParameterNotSupportedOnVariadic => rmsg!("lazy parameters cannot be variadic"),
     }
     }
 
@@ -372,6 +375,7 @@ impl Problem {
             Self::MultipleVariadicParams => rmsg!("remove extra variadic parameter"),
             Self::NestedFunctionDefMarkedConstant => rmsg!("use '$' here instead"),
             Self::NothingToPipe => rmsg!("no previous output to consume"),
+            Self::LazyParameterNotSupportedOnVariadic => rmsg!("remove @lazy or make the parameter non-variadic"),
             Self::ReadOnlyAttributeKeyword(_) => rmsg!("remove the assignment"),
             Self::UnclosedAccessor => rmsg!("no matching '>' found"),
             Self::UnclosedBlock => rmsg!("no matching '}' found"),

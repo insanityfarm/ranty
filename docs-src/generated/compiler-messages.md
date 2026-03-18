@@ -26,6 +26,7 @@
 | `R0026` | error | `multiple variadic parameters are not allowed` |
 | `R0027` | error | `temporal assignment pipe could redefine variable '{}'` |
 | `R0028` | error | `temporal assignment pipe could redefine constant '{}'` |
+| `R0029` | error | `lazy parameters cannot be variadic` |
 | `R0040` | error | `dynamic key blocks can't have more than one element; if branching is desired, create an inner block` |
 | `R0041` | error | `duplicate @{} modifier on block element` |
 | `R0060` | error | `can't assign a value to an expression; try assigning to a child of it instead` |

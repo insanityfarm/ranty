@@ -505,6 +505,7 @@ impl<T: TryFromRanty> FromRantyArgs for T {
 
         let param = Parameter {
             name: Identifier::new(InternalString::from("arg0")),
+            is_lazy: false,
             varity,
             default_value_expr: None,
         };
@@ -581,6 +582,7 @@ macro_rules! impl_from_ranty_args {
         let mut i: usize = 0;
         vec![$(Parameter {
           name: Identifier::new(InternalString::from(format!("arg{}", inc(&mut i)))),
+          is_lazy: false,
           varity: as_varity::<$generic_types>(),
           default_value_expr: None,
         },)*]
@@ -604,11 +606,13 @@ macro_rules! impl_from_ranty_args {
         let mut i: usize = 0;
         vec![$(Parameter {
           name: Identifier::new(InternalString::from(format!("arg{}", inc(&mut i)))),
+          is_lazy: false,
           varity: as_varity::<$generic_types>(),
           default_value_expr: None,
         },)*
         Parameter {
           name: Identifier::new(InternalString::from(format!("arg{}", inc(&mut i)))),
+          is_lazy: false,
           varity: Varity::VariadicStar,
           default_value_expr: None,
         }]
@@ -632,11 +636,13 @@ macro_rules! impl_from_ranty_args {
         let mut i: usize = 0;
         vec![$(Parameter {
           name: Identifier::new(InternalString::from(format!("arg{}", inc(&mut i)))),
+          is_lazy: false,
           varity: as_varity::<$generic_types>(),
           default_value_expr: None,
         },)*
         Parameter {
           name: Identifier::new(InternalString::from(format!("arg{}", inc(&mut i)))),
+          is_lazy: false,
           varity: Varity::VariadicPlus,
           default_value_expr: None,
         }]

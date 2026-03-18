@@ -121,10 +121,9 @@ fn main() {
     let stdin_is_tty = atty::is(Stream::Stdin);
 
     let mut ranty = Ranty::with_options(RantyOptions {
-        use_stdlib: true,
         debug_mode: !opts.no_debug,
-        top_level_defs_are_globals: false,
         seed: opts.seed.unwrap_or_else(|| rand::thread_rng().gen()),
+        ..RantyOptions::default()
     });
 
     register_cli_globals(&mut ranty);

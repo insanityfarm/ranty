@@ -26,6 +26,73 @@ You can leave the assignment part out and it will be initialized to nothing.
 <$name = Nick>
 ```
 
+### Lazy definitions
+
+Use `?=` instead of `=` to define a variable or constant whose initializer should be deferred until the value is first accessed.
+
+```ranty
+<$config ?= [load-config]>
+
+# Nothing has run yet
+<config>   # [load-config] runs here
+<config>   # cached result is reused
+```
+
+Lazy definitions use call-by-need semantics:
+
+* the initializer does not run when the definition is created
+* the initializer runs the first time the binding is read, indexed, keyed, or called
+* the successful result is memoized and reused for the rest of the binding's lifetime
+
+If you overwrite a lazy variable before it is forced, the original initializer is discarded without running:
+
+```ranty
+<$secret ?= [load-secret]>
+<secret = demo>
+<secret> # -> "demo"
+```
+
+Constants can also be lazy:
+
+```ranty
+<%rules ?= [load-rules]>
+<rules>     # forces once
+<rules>     # reuses cached value
+<rules = x> # error: constants still cannot be reassigned
+```
+
+Lazy initializers capture local variables by reference, just like closures:
+
+```ranty
+<$value = 1>
+<$lazy ?= <value>>
+<value = 2>
+<lazy> # -> "2"
+```
+
+Any access rooted at the lazy binding forces it first, including child access and function lookup:
+
+```ranty
+<$items ?= [make-items]>
+<items/0>
+
+<$handler ?= [make-handler]>
+[handler]
+```
+
+Self-referential lazy bindings are not allowed and raise a runtime error when forced:
+
+```ranty
+<$x ?= <x>>
+<x> # runtime error: LAZY_BINDING_CYCLE_ERROR
+```
+
+> **Note:**
+>
+> `?=` is only valid on definitions. In getters, `?` still starts a [fallback expression](./accessors/fallbacks.md).
+>
+> See also [Lazy parameters](./functions.md#lazy-parameters) and [Closures](./functions.md#closures).
+
 ## Setters
 
 A **setter** modifies an existing variable or value.

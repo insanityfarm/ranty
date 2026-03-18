@@ -13,6 +13,7 @@
 | `INVALID_OP_ERROR` | Operation is not valid for the current program state. |
 | `INVOKE_ERROR` | Tried to invoke a non-function. |
 | `KEY_ERROR` | Error occurred while keying value. |
+| `LAZY_BINDING_CYCLE_ERROR` | Lazy binding evaluation recursively depended on itself. |
 | `MODULE_ERROR` | Error occurred while trying to load a module. |
 | `SELECTOR_ERROR` | Error occurred while iterating selector. |
 | `SLICE_ERROR` | Error occurred while slicing value. |

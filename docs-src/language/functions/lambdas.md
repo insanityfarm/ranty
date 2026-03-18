@@ -31,6 +31,14 @@ If you want to add parameters to a lambda, just specify the parameters after the
 [?: param1; param2] { ... }
 ```
 
+Lambda parameters support the same modifiers as named functions, including `@lazy` and optional defaults:
+
+```ranty
+[?: @lazy name ? "friend"] { Hello, <name>! }
+```
+
+See [Lazy parameters](../functions.md#lazy-parameters) for the full evaluation rules.
+
 
 ## Calling an anonymous function
 

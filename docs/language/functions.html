@@ -229,6 +229,8 @@ When we define a function, we are simply defining a variable and storing it ther
     {&lt;heads&gt;|&lt;tails&gt;}
 }
 </code></pre>
+<p>Parameters can also be marked optional with <code>?</code>, lazy with <code>@lazy</code>, or variadic with <code>*</code> / <code>+</code>.
+See the sections below for the detailed rules and interactions.</p>
 <p>Like other variables, functions can also be made constant by using <code>%</code> in place of <code>$</code> when defining them:</p>
 <pre><code class="language-ranty"># Regular functions can be overwritten
 [$foo] { hello! }
@@ -250,7 +252,7 @@ When we define a function, we are simply defining a variable and storing it ther
 </blockquote>
 <h4 id="default-arguments"><a class="header" href="#default-arguments">Default arguments</a></h4>
 <p>You can also specify a custom default value for an optional parameter by adding an expression after the <code>?</code> modifier.</p>
-<p>Each time the function is called without that parameter, Ranty will run its default value expression and use its output as the argument.</p>
+<p>For ordinary parameters, the default expression is eager: each time the function is called without that parameter, Ranty runs the expression immediately and uses its output as the argument.</p>
 <pre><code class="language-ranty"># Modification of the previous [gen-pet] to use a default value instead of calling [alt]
 [$gen-pet: name; species ? "dog"] { 
     (::
@@ -262,6 +264,54 @@ When we define a function, we are simply defining a variable and storing it ther
 <blockquote>
 <p><strong>Note:</strong></p>
 <p>Default argument expressions can capture external variables just like the body of the function they're attached to.</p>
+</blockquote>
+<h4 id="lazy-parameters"><a class="header" href="#lazy-parameters">Lazy parameters</a></h4>
+<p>Place <code>@lazy</code> before a parameter name to defer evaluation of the caller's argument until the parameter is first accessed.</p>
+<pre><code class="language-ranty">[$ignore: @lazy value] {
+    done
+}
+
+[ignore: [expensive-call]]
+</code></pre>
+<p>In the example above, <code>[expensive-call]</code> is never evaluated because the function body never reads <code>&lt;value&gt;</code>.</p>
+<p>Lazy parameters are call-by-need:</p>
+<ul>
+<li>the caller's argument expression is captured instead of evaluated immediately</li>
+<li>the first read forces the argument</li>
+<li>the result is memoized, so later reads reuse the same value</li>
+</ul>
+<pre><code class="language-ranty">[$dup: @lazy x] {
+    &lt;x&gt;,&lt;x&gt;
+}
+
+[dup: [build-value]]
+</code></pre>
+<p><code>@lazy</code> also works with optional parameters and defaults:</p>
+<pre><code class="language-ranty">[$greet: @lazy name ? [pick-name]] {
+    Hello, &lt;name&gt;!
+}
+</code></pre>
+<p>If <code>[pick-name]</code> is needed, it is still deferred until <code>&lt;name&gt;</code> is first accessed.
+If the caller supplies <code>name</code>, the default expression is ignored completely.</p>
+<p>An optional lazy parameter without a default is still absent when omitted, just like any other optional parameter:</p>
+<pre><code class="language-ranty">[$show-subtitle: @lazy subtitle?] {
+    &lt;subtitle ? "(none)"&gt;
+}
+</code></pre>
+<p>Lazy parameters can also be captured by returned closures, and they capture outer variables by reference:</p>
+<pre><code class="language-ranty">[$defer: @lazy x] {
+    [?] { &lt;x&gt; }
+}
+
+&lt;$value = 1&gt;
+&lt;$reader = [defer: &lt;value&gt;]&gt;
+&lt;value = 2&gt;
+[reader] # -&gt; "2"
+</code></pre>
+<p><code>@lazy</code> is supported on user-defined function and lambda parameters, but not on variadic parameters.</p>
+<blockquote>
+<p><strong>See also:</strong></p>
+<p><a href="./accessors.html#lazy-definitions">Lazy definitions</a>, <a href="./functions/optional-parameters.html">Optional parameters</a>, <a href="./functions/lambdas.html">Lambdas</a>, and <a href="./functions/variadic-parameters.html">Variadic parameters</a>.</p>
 </blockquote>
 <h2 id="closures"><a class="header" href="#closures">Closures</a></h2>
 <p>A function can access variables defined outside of its body.
@@ -297,6 +347,8 @@ even if the original variable falls out of scope, the closure still keeps it ali
 <h3 id="limitations-on-variable-capture"><a class="header" href="#limitations-on-variable-capture">Limitations on variable capture</a></h3>
 <p>Capturing is only supported on variables accessed locally from the function body or default argument expressions.
 Descoped and explicit global accessors do not capture variables.</p>
+<p>The same by-reference capture behavior is used by lazy definition initializers and lazy parameter/default thunks.
+If a captured variable changes before a lazy binding is first forced, the forced value observes the latest captured state.</p>
 <h2 id="calling-shadowed-functions"><a class="header" href="#calling-shadowed-functions">Calling shadowed functions</a></h2>
 <p>The situation may occasionally arise where you accidentally (or intentionally)
 define a non-function variable with the same name as a function from a parent scope (e.g. a stdlib function)
