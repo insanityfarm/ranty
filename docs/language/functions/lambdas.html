@@ -208,14 +208,14 @@ The body of a lambda can also capture variables from its environment, just like 
     [?]{Hello from anonymous function}
 }
 
-[([get-anon-func])]         # -&gt; "Hello from anonymous function"
+[([get-anon-func])]         # -&gt; Hello from anonymous function
 
 # Define a function that returns a function with a single parameter
 [$get-greet-func] {
     [?:name]{Hello, &lt;name&gt;!}
 }
 
-[([get-greet-func]): Ranty]  # "Hello, Ranty!"
+[([get-greet-func]): Ranty]  # -&gt; Hello, Ranty!
 </code></pre>
 <h3 id="using-piping-to-call-an-anonymous-function-produced-by-another-function"><a class="header" href="#using-piping-to-call-an-anonymous-function-produced-by-another-function">Using piping to call an anonymous function produced by another function</a></h3>
 <p>The above example could be simplified with <a href="./piping.html">piping</a>: just call <code>[get-anon-func]</code>, then call <code>[]</code> directly.</p>

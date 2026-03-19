@@ -1,0 +1,317 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Accessors, Variables, Constants, and Nothing - Ranty Reference</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/custom.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Ranty Reference</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="accessors-variables-constants-and-nothing"><a class="header" href="#accessors-variables-constants-and-nothing">Accessors, Variables, Constants, and Nothing</a></h1>
+<p>Juniper brings you to the bakery stall nearest the gate and drops a stack of blank cards onto the counter.</p>
+<p>The baker catches the top card before it slides, dusts flour from her thumb, and says, "Mira. If these things are going to remember me, start with the buns." "The market name never changes," Juniper adds. "Everything else does." Mira calls out a new tray count without looking up from the oven. Somewhere farther down the lane a kettle lid clatters, but here at the counter the problem is simple: fixed facts, changing facts, and cards that should know the difference.</p>
+<h2 id="defining-and-reading-values"><a class="header" href="#defining-and-reading-values">Defining and reading values</a></h2>
+<p><code>&lt;$name = ...&gt;</code> defines a mutable variable. <code>&lt;name&gt;</code> reads it back out. Your first task is to make one clean stall line for Mira.</p>
+<pre><code class="language-ranty example"># Store three details about Mira's stall at once.
+&lt;$vendor = "Mira"; $snack = "star buns"; $price = 3&gt;
+Tonight, `&lt;vendor&gt; sells `&lt;snack&gt; for `&lt;price&gt; shells.
+</code></pre>
+<pre><code class="language-text expected">Tonight, Mira sells star buns for 3 shells.
+</code></pre>
+<p>That one line also shows a multi-part accessor: you can do several accessor operations inside one pair of angle brackets by separating them with <code>;</code>. It is a nice fit for stall cards and setup notes, where several related facts often arrive together.</p>
+<h2 id="mutable-variables-constants-and-setters"><a class="header" href="#mutable-variables-constants-and-setters">Mutable variables, constants, and setters</a></h2>
+<p>Ranty gives you two common kinds of named storage:</p>
+<ul>
+<li><code>$name</code> is a mutable variable. You expect to change it later.</li>
+<li><code>%name</code> is a constant. You want it to stay fixed once defined.</li>
+</ul>
+<p>That distinction matters here. Lantern counts change. The carved name above the gate does not.</p>
+<pre><code class="language-ranty example"># `%` makes a constant for facts that should stay fixed.
+&lt;%market-name = "Wandering Moon-Market"&gt;
+# `$` makes a variable for facts Juniper may revise.
+&lt;$lanterns = 2&gt;
+# This setter updates the variable when another lantern bundle arrives.
+&lt;lanterns = 3&gt;
+Market header: `&lt;market-name&gt;\n
+Lanterns above Mira's stall: `&lt;lanterns&gt;
+</code></pre>
+<pre><code class="language-text expected">Market header: Wandering Moon-Market
+Lanterns above Mira's stall: 3
+</code></pre>
+<p>Use <code>%</code> for carved facts and <code>$</code> for moving pieces. If you mark a changing value as fixed, Ranty objects at once:</p>
+<p><strong>Wrong attempt</strong></p>
+<pre><code class="language-ranty"># Juniper mistakenly marks the lantern count as fixed.
+&lt;%lantern-count = 5&gt;
+&lt;lantern-count = 6&gt;
+</code></pre>
+<p><strong>What happened</strong></p>
+<pre><code class="language-text">error[R0100]: reassignment of known constant 'lantern-count'
+...
+Compile failed (1 error found)
+</code></pre>
+<p>If Juniper truly expects the number to change, it should have been a variable instead:</p>
+<pre><code class="language-ranty example"># This time the changing count is stored in `$`.
+&lt;$lantern-count = 5&gt;
+&lt;lantern-count = 6&gt;
+Lanterns above Mira's stall: `&lt;lantern-count&gt;
+</code></pre>
+<pre><code class="language-text expected">Lanterns above Mira's stall: 6
+</code></pre>
+<p>So when you choose between <code>$</code> and <code>%</code>, you are really choosing whether that piece of market data is meant to change.</p>
+<h2 id="missing-values-fallbacks-and-the-nothing-literal"><a class="header" href="#missing-values-fallbacks-and-the-nothing-literal">Missing values, fallbacks, and the <code>nothing</code> literal</a></h2>
+<p>Sometimes a stall card simply does not have a detail yet. Ranty has a special value for that idea: <code>&lt;&gt;</code>, pronounced "nothing." Think of it as a deliberate blank, not a dramatic error.</p>
+<p>On its own, <code>nothing</code> prints as nothing at all. A missing read without any protection is an error, but a fallback gives you a gentler result.</p>
+<pre><code class="language-ranty example"># Juniper knows the title, but Mira has not picked a subtitle yet.
+&lt;$title = "Moon pears"&gt;
+Card title: `&lt;title?&gt;\n
+Card subtitle:\n
+&lt;subtitle?&gt;\n
+Safe subtitle: `&lt;subtitle ? "(no subtitle yet)"&gt;
+</code></pre>
+<pre><code class="language-text expected">Card title: Moon pears
+Card subtitle:
+
+Safe subtitle: (no subtitle yet)
+</code></pre>
+<p>Two useful details are hiding in there:</p>
+<ul>
+<li><code>&lt;subtitle?&gt;</code> means "try to read it; if it is missing, quietly produce nothing."</li>
+<li><code>&lt;subtitle ? "..."&gt;</code> means "if it is missing, use this fallback instead."</li>
+</ul>
+<h2 id="lazy-definitions-wait-until-you-actually-read-them"><a class="header" href="#lazy-definitions-wait-until-you-actually-read-them">Lazy definitions wait until you actually read them</a></h2>
+<p>Sometimes you need to set wording aside until the last possible moment. That is what <code>?=</code> means.</p>
+<pre><code class="language-ranty example"># Juniper starts with one opening word.
+&lt;$opening-word = dawn&gt;
+# Define `chant` lazily: do not read `opening-word` yet.
+&lt;$chant ?= &lt;opening-word&gt;&gt;
+# She changes the word before `chant` is ever read.
+&lt;opening-word = dusk&gt;
+Opening chant: `&lt;chant&gt;
+</code></pre>
+<pre><code class="language-text expected">Opening chant: dusk
+</code></pre>
+<p>Because the definition was lazy, <code>&lt;opening-word&gt;</code> was not read until <code>&lt;chant&gt;</code> was read. By then, Juniper had already changed the opening word from <code>dawn</code> to <code>dusk</code>, which is exactly what she wanted.</p>
+<p>More information about accessors, fallbacks, and <code>nothing</code> can be found in the Ranty documentation for <a href="../../language/accessors.html">Accessors</a>, <a href="../../language/accessors/fallbacks.html">Fallbacks</a>, and <a href="../../language/data-types/nothing.html">nothing</a>.</p>
+<p>Mira's stall card stops changing shape every time a bun leaves the oven. Juniper stacks the finished cards, then nods farther down the lane toward a tea stall half-buried under labels and kettle tags. One counter is in order. The next one is worse.</p>
+<p>Previous: <a href="01-text-comments-escapes-and-hinting.html">Text, Comments, Escapes, and Hinting</a> | Next: <a href="03-lists-tuples-maps-and-access-paths.html">Lists, Tuples, Maps, and Access Paths</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../getting-started/tutorial/01-text-comments-escapes-and-hinting.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../getting-started/tutorial/03-lists-tuples-maps-and-access-paths.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../getting-started/tutorial/01-text-comments-escapes-and-hinting.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../getting-started/tutorial/03-lists-tuples-maps-and-access-paths.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

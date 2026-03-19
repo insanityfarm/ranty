@@ -231,14 +231,15 @@ Ranty aims to address all of those flaws while retaining the ergonomics of the o
 <p>Variables in Rant 3 were mostly manipulated through standard-library functions such as <code>[v]</code>, <code>[vn]</code>, and <code>[vs]</code>.</p>
 <p>Ranty replaces that system with <a href="language/accessors.html">accessors</a>, giving variables, keys, indices, descoping, and fallbacks a consistent language-level syntax.</p>
 <h3 id="example"><a class="header" href="#example">Example</a></h3>
-<pre><code class="language-ranty"># Rant 3 style
+<p>Before:</p>
+<pre><code class="language-text"># Rant 3 syntax
 [vn: foo; 1]
 [vn: bar; 2]
 [add: [v: foo]; [v: bar]]
 # -&gt; 3
-
-
-# Ranty equivalent
+</code></pre>
+<p>After:</p>
+<pre><code class="language-ranty"># Ranty syntax
 &lt;$foo = 1; $bar = 2&gt;
 &lt;foo&gt; + &lt;bar&gt;
 # -&gt; 3
@@ -260,25 +261,27 @@ Ranty aims to address all of those flaws while retaining the ergonomics of the o
 <p>In Ranty, selectors are ordinary values of type <a href="language/data-types/selector.html"><code>selector</code></a>. They can be created once, stored in variables, shared across blocks, or created inline for one-off use.</p>
 <h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
 <p><strong>Reusing a selector</strong></p>
-<pre><code class="language-ranty"># Old Rant 3 style
+<p>Before:</p>
+<pre><code class="language-text"># Rant 3 syntax
 [x:foo;locked]
 {a|b|c|d|e|f|g|h}
 [x:foo;locked]
 {1|2|3|4|5|6|7|8}
-
-
-# Ranty equivalent
+</code></pre>
+<p>After:</p>
+<pre><code class="language-ranty"># Ranty syntax
 &lt;%sync = [mksel: one]&gt;
 [sel: &lt;sync&gt;] {a|b|c|d|e|f|g|h}
 [sel: &lt;sync&gt;] {1|2|3|4|5|6|7|8}
 </code></pre>
 <p><strong>Single-use selector</strong></p>
-<pre><code class="language-ranty"># Rant 3 style
+<p>Before:</p>
+<pre><code class="language-text"># Rant 3 syntax
 [x:foo;deck][rep:each]{A|B|C|D|E|F|G|H}
 [xdel:foo]
-
-
-# Ranty equivalent
+</code></pre>
+<p>After:</p>
+<pre><code class="language-ranty">Ranty syntax:
 [sel: deck] [rep: all] {A|B|C|D|E|F|G|H}
 </code></pre>
 

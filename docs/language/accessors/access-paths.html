@@ -271,7 +271,7 @@ Slices can be fully-bounded (having start + end points), half-bounded (having a 
 <pre><code class="language-ranty">&lt;$my-list = (: 1; 2; 3)&gt;
 &lt;my-list/1..2 = (: a; b)&gt; # the splice value doesn't have to be the same size!
 &lt;my-list/3..4 = (c; d)&gt; # the splice value can also be a tuple!
-&lt;my-list&gt; # -&gt; (: 1; a; b; 3)
+&lt;my-list&gt; # -&gt; (: 1; a; b; c; d)
 </code></pre>
 <h4 id="dynamic-slices"><a class="header" href="#dynamic-slices">Dynamic slices</a></h4>
 <p>Slices also support dynamic bounds; just replace any slice bound with a dynamic key:</p>

@@ -4,7 +4,7 @@
 
 ```ranty
 
-[%alpha: count ? 1]
+[alpha: count ? 1]
 
 ```
 &rarr; `string`
@@ -15,7 +15,7 @@ Prints a uniformly random lowercase alphabetic string.
 
 ```ranty
 
-[%dig: count ? 1]
+[dig: count ? 1]
 
 ```
 &rarr; `string`
@@ -39,7 +39,7 @@ The number of digits to generate. Defaults to 1.
 
 ```ranty
 
-[%digh: count ? 1]
+[digh: count ? 1]
 
 ```
 &rarr; `string`
@@ -63,7 +63,7 @@ The number of digits to generate. Defaults to 1.
 
 ```ranty
 
-[%dignz: count ? 1]
+[dignz: count ? 1]
 
 ```
 &rarr; `string`
@@ -87,7 +87,7 @@ The number of digits to generate. Defaults to 1.
 
 ```ranty
 
-[%maybe: p ? 0.5]
+[maybe: p ? 0.5]
 
 ```
 &rarr; `bool`
@@ -107,7 +107,7 @@ If omitted or nothing, defaults to 0.5.
 
 ```ranty
 
-[%pick: collection]
+[pick: collection]
 
 ```
 
@@ -117,7 +117,7 @@ Prints a random element from an ordered collection.
 
 ```ranty
 
-[%pickn: collection; count]
+[pickn: collection; count]
 
 ```
 &rarr; `list`
@@ -128,7 +128,7 @@ Prints a list containing `count` random elements sampled from `collection`.
 
 ```ranty
 
-[%pick-sparse: first; ...rest]
+[pick-sparse: first; ...rest]
 
 ```
 
@@ -139,7 +139,7 @@ Randomly selects one value from a sparse weighted set of arguments by using each
 
 ```ranty
 
-[%rand: a; b]
+[rand: a; b]
 
 ```
 &rarr; `int`
@@ -168,7 +168,7 @@ You roll a `[rand:1;6].
 
 ```ranty
 
-[%randf: a; b]
+[randf: a; b]
 
 ```
 &rarr; `float`
@@ -188,7 +188,7 @@ The second inclusive bound of the random number.
 
 ```ranty
 
-[%rand-list: a; b; n]
+[rand-list: a; b; n]
 
 ```
 &rarr; `list`
@@ -222,7 +222,7 @@ You rolled `[join: \sand\s; <roll>] for a total of `[sum: <roll>].
 
 ```ranty
 
-[%randf-list: a; b; n]
+[randf-list: a; b; n]
 
 ```
 &rarr; `list`
@@ -245,7 +245,7 @@ The amount of numbers to generate.
 
 ```ranty
 
-[%rand-list-sum: input; count; variance]
+[rand-list-sum: input; count; variance]
 
 ```
 &rarr; `list`

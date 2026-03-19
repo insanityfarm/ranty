@@ -4,7 +4,7 @@
 
 ```ranty
 
-[%assoc: keys; values]
+[assoc: keys; values]
 
 ```
 &rarr; `map`
@@ -60,7 +60,7 @@ Raises a runtime error if the lengths of `keys` and `values` do not match.
 
 ```ranty
 
-[%augment: dst-map; src-map]
+[augment: dst-map; src-map]
 
 ```
 &rarr; `map`
@@ -80,7 +80,7 @@ The map containing the values to add to those in `dst-map`.
 
 ```ranty
 
-[%augment-self: dst-map; src-map]
+[augment-self: dst-map; src-map]
 
 ```
 
@@ -99,7 +99,7 @@ The map containing the values to add to those in `dst-map`.
 
 ```ranty
 
-[%augment-self: dst-map; src-map]
+[augment-thru: dst-map; src-map]
 
 ```
 &rarr; `map`
@@ -119,7 +119,7 @@ The map containing the values to add to those in `dst-map`.
 
 ```ranty
 
-[%chunks: collection; count]
+[chunks: collection; count]
 
 ```
 &rarr; `list`
@@ -147,7 +147,7 @@ Raises a runtime error if `collection` cannot be sliced.
 
 ```ranty
 
-[%clear: collection]
+[clear: collection]
 
 ```
 
@@ -166,7 +166,7 @@ Causes a runtime error if `collection` is not a list or map.
 
 ```ranty
 
-[%fill-self: list; value]
+[fill-self: list; value]
 
 ```
 
@@ -176,7 +176,7 @@ Mutates `list` in place by replacing every element with `value`.
 
 ```ranty
 
-[%fill-thru: list; value]
+[fill-thru: list; value]
 
 ```
 
@@ -187,7 +187,7 @@ Mutates `list` in place and then prints the same list handle.
 
 ```ranty
 
-[%list: values*]
+[list: values*]
 
 ```
 &rarr; `list`
@@ -204,7 +204,7 @@ The values to store in the list.
 
 ```ranty
 
-[%tuple: values*]
+[tuple: values*]
 
 ```
 &rarr; `tuple`
@@ -220,7 +220,7 @@ The values to store in the tuple.
 
 ```ranty
 
-[%nlist: values*]
+[nlist: values*]
 
 ```
 
@@ -231,7 +231,7 @@ Prints a single-element list whose only value is the list constructed from `valu
 
 ```ranty
 
-[%filter: list; predicate]
+[filter: list; predicate]
 
 ```
 &rarr; `list`
@@ -275,14 +275,14 @@ The predicate to run against each element in the input list.
 <$words = [split: "the quick brown fox jumps over the lazy dog";\s]>
 <$short-words = [filter: <words>; [?:word] { [le: [len: <word>]; 3] }]>
 [join: <short-words>; ,\s]
-# -> the fox the dog
+# -> the, fox, the, dog
 ```
 
 ## has
 
 ```ranty
 
-[%has: collection; value]
+[has: collection; value]
 
 ```
 &rarr; `bool`
@@ -306,7 +306,7 @@ If `collection` is of type `map`, `value` will be coerced to a string before sea
 
 ```ranty
 
-[%index-of: list; value]
+[index-of: list; value]
 
 ```
 &rarr; `int | nothing`
@@ -337,7 +337,7 @@ The value to search for.
 
 ```ranty
 
-[%join: list; separator?]
+[join: list; separator?]
 
 ```
 &rarr; `any*`
@@ -357,7 +357,7 @@ The separator to print between each element.
 
 ```ranty
 
-[%last-index-of: list; value]
+[last-index-of: list; value]
 
 ```
 &rarr; `any`
@@ -388,7 +388,7 @@ The value to search for.
 
 ```ranty
 
-[%map: list; map-func]
+[map: list; map-func]
 
 ```
 &rarr; `list`
@@ -414,7 +414,7 @@ The function to map the values with.
 # Multiple each element of a list by 10
 <$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10)>
 <$tens = [map: <numbers>; [?:x] { [mul: <x>; 10] }]>
-[join: ,\s; <tens>]
+[join: <tens>; ,\s]
 # -> 10, 20, 30, 40, 50, 60, 70, 80, 90, 100
 ```
 
@@ -423,7 +423,7 @@ The function to map the values with.
 
 ```ranty
 
-[%oxford-join: comma; conj; comma-conj; list]
+[oxford-join: comma; conj; comma-conj; list]
 
 ```
 &rarr; `any*`
@@ -498,7 +498,7 @@ The separator values are applied as follows:
 
 ```ranty
 
-[%push: list; value]
+[push: list; value]
 
 ```
 
@@ -517,7 +517,7 @@ The value to add to the end of `list`.
 
 ```ranty
 
-[%pop: list]
+[pop: list]
 
 ```
 &rarr; `any`
@@ -534,7 +534,7 @@ The list to modify.
 
 ```ranty
 
-[%insert: collection; value; pos]
+[insert: collection; value; pos]
 
 ```
 
@@ -564,7 +564,7 @@ Raises an error if `pos` is out of range or not the correct type for the provide
 
 ```ranty
 
-[%remove: collection; pos]
+[remove: collection; pos]
 
 ```
 
@@ -590,7 +590,7 @@ Raises an error if `pos` is an unsupported type for the provided collection.
 
 ```ranty
 
-[%rev: collection]
+[rev: collection]
 
 ```
 &rarr; `list | string | block | range`
@@ -614,7 +614,7 @@ The collection to reverse.
 
 ```ranty
 
-[%shuffle: list]
+[shuffle: list]
 
 ```
 &rarr; `list`
@@ -641,7 +641,7 @@ The input list.
 
 ```ranty
 
-[%shuffle-self: list]
+[shuffle-self: list]
 
 ```
 
@@ -676,7 +676,7 @@ Where \\(n\\) = the length of `list`:
 
 ```ranty
 
-[%shuffle-thru: list]
+[shuffle-thru: list]
 
 ```
 &rarr; `list`
@@ -701,7 +701,7 @@ Where \\(n\\) = the length of `list`:
 
 ```ranty
 
-[%sift: list; target-size]
+[sift: list; target-size]
 
 ```
 &rarr; `list`
@@ -744,7 +744,7 @@ The maximum number of elements to reduce the `list` to.
 
 ```ranty
 
-[%sift-self: list; target-size]
+[sift-self: list; target-size]
 
 ```
 
@@ -791,7 +791,7 @@ The maximum number of elements to reduce the `list` to.
 
 ```ranty
 
-[%sift-thru: list; target-size]
+[sift-thru: list; target-size]
 
 ```
 &rarr; `list`
@@ -814,7 +814,7 @@ The maximum number of elements to reduce the `list` to.
 
 ```ranty
 
-[%squish: list; target-size]
+[squish: list; target-size]
 
 ```
 &rarr; `list`
@@ -835,7 +835,7 @@ The maximum number of elements to reduce the list copy to.
 
 ```ranty
 
-[%squish-self: list; target-size]
+[squish-self: list; target-size]
 
 ```
 
@@ -878,7 +878,7 @@ After: `[join: ,\s; <numbers>]\n
 
 ```ranty
 
-[%squish-thru: list; target-size]
+[squish-thru: list; target-size]
 
 ```
 &rarr; `list`
@@ -899,7 +899,7 @@ The maximum number of elements to reduce the list to.
 
 ```ranty
 
-[%sort: list]
+[sort: list]
 
 ```
 &rarr; `list`
@@ -916,7 +916,7 @@ The input list.
 
 ```ranty
 
-[%sort-self: list]
+[sort-self: list]
 
 ```
 
@@ -932,7 +932,7 @@ The input list.
 
 ```ranty
 
-[%sort-thru: list]
+[sort-thru: list]
 
 ```
 &rarr; `list`
@@ -949,7 +949,7 @@ The input list.
 
 ```ranty
 
-[%sum: list]
+[sum: list]
 
 ```
 &rarr; `any`
@@ -961,7 +961,7 @@ Adds the elements of a list together from left to right and prints the result.
 
 ```ranty
 
-[%take: collection; pos]
+[take: collection; pos]
 
 ```
 &rarr; `any`
@@ -986,7 +986,7 @@ Raises an error if `pos` is not a valid location in the collection.
 
 ```ranty
 
-[%translate: list; map]
+[translate: list; map]
 
 ```
 &rarr; `list`
@@ -1049,7 +1049,7 @@ Decoded: \"<decoded-message>\"\n
 
 ```ranty
 
-[%keys: map]
+[keys: map]
 
 ```
 
@@ -1062,7 +1062,7 @@ Inherited prototype keys are not included.
 
 ```ranty
 
-[%values: map]
+[values: map]
 
 ```
 
@@ -1076,7 +1076,7 @@ Inherited prototype values are not included.
 
 ```ranty
 
-[%zip: list-a; list-b; zip-func]
+[zip: list-a; list-b; zip-func]
 
 ```
 &rarr; `list`

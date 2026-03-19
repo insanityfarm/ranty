@@ -4,7 +4,7 @@
 
 ```ranty
 
-[%ws-fmt: mode?; custom?]
+[ws-fmt: mode?; custom?]
 
 ```
 &rarr; `string | any`
@@ -15,7 +15,7 @@ Gets or sets the whitespace normalization mode for the current scope. `custom` i
 
 ```ranty
 
-[%num-fmt: options?; depth ? 0]
+[num-fmt: options?; depth ? 0]
 
 ```
 &rarr; `map | nothing`
@@ -76,7 +76,7 @@ Defaults to 0 (the calling scope).
 
 ```ranty
 
-[%num-fmt-system: system?; depth ? 0]
+[num-fmt-system: system?; depth ? 0]
 ```
 &rarr; `string | nothing`
 
@@ -104,7 +104,7 @@ Defaults to 0 (the calling scope).
 
 ```ranty
 
-[%num-fmt-alt: flag?; depth ? 0]
+[num-fmt-alt: flag?; depth ? 0]
 
 ```
 &rarr; `bool | nothing`
@@ -128,7 +128,7 @@ Defaults to 0 (the calling scope).
 
 ```ranty
 
-[%num-fmt-precision: precision?; depth ? 0]
+[num-fmt-precision: precision?; depth ? 0]
 
 ```
 &rarr; `int | nothing`
@@ -153,7 +153,7 @@ Defaults to 0 (the calling scope).
 
 ```ranty
 
-[%num-fmt-padding: padding?; depth ? 0]
+[num-fmt-padding: padding?; depth ? 0]
 
 ```
 &rarr; `int | nothing`
@@ -176,7 +176,7 @@ Defaults to 0 (the calling scope).
 
 ```ranty
 
-[%num-fmt-upper: flag?; depth ? 0]
+[num-fmt-upper: flag?; depth ? 0]
 
 ```
 &rarr; `bool | nothing`
@@ -200,7 +200,7 @@ Defaults to 0 (the calling scope).
 
 ```ranty
 
-[%num-fmt-sign: sign?; depth ? 0]
+[num-fmt-sign: sign?; depth ? 0]
 
 ```
 &rarr; `string | nothing`
@@ -228,7 +228,7 @@ Defaults to 0 (the calling scope).
 
 ```ranty
 
-[%num-fmt-endian: endianness?; depth ? 0]
+[num-fmt-endian: endianness?; depth ? 0]
 
 ```
 &rarr; `string | nothing`
@@ -255,7 +255,7 @@ Defaults to 0 (the calling scope).
 
 ```ranty
 
-[%num-fmt-infinity: infinity?; depth ? 0]
+[num-fmt-infinity: infinity?; depth ? 0]
 
 ```
 &rarr; `string | nothing`
@@ -283,7 +283,7 @@ Defaults to 0 (the calling scope).
 
 ```ranty
 
-[%num-fmt-group-sep: group-sep?; depth ? 0]
+[num-fmt-group-sep: group-sep?; depth ? 0]
 
 ```
 &rarr; `string | nothing`
@@ -306,7 +306,7 @@ Defaults to 0 (the calling scope).
 
 ```ranty
 
-[%num-fmt-decimal-sep: decimal-sep?; depth ? 0]
+[num-fmt-decimal-sep: decimal-sep?; depth ? 0]
 
 ```
 &rarr; `string | nothing`

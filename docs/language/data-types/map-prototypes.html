@@ -204,7 +204,7 @@ If the key is missing, it walks up the prototype chain until it finds a match or
 [proto: &lt;obj&gt;]   # -&gt; (:: flavor = vanilla)
 
 [set-proto: &lt;obj&gt;; &lt;&gt;]
-[proto: &lt;obj&gt;]   # -&gt; &lt;&gt;
+[proto: &lt;obj&gt;]   # -&gt; &lt;&gt; (nothing value, no output printed)
 </code></pre>
 <h2 id="inherited-reads"><a class="header" href="#inherited-reads">Inherited reads</a></h2>
 <p>If a key is not stored directly on the map, the getter continues through the prototype chain:</p>
@@ -259,7 +259,7 @@ Proto: &lt;proto/flavor&gt;
 <p>This is one of the most important rules to remember: inheritance affects lookup, not storage.</p>
 <h2 id="prototype-methods"><a class="header" href="#prototype-methods">Prototype methods</a></h2>
 <p>Maps can store functions, so a prototype can also provide shared behavior:</p>
-<pre><code class="language-ranty">&lt;$animal = (:: speak = [?: name] { &lt;name&gt; says hello. })&gt;
+<pre><code class="language-ranty">&lt;$animal = (:: speak = [?: name] { `&lt;name&gt; says hello. })&gt;
 &lt;$cat = (:: name = Miso)&gt;
 [set-proto: &lt;cat&gt;; &lt;animal&gt;]
 

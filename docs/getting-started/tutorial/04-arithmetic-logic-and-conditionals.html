@@ -1,0 +1,334 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Arithmetic, Logic, and Conditionals - Ranty Reference</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/custom.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Ranty Reference</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="arithmetic-logic-and-conditionals"><a class="header" href="#arithmetic-logic-and-conditionals">Arithmetic, Logic, and Conditionals</a></h1>
+<p>You stop in the middle of the lane, with the gate behind you and both stalls close enough to watch. Juniper studies the first knot of early wanderers and points with the tip of her pencil.</p>
+<p>"If the crowd swells, ring the bell. If Mira nods off, close the awning. If that kettle says anything prophetic, print it." You have heard shakier stage directions. What the market lacks now is judgment: numbers, yes-or-no answers, and a way to choose the right line at the right moment.</p>
+<h2 id="arithmetic"><a class="header" href="#arithmetic">Arithmetic</a></h2>
+<p>Ranty supports the usual arithmetic operators, including exponentiation with <code>**</code> and unary negation with <code>@neg</code>. On opening night these are often quick workshop checks: counts, totals, and little sanity tests before a line reaches the final script.</p>
+<p>You try a quick total for Juniper's setup notes without thinking about precedence.</p>
+<p><strong>Wrong attempt</strong></p>
+<pre><code class="language-ranty"># Two gate posts and three lantern strings of four.
+2 + 3 * 4
+</code></pre>
+<p><strong>What happened</strong></p>
+<pre><code class="language-text">14
+</code></pre>
+<p>Multiplication happens before addition. If you want the addition first, you need parentheses.</p>
+<pre><code class="language-ranty example"># Add the posts first, then give each place four hooks.
+(2 + 3) * 4
+</code></pre>
+<pre><code class="language-text expected">20
+</code></pre>
+<pre><code class="language-ranty example"># A few quick opening-night calculations for Juniper's setup notes.
+(2 + 3 * 4)\n
+(10 - 4)\n
+(10 / 2)\n
+(10 % 4)\n
+(2 ** 5)\n
+(@neg 3)
+</code></pre>
+<pre><code class="language-text expected">14
+6
+5
+2
+32
+-3
+</code></pre>
+<h2 id="comparison-booleans-and-logic"><a class="header" href="#comparison-booleans-and-logic">Comparison, booleans, and logic</a></h2>
+<p>Comparisons return booleans, and booleans in Ranty are <code>@true</code> and <code>@false</code>. Think of them as the Moon-Market's yes-or-no answers.</p>
+<pre><code class="language-ranty example"># Each line asks a yes-or-no question about the lane.
+(1 @eq 1)\n
+(1 @neq 2)\n
+(7 @gt 4)\n
+(1 @lt 2)\n
+(2 @ge 2)\n
+(1 @le 1)
+</code></pre>
+<pre><code class="language-text expected">@true
+@true
+@true
+@true
+@true
+@true
+</code></pre>
+<p>Logic operators let you combine those answers.</p>
+<pre><code class="language-ranty example"># Bell ready and lantern oil ready.
+(@true &amp; @true)\n
+# Exactly one omen flag is raised.
+(@true ^ @false)\n
+# No tickets sold yet means "not busy" is true.
+(@not 0)\n
+# If no omen is set, print the safe fallback.
+(&lt;&gt; | "keep the lane clear")
+</code></pre>
+<pre><code class="language-text expected">@true
+@true
+@true
+keep the lane clear
+</code></pre>
+<p>That last line is especially handy in prose work: <code>a | b</code> means "use <code>a</code> if it is truthy, otherwise use <code>b</code>." It is the kind of operator Juniper reaches for when a note may or may not be present.</p>
+<h2 id="compound-assignment"><a class="header" href="#compound-assignment">Compound assignment</a></h2>
+<p>If a setter would immediately reuse the old value, you can shorten the spelling.</p>
+<pre><code class="language-ranty example"># Juniper adds more shells, then doubles the total for a rough estimate.
+&lt;$shells = 10&gt;
+&lt;shells += 5&gt;
+&lt;shells *= 2&gt;
+&lt;shells&gt;
+</code></pre>
+<pre><code class="language-text expected">30
+</code></pre>
+<p>The same pattern works for the other arithmetic and logic operators too.</p>
+<h2 id="conditional-expressions-read-almost-like-narration"><a class="header" href="#conditional-expressions-read-almost-like-narration">Conditional expressions read almost like narration</a></h2>
+<p>Ranty's conditional syntax looks wordy at first, but that wordiness is useful: it reads like a tiny set of stage directions for the market.</p>
+<pre><code class="language-ranty example"># Decide what Juniper should do with the awning.
+&lt;$mood = sleepy&gt;
+@if &lt;mood&gt; @eq sleepy: {
+  Close the awning.
+} @elseif &lt;mood&gt; @eq busy: {
+  Ring the bell.
+} @else: {
+  Brew more tea.
+}
+</code></pre>
+<pre><code class="language-text expected">Close the awning.
+</code></pre>
+<h2 id="expressions-can-collapse-into-one-value"><a class="header" href="#expressions-can-collapse-into-one-value">Expressions can collapse into one value</a></h2>
+<p>This is a small rule with big consequences: when an expression prints several compatible values, Ranty combines them from left to right.</p>
+<pre><code class="language-ranty example"># Juniper writes the shell cost in two compatible pieces.
+3
+0.25
+</code></pre>
+<pre><code class="language-text expected">3.25
+</code></pre>
+<p>That is why earlier examples could build strings and collections out of smaller pieces. Ranty is always trying to fold compatible outputs together.</p>
+<p>More information about operators, booleans, conditional expressions, and compound assignment can be found in the Ranty documentation for <a href="../../language/operators.html">Operators</a>, <a href="../../language/data-types/bool.html">bool</a>, <a href="../../language/conditional-expressions.html">Conditional expressions</a>, and <a href="../../language/accessors/compound-assignment.html">Compound Assignment</a>.</p>
+<p>The script can answer back now. Juniper tucks the pencil behind one ear and turns you toward the bakery stall, where repeating one line too many times is becoming a problem you can actually hear. The next fix is reuse.</p>
+<p>Previous: <a href="03-lists-tuples-maps-and-access-paths.html">Lists, Tuples, Maps, and Access Paths</a> | Next: <a href="05-function-calls-functions-and-ranges.html">Function Calls, Functions, and Ranges</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../getting-started/tutorial/03-lists-tuples-maps-and-access-paths.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../getting-started/tutorial/05-function-calls-functions-and-ranges.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../getting-started/tutorial/03-lists-tuples-maps-and-access-paths.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../getting-started/tutorial/05-function-calls-functions-and-ranges.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

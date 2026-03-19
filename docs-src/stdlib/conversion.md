@@ -4,7 +4,7 @@
 
 ```ranty
 
-[%to-float: value]
+[to-float: value]
 
 ```
 &rarr; `float | nothing`
@@ -22,7 +22,7 @@ The input value to convert.
 
 ```ranty
 
-[%to-int: value]
+[to-int: value]
 
 ```
 &rarr; `int | nothing`
@@ -40,7 +40,7 @@ The input value to convert.
 
 ```ranty
 
-[%to-string: value]
+[to-string: value]
 
 ```
 &rarr; `string | nothing`
@@ -57,7 +57,7 @@ The input value to convert.
 
 ```ranty
 
-[%to-bool: value]
+[to-bool: value]
 
 ```
 &rarr; `bool`
@@ -69,7 +69,7 @@ Converts `value` to a boolean using Ranty's runtime truthiness rules.
 
 ```ranty
 
-[%to-list: value]
+[to-list: value]
 
 ```
 &rarr; `list | nothing`
@@ -111,7 +111,7 @@ Passing a `range` value into this function prints a list of the range's elements
 
 ```ranty
 
-[%to-tuple: value]
+[to-tuple: value]
 
 ```
 &rarr; `tuple | nothing`

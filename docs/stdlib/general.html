@@ -177,75 +177,75 @@
                     <main>
                         <h1 id="standard-library-general-functions"><a class="header" href="#standard-library-general-functions">Standard Library: General functions</a></h1>
 <h2 id="alt"><a class="header" href="#alt">alt</a></h2>
-<pre><code class="language-ranty">[%alt: a; ...rest]
+<pre><code class="language-ranty">[alt: a; ...rest]
 </code></pre>
 <p>Prints the first argument that is not <code>nothing</code>.</p>
 <h2 id="call"><a class="header" href="#call">call</a></h2>
-<pre><code class="language-ranty">[%call: func; args?]
+<pre><code class="language-ranty">[call: func; args?]
 </code></pre>
 <p>Calls <code>func</code> with an optional list of argument values.</p>
 <h2 id="cat"><a class="header" href="#cat">cat</a></h2>
-<pre><code class="language-ranty">[%cat: ...values]
+<pre><code class="language-ranty">[cat: ...values]
 </code></pre>
 <p>Prints each argument into the current scope.</p>
 <h2 id="either"><a class="header" href="#either">either</a></h2>
-<pre><code class="language-ranty">[%either: condition; true-value; false-value]
+<pre><code class="language-ranty">[either: condition; true-value; false-value]
 </code></pre>
 <p>Prints <code>true-value</code> when <code>condition</code> is true, otherwise <code>false-value</code>.</p>
 <h2 id="len"><a class="header" href="#len">len</a></h2>
-<pre><code class="language-ranty">[%len: value]
+<pre><code class="language-ranty">[len: value]
 </code></pre>
 <p>Prints the length of a string, list, map, range, or other length-aware value.</p>
 <h2 id="type"><a class="header" href="#type">type</a></h2>
-<pre><code class="language-ranty">[%type: value]
+<pre><code class="language-ranty">[type: value]
 </code></pre>
 <p>Prints the runtime type name of <code>value</code>.</p>
 <h2 id="seed"><a class="header" href="#seed">seed</a></h2>
-<pre><code class="language-ranty">[%seed]
+<pre><code class="language-ranty">[seed]
 </code></pre>
 <p>Prints the currently active RNG seed as an <code>int</code>.</p>
 <h2 id="tap"><a class="header" href="#tap">tap</a></h2>
-<pre><code class="language-ranty">[%tap: ...]
+<pre><code class="language-ranty">[tap: ...]
 </code></pre>
 <p>Consumes arguments and produces no output. This is useful as a no-op sink in pipe chains.</p>
 <h2 id="print"><a class="header" href="#print">print</a></h2>
-<pre><code class="language-ranty">[%print: ...values]
+<pre><code class="language-ranty">[print: ...values]
 </code></pre>
 <p>Prints values directly into the caller's output scope.</p>
 <h2 id="range"><a class="header" href="#range">range</a></h2>
-<pre><code class="language-ranty">[%range: a; b?; step?]
+<pre><code class="language-ranty">[range: a; b?; step?]
 </code></pre>
 <p>Builds a half-open integer range.</p>
 <h2 id="require"><a class="header" href="#require">require</a></h2>
-<pre><code class="language-ranty">[%require: module-path]
+<pre><code class="language-ranty">[require: module-path]
 </code></pre>
 <p>Imports a module through the active module resolver.</p>
 <h2 id="irange"><a class="header" href="#irange">irange</a></h2>
-<pre><code class="language-ranty">[%irange: a; b?; step?]
+<pre><code class="language-ranty">[irange: a; b?; step?]
 </code></pre>
 <p>Builds an inclusive integer range.</p>
 <h2 id="fork"><a class="header" href="#fork">fork</a></h2>
-<pre><code class="language-ranty">[%fork: seed?]
+<pre><code class="language-ranty">[fork: seed?]
 </code></pre>
 <p>Pushes a derived RNG onto the RNG stack. Integer and string seeds are both supported.</p>
 <h2 id="unfork"><a class="header" href="#unfork">unfork</a></h2>
-<pre><code class="language-ranty">[%unfork]
+<pre><code class="language-ranty">[unfork]
 </code></pre>
 <p>Pops the most recent derived RNG and resumes the previous RNG state.</p>
 <h2 id="try"><a class="header" href="#try">try</a></h2>
-<pre><code class="language-ranty">[%try: context; handler?]
+<pre><code class="language-ranty">[try: context; handler?]
 </code></pre>
 <p>Runs <code>context</code> and optionally dispatches runtime failures to <code>handler</code>.</p>
 <h2 id="ds-request"><a class="header" href="#ds-request">ds-request</a></h2>
-<pre><code class="language-ranty">[%ds-request: id; ...args]
+<pre><code class="language-ranty">[ds-request: id; ...args]
 </code></pre>
 <p>Calls a registered data source by ID and prints its result.</p>
 <h2 id="ds-query-sources"><a class="header" href="#ds-query-sources">ds-query-sources</a></h2>
-<pre><code class="language-ranty">[%ds-query-sources]
+<pre><code class="language-ranty">[ds-query-sources]
 </code></pre>
 <p>Prints the list of currently registered data-source IDs.</p>
 <h2 id="proto"><a class="header" href="#proto">proto</a></h2>
-<pre><code class="language-ranty">[%proto: map]
+<pre><code class="language-ranty">[proto: map]
 </code></pre>
 <p>Prints the prototype map of <code>map</code>, or <code>nothing</code> if no prototype is set.</p>
 <p>Prototype maps are used only as lookup fallbacks for missing keys.
@@ -266,7 +266,7 @@ They do not merge physically into the map, and they are not treated as bound obj
 ##
 </code></pre>
 <h2 id="set-proto"><a class="header" href="#set-proto">set-proto</a></h2>
-<pre><code class="language-ranty">[%set-proto: map; proto?]
+<pre><code class="language-ranty">[set-proto: map; proto?]
 </code></pre>
 <p>Sets or clears the prototype map for <code>map</code>.</p>
 <p>Pass <code>&lt;&gt;</code> to clear the current prototype.</p>
@@ -295,7 +295,7 @@ If a call to <code>[set-proto]</code> would create a cycle, Ranty raises a runti
 [set-proto: &lt;b&gt;; &lt;a&gt;] # runtime error
 </code></pre>
 <h2 id="error"><a class="header" href="#error">error</a></h2>
-<pre><code class="language-ranty">[%error: message?]
+<pre><code class="language-ranty">[error: message?]
 </code></pre>
 <p>Raises a <code>USER_ERROR</code> runtime failure with an optional message.</p>
 

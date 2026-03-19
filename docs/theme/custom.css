@@ -19,3 +19,13 @@ strong code.hljs {
 #sidebar .chapter > .chapter-item > a {
     font-weight: bolder !important;
 }
+
+.hljs-operator {
+    color: inherit;
+    opacity: 0.9;
+}
+
+.hljs-punctuation {
+    color: inherit;
+    opacity: 0.72;
+}

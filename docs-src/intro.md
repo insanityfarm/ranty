@@ -23,4 +23,4 @@ If you want to see this documentation in your language, please [file an issue](h
 
 For Rust API documentation, see [docs.rs](https://docs.rs/rant) (at this time, the link is for Rant 4, not Ranty).
 
-A true step-by-step beginner's guide to Ranty has not yet been written. In the meantime, see the [Getting Started](getting-started.md) docs page.
+If you want a guided, page-by-page walkthrough, start with the [Tutorial](getting-started/tutorial.md). For a quicker setup path, see [Getting Started](getting-started.md).

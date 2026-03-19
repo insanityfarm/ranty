@@ -4,7 +4,7 @@
 
 ```ranty
 
-[%and: a; b; c*]
+[and: a; b; c*]
 
 ```
 &rarr; `bool`
@@ -26,7 +26,7 @@ Any additional right-hand operands.
 
 ```ranty
 
-[%not: a]
+[not: a]
 
 ```
 &rarr; `bool`
@@ -42,7 +42,7 @@ The value to invert.
 
 ```ranty
 
-[%or: a; b; c*]
+[or: a; b; c*]
 
 ```
 &rarr; `bool`
@@ -65,7 +65,7 @@ Any additional right-hand operands.
 
 ```ranty
 
-[%xor: a; b]
+[xor: a; b]
 
 ```
 &rarr; `bool`

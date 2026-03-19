@@ -49,7 +49,7 @@ If you overwrite a lazy variable before it is forced, the original initializer i
 ```ranty
 <$secret ?= [load-secret]>
 <secret = demo>
-<secret> # -> "demo"
+<secret> # -> demo
 ```
 
 Constants can also be lazy:
@@ -67,7 +67,7 @@ Lazy initializers capture local variables by reference, just like closures:
 <$value = 1>
 <$lazy ?= <value>>
 <value = 2>
-<lazy> # -> "2"
+<lazy> # -> 2
 ```
 
 Any access rooted at the lazy binding forces it first, including child access and function lookup:

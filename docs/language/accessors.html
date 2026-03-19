@@ -213,7 +213,7 @@ You can leave the assignment part out and it will be initialized to nothing.</p>
 <p>If you overwrite a lazy variable before it is forced, the original initializer is discarded without running:</p>
 <pre><code class="language-ranty">&lt;$secret ?= [load-secret]&gt;
 &lt;secret = demo&gt;
-&lt;secret&gt; # -&gt; "demo"
+&lt;secret&gt; # -&gt; demo
 </code></pre>
 <p>Constants can also be lazy:</p>
 <pre><code class="language-ranty">&lt;%rules ?= [load-rules]&gt;
@@ -225,7 +225,7 @@ You can leave the assignment part out and it will be initialized to nothing.</p>
 <pre><code class="language-ranty">&lt;$value = 1&gt;
 &lt;$lazy ?= &lt;value&gt;&gt;
 &lt;value = 2&gt;
-&lt;lazy&gt; # -&gt; "2"
+&lt;lazy&gt; # -&gt; 2
 </code></pre>
 <p>Any access rooted at the lazy binding forces it first, including child access and function lookup:</p>
 <pre><code class="language-ranty">&lt;$items ?= [make-items]&gt;

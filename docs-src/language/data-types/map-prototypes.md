@@ -35,7 +35,7 @@ Use `[set-proto]` to attach or clear a prototype, and `[proto]` to read the curr
 [proto: <obj>]   # -> (:: flavor = vanilla)
 
 [set-proto: <obj>; <>]
-[proto: <obj>]   # -> <>
+[proto: <obj>]   # -> <> (nothing value, no output printed)
 ```
 
 ## Inherited reads
@@ -107,7 +107,7 @@ This is one of the most important rules to remember: inheritance affects lookup,
 Maps can store functions, so a prototype can also provide shared behavior:
 
 ```ranty
-<$animal = (:: speak = [?: name] { <name> says hello. })>
+<$animal = (:: speak = [?: name] { `<name> says hello. })>
 <$cat = (:: name = Miso)>
 [set-proto: <cat>; <animal>]
 

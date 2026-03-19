@@ -3,7 +3,7 @@
 ## if
 
 ```ranty
-[%if: condition]
+[if: condition]
 ```
 
 Marks the next block as conditional and resolves it only when `condition` is truthy.
@@ -11,7 +11,7 @@ Marks the next block as conditional and resolves it only when `condition` is tru
 ## elseif
 
 ```ranty
-[%elseif: condition]
+[elseif: condition]
 ```
 
 Marks the next block as an `else if` branch following a previous conditional block.
@@ -19,7 +19,7 @@ Marks the next block as an `else if` branch following a previous conditional blo
 ## else
 
 ```ranty
-[%else]
+[else]
 ```
 
 Marks the next block as the fallback branch after a previous conditional block.
@@ -27,7 +27,7 @@ Marks the next block as the fallback branch after a previous conditional block.
 ## mksel
 
 ```ranty
-[%mksel: selector-mode; match-value?]
+[mksel: selector-mode; match-value?]
 ```
 
 Creates and returns a selector with the specified mode. `match` mode requires a match value;
@@ -40,7 +40,7 @@ all other modes reject one.
 ## rep
 
 ```ranty
-[%rep: reps]
+[rep: reps]
 ```
 
 Sets the repetition count or repetition mode for the next block.
@@ -48,7 +48,7 @@ Sets the repetition count or repetition mode for the next block.
 ## sel
 
 ```ranty
-[%sel: selector?]
+[sel: selector?]
 ```
 
 Sets the active selector for the next block. With no argument, prints the current selector or `nothing`.
@@ -56,7 +56,7 @@ Sets the active selector for the next block. With no argument, prints the curren
 ## match
 
 ```ranty
-[%match: value]
+[match: value]
 ```
 
 Sets the active selector for the next block to a `match` selector bound to `value`.
@@ -64,7 +64,7 @@ Sets the active selector for the next block to a `match` selector bound to `valu
 ## sep
 
 ```ranty
-[%sep: separator]
+[sep: separator]
 ```
 
 Sets the separator value for repeated block iterations.
@@ -72,7 +72,7 @@ Sets the separator value for repeated block iterations.
 ## mut
 
 ```ranty
-[%mut: mutator?]
+[mut: mutator?]
 ```
 
 Sets the mutator function for the next block, or clears it when passed `nothing`.
@@ -80,7 +80,7 @@ Sets the mutator function for the next block, or clears it when passed `nothing`
 ## sel-skip
 
 ```ranty
-[%sel-skip: selector; n?]
+[sel-skip: selector; n?]
 ```
 
 Advances `selector` without printing any selected value. This is unsupported for `match` selectors.
@@ -88,7 +88,7 @@ Advances `selector` without printing any selected value. This is unsupported for
 ## sel-freeze
 
 ```ranty
-[%sel-freeze: selector; frozen?]
+[sel-freeze: selector; frozen?]
 ```
 
 Sets the frozen state of `selector`. Omitting `frozen` freezes it. This is unsupported for `match` selectors.
@@ -96,7 +96,7 @@ Sets the frozen state of `selector`. Omitting `frozen` freezes it. This is unsup
 ## sel-frozen
 
 ```ranty
-[%sel-frozen: selector]
+[sel-frozen: selector]
 ```
 
 Prints whether `selector` is currently frozen. This is unsupported for `match` selectors.
@@ -104,7 +104,7 @@ Prints whether `selector` is currently frozen. This is unsupported for `match` s
 ## reset-attrs
 
 ```ranty
-[%reset-attrs]
+[reset-attrs]
 ```
 
 Resets the current attribute state back to the runtime defaults.
@@ -112,7 +112,7 @@ Resets the current attribute state back to the runtime defaults.
 ## step
 
 ```ranty
-[%step]
+[step]
 ```
 
 Prints the current repeater step value using a 1-based index.
@@ -120,7 +120,7 @@ Prints the current repeater step value using a 1-based index.
 ## step-index
 
 ```ranty
-[%step-index]
+[step-index]
 ```
 
 Prints the zero-based iteration index of the active repeater.
@@ -128,7 +128,7 @@ Prints the zero-based iteration index of the active repeater.
 ## step-count
 
 ```ranty
-[%step-count]
+[step-count]
 ```
 
 Prints the total number of iterations scheduled for the active repeater. Infinite repeaters report `0`.

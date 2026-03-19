@@ -2,6 +2,8 @@
 
 Ranty can be used through the CLI or embedded as a Rust library.
 
+If you want a slower, story-driven walk through the language, head to the [Tutorial](getting-started/tutorial.md).
+
 ## Install the CLI
 
 ```sh

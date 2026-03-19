@@ -178,7 +178,7 @@
                         <h1 id="standard-library-collection-functions"><a class="header" href="#standard-library-collection-functions">Standard Library: Collection functions</a></h1>
 <h2 id="assoc"><a class="header" href="#assoc">assoc</a></h2>
 <pre><code class="language-ranty">
-[%assoc: keys; values]
+[assoc: keys; values]
 
 </code></pre>
 <p>→ <code>map</code></p>
@@ -222,7 +222,7 @@ The values to associate with the keys.</p>
 </code></pre>
 <h2 id="augment"><a class="header" href="#augment">augment</a></h2>
 <pre><code class="language-ranty">
-[%augment: dst-map; src-map]
+[augment: dst-map; src-map]
 
 </code></pre>
 <p>→ <code>map</code></p>
@@ -234,7 +234,7 @@ The map to copy and augment.</p>
 The map containing the values to add to those in <code>dst-map</code>.</p>
 <h2 id="augment-self"><a class="header" href="#augment-self">augment-self</a></h2>
 <pre><code class="language-ranty">
-[%augment-self: dst-map; src-map]
+[augment-self: dst-map; src-map]
 
 </code></pre>
 <p>Adds the values from <code>src-map</code> to the values with matching keys on <code>dst-map</code>.</p>
@@ -245,7 +245,7 @@ The map to augment.</p>
 The map containing the values to add to those in <code>dst-map</code>.</p>
 <h2 id="augment-thru"><a class="header" href="#augment-thru">augment-thru</a></h2>
 <pre><code class="language-ranty">
-[%augment-self: dst-map; src-map]
+[augment-thru: dst-map; src-map]
 
 </code></pre>
 <p>→ <code>map</code></p>
@@ -257,7 +257,7 @@ The map to augment.</p>
 The map containing the values to add to those in <code>dst-map</code>.</p>
 <h2 id="chunks"><a class="header" href="#chunks">chunks</a></h2>
 <pre><code class="language-ranty">
-[%chunks: collection; count]
+[chunks: collection; count]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -273,7 +273,7 @@ The number of chunks to produce.</p>
 <p>Raises a runtime error if <code>collection</code> cannot be sliced.</p>
 <h2 id="clear"><a class="header" href="#clear">clear</a></h2>
 <pre><code class="language-ranty">
-[%clear: collection]
+[clear: collection]
 
 </code></pre>
 <p>Removes all elements from a list or map.</p>
@@ -284,19 +284,19 @@ The collection to clear.</p>
 <p>Causes a runtime error if <code>collection</code> is not a list or map.</p>
 <h2 id="fill-self"><a class="header" href="#fill-self">fill-self</a></h2>
 <pre><code class="language-ranty">
-[%fill-self: list; value]
+[fill-self: list; value]
 
 </code></pre>
 <p>Mutates <code>list</code> in place by replacing every element with <code>value</code>.</p>
 <h2 id="fill-thru"><a class="header" href="#fill-thru">fill-thru</a></h2>
 <pre><code class="language-ranty">
-[%fill-thru: list; value]
+[fill-thru: list; value]
 
 </code></pre>
 <p>Mutates <code>list</code> in place and then prints the same list handle.</p>
 <h2 id="list"><a class="header" href="#list">list</a></h2>
 <pre><code class="language-ranty">
-[%list: values*]
+[list: values*]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -306,7 +306,7 @@ The collection to clear.</p>
 The values to store in the list.</p>
 <h2 id="tuple"><a class="header" href="#tuple">tuple</a></h2>
 <pre><code class="language-ranty">
-[%tuple: values*]
+[tuple: values*]
 
 </code></pre>
 <p>→ <code>tuple</code></p>
@@ -316,13 +316,13 @@ The values to store in the list.</p>
 The values to store in the tuple.</p>
 <h2 id="nlist"><a class="header" href="#nlist">nlist</a></h2>
 <pre><code class="language-ranty">
-[%nlist: values*]
+[nlist: values*]
 
 </code></pre>
 <p>Prints a single-element list whose only value is the list constructed from <code>values</code>.</p>
 <h2 id="filter"><a class="header" href="#filter">filter</a></h2>
 <pre><code class="language-ranty">
-[%filter: list; predicate]
+[filter: list; predicate]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -355,11 +355,11 @@ The current item to be checked.</p>
 <pre><code class="language-ranty">&lt;$words = [split: "the quick brown fox jumps over the lazy dog";\s]&gt;
 &lt;$short-words = [filter: &lt;words&gt;; [?:word] { [le: [len: &lt;word&gt;]; 3] }]&gt;
 [join: &lt;short-words&gt;; ,\s]
-# -&gt; the fox the dog
+# -&gt; the, fox, the, dog
 </code></pre>
 <h2 id="has"><a class="header" href="#has">has</a></h2>
 <pre><code class="language-ranty">
-[%has: collection; value]
+[has: collection; value]
 
 </code></pre>
 <p>→ <code>bool</code></p>
@@ -374,7 +374,7 @@ The value to search for. <br/>
 If <code>collection</code> is of type <code>map</code>, <code>value</code> will be coerced to a string before searching (as map keys can only be strings).</p>
 <h2 id="index-of"><a class="header" href="#index-of">index-of</a></h2>
 <pre><code class="language-ranty">
-[%index-of: list; value]
+[index-of: list; value]
 
 </code></pre>
 <p>→ <code>int | nothing</code></p>
@@ -394,7 +394,7 @@ The value to search for.</p>
 </code></pre>
 <h2 id="join"><a class="header" href="#join">join</a></h2>
 <pre><code class="language-ranty">
-[%join: list; separator?]
+[join: list; separator?]
 
 </code></pre>
 <p>→ <code>any*</code></p>
@@ -406,7 +406,7 @@ The list whose elements to print.</p>
 The separator to print between each element.</p>
 <h2 id="last-index-of"><a class="header" href="#last-index-of">last-index-of</a></h2>
 <pre><code class="language-ranty">
-[%last-index-of: list; value]
+[last-index-of: list; value]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -426,7 +426,7 @@ The value to search for.</p>
 </code></pre>
 <h2 id="map"><a class="header" href="#map">map</a></h2>
 <pre><code class="language-ranty">
-[%map: list; map-func]
+[map: list; map-func]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -445,12 +445,12 @@ The current item to map.</p>
 <pre><code class="language-ranty"># Multiple each element of a list by 10
 &lt;$numbers = (: 1; 2; 3; 4; 5; 6; 7; 8; 9; 10)&gt;
 &lt;$tens = [map: &lt;numbers&gt;; [?:x] { [mul: &lt;x&gt;; 10] }]&gt;
-[join: ,\s; &lt;tens&gt;]
+[join: &lt;tens&gt;; ,\s]
 # -&gt; 10, 20, 30, 40, 50, 60, 70, 80, 90, 100
 </code></pre>
 <h2 id="oxford-join"><a class="header" href="#oxford-join">oxford-join</a></h2>
 <pre><code class="language-ranty">
-[%oxford-join: comma; conj; comma-conj; list]
+[oxford-join: comma; conj; comma-conj; list]
 
 </code></pre>
 <p>→ <code>any*</code></p>
@@ -510,7 +510,7 @@ the <a href="https://en.wikipedia.org/wiki/Serial_comma">Oxford comma</a> or the
 </code></pre>
 <h2 id="push"><a class="header" href="#push">push</a></h2>
 <pre><code class="language-ranty">
-[%push: list; value]
+[push: list; value]
 
 </code></pre>
 <p>Appends a value to the end of a list.</p>
@@ -521,7 +521,7 @@ The list to modify.</p>
 The value to add to the end of <code>list</code>.</p>
 <h2 id="pop"><a class="header" href="#pop">pop</a></h2>
 <pre><code class="language-ranty">
-[%pop: list]
+[pop: list]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -531,7 +531,7 @@ The value to add to the end of <code>list</code>.</p>
 The list to modify.</p>
 <h2 id="insert"><a class="header" href="#insert">insert</a></h2>
 <pre><code class="language-ranty">
-[%insert: collection; value; pos]
+[insert: collection; value; pos]
 
 </code></pre>
 <p>Inserts <code>value</code> into a list or map at the position <code>pos</code>.</p>
@@ -549,7 +549,7 @@ For lists, this is the index; for maps, this is the key.</p>
 <p>Raises an error if <code>pos</code> is out of range or not the correct type for the provided collection.</p>
 <h2 id="remove"><a class="header" href="#remove">remove</a></h2>
 <pre><code class="language-ranty">
-[%remove: collection; pos]
+[remove: collection; pos]
 
 </code></pre>
 <p>Removes the value at the <code>pos</code> from a list or map.</p>
@@ -564,7 +564,7 @@ The location of the value to remove. Must be of type <code>int</code> for lists.
 <p>Raises an error if <code>pos</code> is an unsupported type for the provided collection.</p>
 <h2 id="rev"><a class="header" href="#rev">rev</a></h2>
 <pre><code class="language-ranty">
-[%rev: collection]
+[rev: collection]
 
 </code></pre>
 <p>→ <code>list | string | block | range</code></p>
@@ -578,7 +578,7 @@ The collection to reverse.</p>
 </code></pre>
 <h2 id="shuffle"><a class="header" href="#shuffle">shuffle</a></h2>
 <pre><code class="language-ranty">
-[%shuffle: list]
+[shuffle: list]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -595,7 +595,7 @@ The input list.</p>
 </code></pre>
 <h2 id="shuffle-self"><a class="header" href="#shuffle-self">shuffle-self</a></h2>
 <pre><code class="language-ranty">
-[%shuffle-self: list]
+[shuffle-self: list]
 
 </code></pre>
 <p>Shuffles the elements of a list in-place.</p>
@@ -616,7 +616,7 @@ The input list.</p>
 </code></pre>
 <h2 id="shuffle-thru"><a class="header" href="#shuffle-thru">shuffle-thru</a></h2>
 <pre><code class="language-ranty">
-[%shuffle-thru: list]
+[shuffle-thru: list]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -630,7 +630,7 @@ The input list.</p>
 <p><strong>RNG complexity</strong><br/>\(n - 1\)<br/></p>
 <h2 id="sift"><a class="header" href="#sift">sift</a></h2>
 <pre><code class="language-ranty">
-[%sift: list; target-size]
+[sift: list; target-size]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -662,7 +662,7 @@ The maximum number of elements to reduce the <code>list</code> to.</p>
 </code></pre>
 <h2 id="sift-self"><a class="header" href="#sift-self">sift-self</a></h2>
 <pre><code class="language-ranty">
-[%sift-self: list; target-size]
+[sift-self: list; target-size]
 
 </code></pre>
 <p>Removes random elements from a list in-place until the number of elements in the list reaches <code>target-size</code>.
@@ -698,7 +698,7 @@ The maximum number of elements to reduce the <code>list</code> to.</p>
 </code></pre>
 <h2 id="sift-thru"><a class="header" href="#sift-thru">sift-thru</a></h2>
 <pre><code class="language-ranty">
-[%sift-thru: list; target-size]
+[sift-thru: list; target-size]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -712,7 +712,7 @@ The input list.</p>
 The maximum number of elements to reduce the <code>list</code> to.</p>
 <h2 id="squish"><a class="header" href="#squish">squish</a></h2>
 <pre><code class="language-ranty">
-[%squish: list; target-size]
+[squish: list; target-size]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -725,7 +725,7 @@ The input list.</p>
 The maximum number of elements to reduce the list copy to.</p>
 <h2 id="squish-self"><a class="header" href="#squish-self">squish-self</a></h2>
 <pre><code class="language-ranty">
-[%squish-self: list; target-size]
+[squish-self: list; target-size]
 
 </code></pre>
 <p>Merges random adjacent elements in a list using addition until the number of elements in the list reaches <code>target-size</code>.
@@ -757,7 +757,7 @@ After: `[join: ,\s; &lt;numbers&gt;]\n
 </code></pre>
 <h2 id="squish-thru"><a class="header" href="#squish-thru">squish-thru</a></h2>
 <pre><code class="language-ranty">
-[%squish-thru: list; target-size]
+[squish-thru: list; target-size]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -770,7 +770,7 @@ The input list.</p>
 The maximum number of elements to reduce the list to.</p>
 <h2 id="sort"><a class="header" href="#sort">sort</a></h2>
 <pre><code class="language-ranty">
-[%sort: list]
+[sort: list]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -780,7 +780,7 @@ The maximum number of elements to reduce the list to.</p>
 The input list.</p>
 <h2 id="sort-self"><a class="header" href="#sort-self">sort-self</a></h2>
 <pre><code class="language-ranty">
-[%sort-self: list]
+[sort-self: list]
 
 </code></pre>
 <p>Sorts the elements of a list in-place in ascending order.</p>
@@ -789,7 +789,7 @@ The input list.</p>
 The input list.</p>
 <h2 id="sort-thru"><a class="header" href="#sort-thru">sort-thru</a></h2>
 <pre><code class="language-ranty">
-[%sort-thru: list]
+[sort-thru: list]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -799,14 +799,14 @@ The input list.</p>
 The input list.</p>
 <h2 id="sum"><a class="header" href="#sum">sum</a></h2>
 <pre><code class="language-ranty">
-[%sum: list]
+[sum: list]
 
 </code></pre>
 <p>→ <code>any</code></p>
 <p>Adds the elements of a list together from left to right and prints the result.</p>
 <h2 id="take"><a class="header" href="#take">take</a></h2>
 <pre><code class="language-ranty">
-[%take: collection; pos]
+[take: collection; pos]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -821,7 +821,7 @@ If <code>collection</code> is a <code>list</code>, this argument must be an <cod
 <p>Raises an error if <code>pos</code> is not a valid location in the collection.</p>
 <h2 id="translate"><a class="header" href="#translate">translate</a></h2>
 <pre><code class="language-ranty">
-[%translate: list; map]
+[translate: list; map]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -874,7 +874,7 @@ Decoded: \"&lt;decoded-message&gt;\"\n
 </code></pre>
 <h2 id="keys"><a class="header" href="#keys">keys</a></h2>
 <pre><code class="language-ranty">
-[%keys: map]
+[keys: map]
 
 </code></pre>
 <p>Prints a list of the keys stored in <code>map</code>.</p>
@@ -882,7 +882,7 @@ Decoded: \"&lt;decoded-message&gt;\"\n
 Inherited prototype keys are not included.</p>
 <h2 id="values"><a class="header" href="#values">values</a></h2>
 <pre><code class="language-ranty">
-[%values: map]
+[values: map]
 
 </code></pre>
 <p>Prints a list of the values stored in <code>map</code>.</p>
@@ -890,7 +890,7 @@ Inherited prototype keys are not included.</p>
 Inherited prototype values are not included.</p>
 <h2 id="zip"><a class="header" href="#zip">zip</a></h2>
 <pre><code class="language-ranty">
-[%zip: list-a; list-b; zip-func]
+[zip: list-a; list-b; zip-func]
 
 </code></pre>
 <p>→ <code>list</code></p>

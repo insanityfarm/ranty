@@ -1,16 +1,14 @@
 # Ranty
 
-This is a fork of the seemingly abandoned [Rant 4](https://github.com/rant-lang/rant) project. Thanks to [Robin Pederson](https://github.com/TheBerkin), the original project creator, and additional thanks to [Leander Neiss](https://github.com/lanice) and [Tamme Schichler](https://github.com/Tamschi) for their contributions.
-
-Ranty was created in 2026 by prompting agentic AI to complete the apparent remaining work in `Rant v4.0.0-alpha.33` so the fork could reach the next stable, release-ready milestone. It also includes implementations of the proposed or in-flight features described on the [Rant 5 Roadmap](https://github.com/orgs/rant-lang/projects/1/views/1). A good-faith effort was made to honor the original maintainer's intent, but some speculation and decision-making was required to execute on those descriptions. As with all vibe-coded software, those features and indeed all of Ranty may not be as functional as intended. Issues and pull requests are welcome.
-
 **Ranty** is a dynamically-typed, multi-paradigm templating language designed primarily for procedural generation. It is designed with scalability in mind: it can handle tasks ranging from simple randomized string generation to more complex workloads such as procedural dialogue, character generation, and worldbuilding.
 
 ## Introducing Ranty
 
 Ranty is the result of a long-standing desire for an all-in-one data templating tool made especially for creative applications like games and interactive art.
 
-Ranty keeps the reimagined syntax, standard library, interpreter, and runtime behavior that made the upstream project compelling, while shipping them as a stable, release-ready fork with first-class `.ranty` source files and continued compatibility for legacy `.rant` files.
+This is a fork of [Rant 4](https://github.com/rant-lang/rant), which appears to have been abandoned before its first release. Many thanks to [Robin Pederson](https://github.com/TheBerkin), Rant's original creator and maintainer, with additional appreciation for the contributions of [Leander Neiss](https://github.com/lanice) and [Tamme Schichler](https://github.com/Tamschi) to that codebase.
+
+Ranty was created in 2026 with the assistance of agentic AI (OpenAI's [Codex](https://openai.com/codex/)). Our goal was to complete the apparent remaining work in the Rant 4 project, uplifting it from its last version (`v4.0.0-alpha.33`) to a stable, feature-complete release. While we were at it we took a stab at letting Codex implement most of the proposed or in-flight features described on the [Rant 5 Roadmap](https://github.com/orgs/rant-lang/projects/1/views/1). We made a good-faith effort to honor Robin Pederson's intent for these, but as they're fairly underspecified we had to do some speculation and decision-making of our own. So this disclaimer: As with all vibe-coded software, those features (and indeed all of Ranty) may not be as functional as intended. We encourage everyone to submit issues as concerns are found, and PRs if you want to help fix them!
 
 ## Features
 

@@ -41,7 +41,7 @@ A prototype can also serve as a behavior bundle:
 ```ranty
 <$describable = (::
   describe = [?: obj] {
-    <obj/name> the <obj/species>
+    `<obj/name> the `<obj/species>
   };
 )>
 
@@ -68,10 +68,8 @@ The factory creates a fresh map, then attaches the shared prototype:
 )>
 
 [$make-counter: start ? 0] {
-  <
-    $counter = (:: value = <start>);
-    [set-proto: <counter>; <counter-proto>];
-  >
+  <$counter = (:: value = <start>)>
+  [set-proto: <counter>; <counter-proto>]
   <counter>
 }
 
@@ -82,7 +80,7 @@ The factory creates a fresh map, then attaches the shared prototype:
 [counter-a/inc: <counter-a>]
 [counter-b/inc: <counter-b>]
 
-[counter-a/read: <counter-a>], [counter-b/read: <counter-b>]
+[counter-a/read: <counter-a>],\s[counter-b/read: <counter-b>]
 # -> 2, 11
 ```
 

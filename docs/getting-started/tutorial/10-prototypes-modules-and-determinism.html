@@ -1,0 +1,321 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Prototypes, Modules, and Determinism - Ranty Reference</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/custom.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Ranty Reference</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="prototypes-modules-and-determinism"><a class="header" href="#prototypes-modules-and-determinism">Prototypes, Modules, and Determinism</a></h1>
+<p>Back at the gate-side trunk, with the lane open before you and both stalls finally in sight, you set the last pages beside Juniper's bell.</p>
+<p>Moonrise is close enough to silver the wagon rims. Mira works the bakery counter nearest the gate. Farther down the lane, Tavi polishes a kettle lid with his sleeve as if brightness might fix fate. Juniper pretends not to watch the queue and fails. You have not seen a market cut it this close since the Glass Coast rains. One last assembly, then the gates open.</p>
+<h2 id="prototypes-make-maps-share-behavior"><a class="header" href="#prototypes-make-maps-share-behavior">Prototypes make maps share behavior</a></h2>
+<pre><code class="language-ranty example"># A prototype with a shared mood and description function.
+&lt;$stall-proto = (::
+  mood = cozy;
+  describe = [?: stall] {
+    `&lt;stall/name&gt; hums with `&lt;stall/mood&gt; light.
+  };
+)&gt;
+&lt;$stall = (:: name = "Moon Bakery")&gt;
+[set-proto: &lt;stall&gt;; &lt;stall-proto&gt;]
+[stall/describe: &lt;stall&gt;]
+</code></pre>
+<pre><code class="language-text expected">Moon Bakery hums with cozy light.
+</code></pre>
+<p>The function stored on the prototype is just a normal function found through map lookup. Ranty does not pass a hidden <code>self</code>, so you hand the map in explicitly as <code>stall</code>. That keeps the magic small and readable when you are this close to opening.</p>
+<h2 id="writes-stay-local-even-when-reads-inherit"><a class="header" href="#writes-stay-local-even-when-reads-inherit">Writes stay local, even when reads inherit</a></h2>
+<p>At first glance, it looks as if changing one stall might overwrite the shared defaults for every other stall.</p>
+<p><strong>Wrong expectation</strong></p>
+<pre><code class="language-ranty">&lt;$defaults = (:: mood = calm)&gt;
+&lt;$stall = (::)&gt;
+[set-proto: &lt;stall&gt;; &lt;defaults&gt;]
+&lt;stall/mood = excited&gt;
+&lt;defaults/mood&gt;
+</code></pre>
+<p><strong>What happened</strong></p>
+<pre><code class="language-text">calm
+</code></pre>
+<p>The prototype kept its original value. Writes stay on the receiving map.</p>
+<pre><code class="language-ranty example">&lt;$defaults = (:: mood = calm)&gt;
+&lt;$stall = (::)&gt;
+[set-proto: &lt;stall&gt;; &lt;defaults&gt;]
+&lt;stall/mood = excited&gt;
+[proto: &lt;stall&gt;]\n
+&lt;stall/mood&gt;\n
+&lt;defaults/mood&gt;
+</code></pre>
+<pre><code class="language-text expected">(:: mood = calm)
+excited
+calm
+</code></pre>
+<h2 id="modules"><a class="header" href="#modules">Modules</a></h2>
+<p>The next example loads a tracked tutorial fixture from <code>tests/sources/tutorial/</code>. The fixture itself loads a sibling module through a relative path, so this doubles as a tiny module-system tour. This is the opening line you will hand back to Juniper when the gates swing wide.</p>
+<pre><code class="language-ranty example">@require kit: "tests/sources/tutorial/moon-market-kit"
+[kit/opening-line: Juniper]
+</code></pre>
+<pre><code class="language-text expected">violet awnings rustle over Juniper's stall.
+Specialty: ink-jam
+Omen: the tea hums blue
+</code></pre>
+<h2 id="determinism-with-forks"><a class="header" href="#determinism-with-forks">Determinism with forks</a></h2>
+<p><code>[fork]</code> lets you branch the random stream, and <code>[unfork]</code> returns to the previous one.</p>
+<pre><code class="language-ranty example">@require kit: "tests/sources/tutorial/moon-market-kit"
+[fork: 99][kit/omen]\n
+[unfork]
+[kit/omen]
+</code></pre>
+<pre><code class="language-text expected">a moth lands on the till
+three bells ring at once
+</code></pre>
+<p>That is the useful kind of determinism: the main stream stays predictable, but a nested sub-generator can have its own private randomness. Tavi gets his eerie side channel, and Juniper still gets reproducible tests.</p>
+<h2 id="opening-night-all-together"><a class="header" href="#opening-night-all-together">Opening night, all together</a></h2>
+<p>The Moon-Market generator you have been assembling is still small, but it already has the same moving parts as many bigger interactive-fiction tools: reusable text, stored world state, branching tables, helper functions, formatting control, and modular pieces you can shuffle into new shapes.</p>
+<p>If you want to run the final example from the CLI, the docs verifier uses the same basic idea:</p>
+<pre><code class="language-sh">ranty --seed 1 --eval '@require kit: "tests/sources/tutorial/moon-market-kit" [kit/opening-line: Juniper]'
+</code></pre>
+<pre><code class="language-text">violet awnings rustle over Juniper's stall.
+Specialty: ink-jam
+Omen: the tea hums blue
+</code></pre>
+<p>More information about prototypes, modules, and deterministic helpers can be found in the Ranty documentation for <a href="../../language/data-types/map-prototypes.html">Map Prototypes</a>, <a href="../../language/data-types/prototype-patterns.html">Prototype Patterns</a>, <a href="../../language/keywords/require.html">@require</a>, <a href="../../modules.html">Modules</a>, and <a href="../../stdlib/general.html">General</a>.</p>
+<p>Juniper rings the bell at the gate and finally lets her shoulders drop. Mira slides the first tray of buns onto the counter nearest you and flashes a flour-bright grin. Farther down the lane, Tavi lifts the tea kettle, hears it sing properly at last, and laughs out loud. The awnings stir, the lanterns catch, and the Wandering Moon-Market opens on time. Juniper gives you one grave nod of thanks. When the first rush thins, Mira presses a warm star bun into your hand, and Tavi promises your omen will always get the best kettle.</p>
+<p>Mission accomplished.</p>
+<h2 id="coverage-ledger"><a class="header" href="#coverage-ledger">Coverage ledger</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Feature family</th><th>First tutorial page</th></tr></thead><tbody>
+<tr><td>Text, comments, escape sequences, hinting, string literals</td><td><a href="01-text-comments-escapes-and-hinting.html">Text, Comments, Escapes, and Hinting</a></td></tr>
+<tr><td>Accessors, setters, constants, <code>nothing</code>, fallback syntax, lazy definitions</td><td><a href="02-accessors-variables-constants-and-nothing.html">Accessors, Variables, Constants, and Nothing</a></td></tr>
+<tr><td>Lists, tuples, maps, access paths, slices, dynamic keys, anonymous accessors</td><td><a href="03-lists-tuples-maps-and-access-paths.html">Lists, Tuples, Maps, and Access Paths</a></td></tr>
+<tr><td>Arithmetic, logic, comparison, truthiness, booleans, conditional expressions, compound assignment</td><td><a href="04-arithmetic-logic-and-conditionals.html">Arithmetic, Logic, and Conditionals</a></td></tr>
+<tr><td>Square-bracket calls, built-in helpers, ranges, user functions, lambdas, optional/default/lazy/variadic parameters, closures, <code>@return</code>, globals, descoping</td><td><a href="05-function-calls-functions-and-ranges.html">Function Calls, Functions, and Ranges</a></td></tr>
+<tr><td>Blocks, sinking, selectors, repetition, separators, <code>@weight</code>, <code>@on</code>, <code>match</code>, selector handles</td><td><a href="06-blocks-selectors-and-sinking.html">Blocks, Selectors, and Sinking</a></td></tr>
+<tr><td><code>@step</code>, <code>@total</code>, <code>[step]</code>, control-flow charms, protected blocks, attribute keywords and mutators</td><td><a href="07-repetition-state-control-flow-and-attributes.html">Repetition State, Control Flow, and Attributes</a></td></tr>
+<tr><td>Piping, pipeval, assignment pipe, parametric spread, temporal spread, synchronized spread, complex spread</td><td><a href="08-pipes-and-argument-spreading.html">Pipes and Argument Spreading</a></td></tr>
+<tr><td><code>@edit</code>, <code>@text</code>, whitespace formatting, number formatting, string polish helpers</td><td><a href="09-output-editing-and-formatting.html">Output Editing and Formatting</a></td></tr>
+<tr><td>Prototypes, modules, <code>@require</code>, determinism with <code>fork</code> and <code>unfork</code></td><td><a href="10-prototypes-modules-and-determinism.html">Prototypes, Modules, and Determinism</a></td></tr>
+</tbody></table>
+</div>
+<p>From here, the best next step is not to reread the tutorial. It is to steal one page of it and turn that page into your own scene generator.</p>
+<p>Previous: <a href="09-output-editing-and-formatting.html">Output Editing and Formatting</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../getting-started/tutorial/09-output-editing-and-formatting.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../language.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../getting-started/tutorial/09-output-editing-and-formatting.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../language.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

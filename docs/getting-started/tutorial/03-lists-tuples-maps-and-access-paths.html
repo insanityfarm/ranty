@@ -1,0 +1,354 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Lists, Tuples, Maps, and Access Paths - Ranty Reference</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Stable Ranty language, runtime, CLI, and standard-library reference.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/custom.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Ranty Reference</h1>
+
+                    <div class="right-buttons">
+                        <a href="https://github.com/insanityfarm/ranty" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="lists-tuples-maps-and-access-paths"><a class="header" href="#lists-tuples-maps-and-access-paths">Lists, Tuples, Maps, and Access Paths</a></h1>
+<p>Juniper leads you farther down the lane to the tea stall, where a narrow prep board has vanished beneath labels, kettle tags, and one chipped cup full of pins.</p>
+<p>The man guarding the mess taps the nearest kettle with one fingernail and says, "Tavi. If you can sort this lot, I will owe you tea." Bakery items run down one margin of Juniper's clipboard. Kettle labels crawl up another. Stall facts fill every gap between. You remember caravan clerks who tried to tame this sort of mess with string and colored chalk. Ranty has kinder containers than string.</p>
+<h2 id="lists-tuples-and-maps-in-plain-english"><a class="header" href="#lists-tuples-and-maps-in-plain-english">Lists, tuples, and maps in plain English</a></h2>
+<p>If you are not a programmer, treat these as three different kinds of storage furniture:</p>
+<ul>
+<li>A <code>list</code> is a shelf of items in order. You can replace items, remove them, or add more later.</li>
+<li>A <code>tuple</code> is a tied bundle of items in order. You use it when the shape itself is meant to stay fixed.</li>
+<li>A <code>map</code> is a cabinet of labeled drawers. You look values up by name instead of by position.</li>
+</ul>
+<p>Those ideas matter more than the terminology. The syntax is just how you tell Ranty what shape this heap of market notes ought to take.</p>
+<h2 id="lists-and-tuples-keep-ordered-data"><a class="header" href="#lists-and-tuples-keep-ordered-data">Lists and tuples keep ordered data</a></h2>
+<p>Tavi slides two different scraps across the prep board: one loose row of kettle tags that may be reordered, and one fixed three-part kettle call that always stays in the same order. That is the difference between a list and a tuple.</p>
+<ul>
+<li>Lists use <code>(: item; item; item)</code>.</li>
+<li>Tuples use <code>(item; item; item)</code>.</li>
+<li>In both, semicolons separate items.</li>
+<li>This tutorial writes one space after each semicolon to keep the items easy to scan.</li>
+</ul>
+<pre><code class="language-ranty example"># A list is an ordered shelf Tavi may reshuffle later.
+&lt;$goods = (: mint-steam; ember-tea; moon-sugar)&gt;
+# A tuple is an ordered bundle whose three parts belong together.
+&lt;$kettle-call = (pour; steep; serve)&gt;
+First tag: &lt;goods/0&gt;\n
+Last tag: &lt;goods/-1&gt;\n
+Middle step: &lt;kettle-call/1&gt;
+</code></pre>
+<pre><code class="language-text expected">First tag: mint-steam
+Last tag: moon-sugar
+Middle step: steep
+</code></pre>
+<p>The <code>/0</code>, <code>/-1</code>, and <code>/1</code> parts are access paths. They let you reach into an ordered container by position. Indices are zero-based, so <code>/0</code> means "the first item" and <code>/1</code> means "the second item." Negative indices count backward from the end, which is handy when Juniper only cares about the last tag on a row.</p>
+<p>Lists and tuples may both be ordered, but they are not interchangeable. A list is mutable and resizable. A tuple is immutable and fixed-shape. Use a list when the number of items may change. Use a tuple when the structure itself is part of the meaning.</p>
+<p>If you ever need a one-item tuple later, write it with a trailing semicolon, like <code>(hush;)</code>. That extra semicolon is what marks it as a tuple with one item.</p>
+<h2 id="a-list-can-work-but-this-job-wants-labels"><a class="header" href="#a-list-can-work-but-this-job-wants-labels">A list can work, but this job wants labels</a></h2>
+<p>Juniper taps three lines on the clipboard: stall name, stall kind, and the blend for tonight. "I can keep the order straight for one stall," she says, "but not for twelve." A list can store those facts, but only if everyone remembers which numbered slot means what.</p>
+<p><strong>A first pass</strong></p>
+<pre><code class="language-ranty"># Slot 0 is the stall name, slot 1 is the kind, slot 2 is the night blend.
+&lt;$stall = (: "Tavi's Tea Stall"; tea; blue-steam)&gt;
+&lt;stall/0&gt;\n
+&lt;stall/1&gt;\n
+&lt;stall/2&gt;
+</code></pre>
+<p><strong>What happened</strong></p>
+<pre><code class="language-text">Tavi's Tea Stall
+tea
+blue-steam
+</code></pre>
+<p>That code is valid, and it does work. It is just not good enough for this task. Juniper has too many moving parts for numbered memory games. She wants labeled drawers instead of shelf positions.</p>
+<h2 id="maps-hold-named-facts"><a class="header" href="#maps-hold-named-facts">Maps hold named facts</a></h2>
+<p>Maps use <code>(:: ... )</code>.</p>
+<pre><code class="language-ranty example"># Build a stall record for Tavi's prep board.
+&lt;$secret-key = "aftertaste"&gt;
+&lt;$stall-name = "Tavi's Tea Stall"&gt;
+&lt;$kind = tea&gt;
+&lt;$stall = (::
+  # Shorthand: use the current values of these variables.
+  &lt;stall-name&gt;;
+  &lt;kind&gt;;
+  # A quoted key can contain spaces.
+  "night blend" = blue-steam;
+  # A dynamic key lets Juniper choose the drawer name at runtime.
+  (&lt;secret-key&gt;) = moon-peel;
+)&gt;
+&lt;stall/stall-name&gt;\n
+&lt;stall/kind&gt;\n
+&lt;stall/("night blend")&gt;\n
+&lt;stall/(&lt;secret-key&gt;)&gt;
+</code></pre>
+<pre><code class="language-text expected">Tavi's Tea Stall
+tea
+blue-steam
+moon-peel
+</code></pre>
+<p>This one record gives Juniper one tidy record she can actually trust, and it also shows four useful map tricks:</p>
+<ul>
+<li><code>&lt;stall-name&gt;;</code> is shorthand for <code>stall-name = &lt;stall-name&gt;;</code></li>
+<li>plain identifiers such as <code>kind</code> work as keys</li>
+<li>quoted keys can contain spaces</li>
+<li><code>(&lt;secret-key&gt;)</code> creates a key from another value</li>
+</ul>
+<h2 id="an-empty-shelf-is-not-the-same-as-a-shelf-holding-nothing"><a class="header" href="#an-empty-shelf-is-not-the-same-as-a-shelf-holding-nothing">An empty shelf is not the same as a shelf holding <code>nothing</code></a></h2>
+<p>This is where <code>nothing</code> becomes useful in a practical way. You need to distinguish between "this slot exists but is blank" and "this slot does not exist yet."</p>
+<pre><code class="language-ranty example"># One shelf contains a real first slot whose value is `nothing`.
+&lt;$one-gap = (: &lt;&gt;)&gt;
+# This shelf has no first slot at all.
+&lt;$empty = (:)&gt;
+First slot: &lt;one-gap/0 ? "missing"&gt;\n
+Second slot: &lt;one-gap/1 ? "missing"&gt;\n
+Empty shelf: &lt;empty/0 ? "missing"&gt;
+</code></pre>
+<pre><code class="language-text expected">First slot: 
+Second slot: missing
+Empty shelf: missing
+</code></pre>
+<p>The first shelf really does have an item at index <code>0</code>; it just happens to be <code>nothing</code>, so nothing prints after <code>First slot:</code>. The fallback does not run there because the read succeeded. The second and third reads are genuinely missing, so their fallbacks do run.</p>
+<h2 id="slices-read-parts-of-a-list-and-splices-replace-them"><a class="header" href="#slices-read-parts-of-a-list-and-splices-replace-them">Slices read parts of a list, and splices replace them</a></h2>
+<p>A slice reads a chunk of an ordered collection. A splice writes one back in. This is exactly what you want when Tavi renames the middle of a row of kettle tags without rewriting the whole board.</p>
+<pre><code class="language-ranty example"># Start with four label drafts.
+&lt;$goods = (: mint-steam; dusk-ginger; bell-anise; rain-clove)&gt;
+# Read items 1 through 2.
+&lt;goods/1..3&gt;\n
+# Replace a shorter slice with a longer list.
+&lt;goods/1..2 = (: blue-steam; star-peel)&gt;
+&lt;goods&gt;
+</code></pre>
+<pre><code class="language-text expected">(: dusk-ginger; bell-anise)
+(: mint-steam; blue-steam; star-peel; bell-anise; rain-clove)
+</code></pre>
+<p><code>1..3</code> means "start at index 1, stop before index 3."</p>
+<h2 id="anonymous-accessors-let-you-reach-into-a-value-directly"><a class="header" href="#anonymous-accessors-let-you-reach-into-a-value-directly">Anonymous accessors let you reach into a value directly</a></h2>
+<p>An anonymous accessor lets you index into a value without storing it first. It is a good shortcut when you are moving too fast to wait for extra setup.</p>
+<pre><code class="language-ranty example"># Index directly into a tag literal when Tavi only needs the first letter.
+&lt;("blue-steam")/0&gt;
+</code></pre>
+<pre><code class="language-text expected">b
+</code></pre>
+<p>This example says, "Take this string literal, treat it like a collection, and give me its first item."</p>
+<p>More information about lists, tuples, maps, and access paths can be found in the Ranty documentation for <a href="../../language/data-types/list.html">list</a>, <a href="../../language/data-types/tuple.html">tuple</a>, <a href="../../language/data-types/map.html">map</a>, and <a href="../../language/accessors/access-paths.html">Access Paths</a>.</p>
+<blockquote>
+<p>See also: <a href="../../language/accessors/anonymous.html">Anonymous Accessors</a></p>
+</blockquote>
+<p>The prep board starts to look deliberate. Tavi's labels have names, and the bakery notes on Juniper's clipboard finally sit still beside them. Juniper takes the clipboard back toward the middle of the lane, where the first early wanderers are beginning to bunch beneath the awnings. Next the script must learn judgment.</p>
+<p>Previous: <a href="02-accessors-variables-constants-and-nothing.html">Accessors, Variables, Constants, and Nothing</a> | Next: <a href="04-arithmetic-logic-and-conditionals.html">Arithmetic, Logic, and Conditionals</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../getting-started/tutorial/02-accessors-variables-constants-and-nothing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../getting-started/tutorial/04-arithmetic-logic-and-conditionals.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../getting-started/tutorial/02-accessors-variables-constants-and-nothing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../getting-started/tutorial/04-arithmetic-logic-and-conditionals.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

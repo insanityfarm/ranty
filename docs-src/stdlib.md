@@ -2,6 +2,8 @@
 
 The Ranty Standard Library contains the builtin functions and constants loaded into a fresh `Ranty` context.
 
+Builtins are loaded into a fresh context as predeclared global values. Functions such as `len`, `keys`, and `upper` are constant globals, so you can call them immediately with ordinary bracket syntax like `[len: value]`, but you cannot reassign them in place.
+
 ## Categories
 The detailed reference pages below remain the canonical prose documentation for each category. The generated inventory that follows is rebuilt from the current export surface on every docs build and is used by the audit checks to catch drift.
 

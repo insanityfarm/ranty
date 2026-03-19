@@ -178,14 +178,14 @@
                         <h1 id="standard-library-generators"><a class="header" href="#standard-library-generators">Standard Library: Generators</a></h1>
 <h2 id="alpha"><a class="header" href="#alpha">alpha</a></h2>
 <pre><code class="language-ranty">
-[%alpha: count ? 1]
+[alpha: count ? 1]
 
 </code></pre>
 <p>→ <code>string</code></p>
 <p>Prints a uniformly random lowercase alphabetic string.</p>
 <h2 id="dig"><a class="header" href="#dig">dig</a></h2>
 <pre><code class="language-ranty">
-[%dig: count ? 1]
+[dig: count ? 1]
 
 </code></pre>
 <p>→ <code>string</code></p>
@@ -199,7 +199,7 @@ The number of digits to generate. Defaults to 1.</p>
 </code></pre>
 <h2 id="digh"><a class="header" href="#digh">digh</a></h2>
 <pre><code class="language-ranty">
-[%digh: count ? 1]
+[digh: count ? 1]
 
 </code></pre>
 <p>→ <code>string</code></p>
@@ -213,7 +213,7 @@ The number of digits to generate. Defaults to 1.</p>
 </code></pre>
 <h2 id="dignz"><a class="header" href="#dignz">dignz</a></h2>
 <pre><code class="language-ranty">
-[%dignz: count ? 1]
+[dignz: count ? 1]
 
 </code></pre>
 <p>→ <code>string</code></p>
@@ -227,7 +227,7 @@ The number of digits to generate. Defaults to 1.</p>
 </code></pre>
 <h2 id="maybe"><a class="header" href="#maybe">maybe</a></h2>
 <pre><code class="language-ranty">
-[%maybe: p ? 0.5]
+[maybe: p ? 0.5]
 
 </code></pre>
 <p>→ <code>bool</code></p>
@@ -239,26 +239,26 @@ The probability (0.0 &lt;= p &lt;= 1.0) of the printed boolean being true.
 If omitted or nothing, defaults to 0.5.</p>
 <h2 id="pick"><a class="header" href="#pick">pick</a></h2>
 <pre><code class="language-ranty">
-[%pick: collection]
+[pick: collection]
 
 </code></pre>
 <p>Prints a random element from an ordered collection.</p>
 <h2 id="pickn"><a class="header" href="#pickn">pickn</a></h2>
 <pre><code class="language-ranty">
-[%pickn: collection; count]
+[pickn: collection; count]
 
 </code></pre>
 <p>→ <code>list</code></p>
 <p>Prints a list containing <code>count</code> random elements sampled from <code>collection</code>.</p>
 <h2 id="pick-sparse"><a class="header" href="#pick-sparse">pick-sparse</a></h2>
 <pre><code class="language-ranty">
-[%pick-sparse: first; ...rest]
+[pick-sparse: first; ...rest]
 
 </code></pre>
 <p>Randomly selects one value from a sparse weighted set of arguments by using each argument's length as its weight.</p>
 <h2 id="rand"><a class="header" href="#rand">rand</a></h2>
 <pre><code class="language-ranty">
-[%rand: a; b]
+[rand: a; b]
 
 </code></pre>
 <p>→ <code>int</code></p>
@@ -276,7 +276,7 @@ You roll a `[rand:1;6].
 </code></pre>
 <h2 id="randf"><a class="header" href="#randf">randf</a></h2>
 <pre><code class="language-ranty">
-[%randf: a; b]
+[randf: a; b]
 
 </code></pre>
 <p>→ <code>float</code></p>
@@ -288,7 +288,7 @@ The first inclusive bound of the random number.</p>
 The second inclusive bound of the random number.</p>
 <h2 id="rand-list"><a class="header" href="#rand-list">rand-list</a></h2>
 <pre><code class="language-ranty">
-[%rand-list: a; b; n]
+[rand-list: a; b; n]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -310,7 +310,7 @@ You rolled `[join: \sand\s; &lt;roll&gt;] for a total of `[sum: &lt;roll&gt;].
 </code></pre>
 <h2 id="randf-list"><a class="header" href="#randf-list">randf-list</a></h2>
 <pre><code class="language-ranty">
-[%randf-list: a; b; n]
+[randf-list: a; b; n]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -324,7 +324,7 @@ The second inclusive bound of the random numbers.</p>
 The amount of numbers to generate.</p>
 <h2 id="rand-list-sum"><a class="header" href="#rand-list-sum">rand-list-sum</a></h2>
 <pre><code class="language-ranty">
-[%rand-list-sum: input; count; variance]
+[rand-list-sum: input; count; variance]
 
 </code></pre>
 <p>→ <code>list</code></p>

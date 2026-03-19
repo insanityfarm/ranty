@@ -131,7 +131,7 @@ You can also set a slice on mutable collection types, an operation also known as
 <$my-list = (: 1; 2; 3)>
 <my-list/1..2 = (: a; b)> # the splice value doesn't have to be the same size!
 <my-list/3..4 = (c; d)> # the splice value can also be a tuple!
-<my-list> # -> (: 1; a; b; 3)
+<my-list> # -> (: 1; a; b; c; d)
 ```
 
 #### Dynamic slices

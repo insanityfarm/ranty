@@ -242,7 +242,7 @@ Returns <code>@false</code> if both operands are <code>@false</code>, or if one 
 1 &amp; 0            # -&gt; 0
 0 &amp; 2            # -&gt; 0
 0 &amp; &lt;&gt;           # -&gt; 0
-&lt;&gt; &amp; 0           # -&gt; &lt;&gt;
+&lt;&gt; &amp; 0           # -&gt; &lt;&gt; (nothing value, no output printed)
 </code></pre>
 <h3 id="logical-or"><a class="header" href="#logical-or">Logical OR</a></h3>
 <p><code>|</code> <em>(binary infix operator)</em></p>
@@ -261,7 +261,7 @@ Returns <code>@false</code> if both operands are <code>@false</code>.</p>
 1 | 2             # -&gt; 1
 1 | 0             # -&gt; 1
 0 | 2             # -&gt; 2
-0 | &lt;&gt;            # -&gt; &lt;&gt;
+0 | &lt;&gt;            # -&gt; &lt;&gt; (nothing value, no output printed)
 &lt;&gt; | 0            # -&gt; 0
 </code></pre>
 <blockquote>
@@ -288,7 +288,7 @@ To use it as an OR operator, enclose your expression in parentheses first.</p>
 <p><code>^</code> <em>(binary infix operator)</em></p>
 <p>Returns <code>@true</code> if exactly <em>one</em> of the two operands is truthy; otherwise, returns <code>@false</code>.</p>
 <pre><code class="language-ranty"># Logical XOR using booleans
-@true ^ @true    # -&gt; @true
+@true ^ @true    # -&gt; @false
 @true ^ @false   # -&gt; @true
 @false ^ @true   # -&gt; @true
 @false ^ @false  # -&gt; @false
@@ -328,23 +328,23 @@ To use it as an OR operator, enclose your expression in parentheses first.</p>
 <h3 id="less-than"><a class="header" href="#less-than">Less than</a></h3>
 <p><code>@lt</code> <em>(binary infix operator)</em></p>
 <p>Returns <code>@true</code> if LHS is less than RHS; otherwise, returns <code>@false</code>.</p>
-<pre><code class="language-ranty">1 @gt 1     # -&gt; @false
-1 @gt 2     # -&gt; @true
-2 @gt 1     # -&gt; @false
+<pre><code class="language-ranty">1 @lt 1     # -&gt; @false
+1 @lt 2     # -&gt; @true
+2 @lt 1     # -&gt; @false
 </code></pre>
 <h3 id="greater-than-or-equal"><a class="header" href="#greater-than-or-equal">Greater than or equal</a></h3>
 <p><code>@ge</code> <em>(binary infix operator)</em></p>
 <p>Returns <code>@true</code> if LHS is greater than or equal to RHS; otherwise, returns <code>@false</code>.</p>
-<pre><code class="language-ranty">1 @gt 1     # -&gt; @true
-1 @gt 2     # -&gt; @false
-2 @gt 1     # -&gt; @true
+<pre><code class="language-ranty">1 @ge 1     # -&gt; @true
+1 @ge 2     # -&gt; @false
+2 @ge 1     # -&gt; @true
 </code></pre>
 <h3 id="less-than-or-equal"><a class="header" href="#less-than-or-equal">Less than or equal</a></h3>
 <p><code>@le</code> <em>(binary infix operator)</em></p>
 <p>Returns <code>@true</code> if LHS is less than or equal to RHS; otherwise, returns <code>@false</code>.</p>
-<pre><code class="language-ranty">1 @gt 1     # -&gt; @true
-1 @gt 2     # -&gt; @true
-2 @gt 1     # -&gt; @false
+<pre><code class="language-ranty">1 @le 1     # -&gt; @true
+1 @le 2     # -&gt; @true
+2 @le 1     # -&gt; @false
 </code></pre>
 <h2 id="precedence"><a class="header" href="#precedence">Precedence</a></h2>
 <p>Operators with higher precedence are evaluated before those with lower precedence.

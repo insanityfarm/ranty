@@ -3,7 +3,7 @@
 ## alt
 
 ```ranty
-[%alt: a; ...rest]
+[alt: a; ...rest]
 ```
 
 Prints the first argument that is not `nothing`.
@@ -11,7 +11,7 @@ Prints the first argument that is not `nothing`.
 ## call
 
 ```ranty
-[%call: func; args?]
+[call: func; args?]
 ```
 
 Calls `func` with an optional list of argument values.
@@ -19,7 +19,7 @@ Calls `func` with an optional list of argument values.
 ## cat
 
 ```ranty
-[%cat: ...values]
+[cat: ...values]
 ```
 
 Prints each argument into the current scope.
@@ -27,7 +27,7 @@ Prints each argument into the current scope.
 ## either
 
 ```ranty
-[%either: condition; true-value; false-value]
+[either: condition; true-value; false-value]
 ```
 
 Prints `true-value` when `condition` is true, otherwise `false-value`.
@@ -35,7 +35,7 @@ Prints `true-value` when `condition` is true, otherwise `false-value`.
 ## len
 
 ```ranty
-[%len: value]
+[len: value]
 ```
 
 Prints the length of a string, list, map, range, or other length-aware value.
@@ -43,7 +43,7 @@ Prints the length of a string, list, map, range, or other length-aware value.
 ## type
 
 ```ranty
-[%type: value]
+[type: value]
 ```
 
 Prints the runtime type name of `value`.
@@ -51,7 +51,7 @@ Prints the runtime type name of `value`.
 ## seed
 
 ```ranty
-[%seed]
+[seed]
 ```
 
 Prints the currently active RNG seed as an `int`.
@@ -59,7 +59,7 @@ Prints the currently active RNG seed as an `int`.
 ## tap
 
 ```ranty
-[%tap: ...]
+[tap: ...]
 ```
 
 Consumes arguments and produces no output. This is useful as a no-op sink in pipe chains.
@@ -67,7 +67,7 @@ Consumes arguments and produces no output. This is useful as a no-op sink in pip
 ## print
 
 ```ranty
-[%print: ...values]
+[print: ...values]
 ```
 
 Prints values directly into the caller's output scope.
@@ -75,7 +75,7 @@ Prints values directly into the caller's output scope.
 ## range
 
 ```ranty
-[%range: a; b?; step?]
+[range: a; b?; step?]
 ```
 
 Builds a half-open integer range.
@@ -83,7 +83,7 @@ Builds a half-open integer range.
 ## require
 
 ```ranty
-[%require: module-path]
+[require: module-path]
 ```
 
 Imports a module through the active module resolver.
@@ -91,7 +91,7 @@ Imports a module through the active module resolver.
 ## irange
 
 ```ranty
-[%irange: a; b?; step?]
+[irange: a; b?; step?]
 ```
 
 Builds an inclusive integer range.
@@ -99,7 +99,7 @@ Builds an inclusive integer range.
 ## fork
 
 ```ranty
-[%fork: seed?]
+[fork: seed?]
 ```
 
 Pushes a derived RNG onto the RNG stack. Integer and string seeds are both supported.
@@ -107,7 +107,7 @@ Pushes a derived RNG onto the RNG stack. Integer and string seeds are both suppo
 ## unfork
 
 ```ranty
-[%unfork]
+[unfork]
 ```
 
 Pops the most recent derived RNG and resumes the previous RNG state.
@@ -115,7 +115,7 @@ Pops the most recent derived RNG and resumes the previous RNG state.
 ## try
 
 ```ranty
-[%try: context; handler?]
+[try: context; handler?]
 ```
 
 Runs `context` and optionally dispatches runtime failures to `handler`.
@@ -123,7 +123,7 @@ Runs `context` and optionally dispatches runtime failures to `handler`.
 ## ds-request
 
 ```ranty
-[%ds-request: id; ...args]
+[ds-request: id; ...args]
 ```
 
 Calls a registered data source by ID and prints its result.
@@ -131,7 +131,7 @@ Calls a registered data source by ID and prints its result.
 ## ds-query-sources
 
 ```ranty
-[%ds-query-sources]
+[ds-query-sources]
 ```
 
 Prints the list of currently registered data-source IDs.
@@ -139,7 +139,7 @@ Prints the list of currently registered data-source IDs.
 ## proto
 
 ```ranty
-[%proto: map]
+[proto: map]
 ```
 
 Prints the prototype map of `map`, or `nothing` if no prototype is set.
@@ -168,7 +168,7 @@ They do not merge physically into the map, and they are not treated as bound obj
 ## set-proto
 
 ```ranty
-[%set-proto: map; proto?]
+[set-proto: map; proto?]
 ```
 
 Sets or clears the prototype map for `map`.
@@ -210,7 +210,7 @@ If a call to `[set-proto]` would create a cycle, Ranty raises a runtime error in
 ## error
 
 ```ranty
-[%error: message?]
+[error: message?]
 ```
 
 Raises a `USER_ERROR` runtime failure with an optional message.

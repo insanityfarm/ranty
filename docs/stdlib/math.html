@@ -178,7 +178,7 @@
                         <h1 id="standard-library-math-functions"><a class="header" href="#standard-library-math-functions">Standard Library: Math functions</a></h1>
 <h2 id="abs"><a class="header" href="#abs">abs</a></h2>
 <pre><code class="language-ranty">
-[%abs: num]
+[abs: num]
 
 </code></pre>
 <p>→ <code>int | float</code></p>
@@ -190,7 +190,7 @@ The input number.</p>
 <p>Raises an error if <code>num</code> is an integer and the absolute value overflows.</p>
 <h2 id="add"><a class="header" href="#add">add</a></h2>
 <pre><code class="language-ranty">
-[%add: lhs; rhs]
+[add: lhs; rhs]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -202,13 +202,13 @@ The left-hand operand of the addition.</p>
 The right-hand operand of the addition.</p>
 <h2 id="clamp"><a class="header" href="#clamp">clamp</a></h2>
 <pre><code class="language-ranty">
-[%clamp: value; a; b]
+[clamp: value; a; b]
 
 </code></pre>
 <p>Prints <code>value</code> clamped to the inclusive range between <code>a</code> and <code>b</code>.</p>
 <h2 id="ceil"><a class="header" href="#ceil">ceil</a></h2>
 <pre><code class="language-ranty">
-[%ceil: val]
+[ceil: val]
 
 </code></pre>
 <p>→ <code>int</code></p>
@@ -218,7 +218,7 @@ The right-hand operand of the addition.</p>
 The input number.</p>
 <h2 id="div"><a class="header" href="#div">div</a></h2>
 <pre><code class="language-ranty">
-[%div: lhs; rhs]
+[div: lhs; rhs]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -230,7 +230,7 @@ The left-hand operand (dividend).</p>
 The right-hand operand (divisor).</p>
 <h2 id="floor"><a class="header" href="#floor">floor</a></h2>
 <pre><code class="language-ranty">
-[%floor: val]
+[floor: val]
 
 </code></pre>
 <p>→ <code>int</code></p>
@@ -240,7 +240,7 @@ The right-hand operand (divisor).</p>
 The input number.</p>
 <h2 id="frac"><a class="header" href="#frac">frac</a></h2>
 <pre><code class="language-ranty">
-[%frac: val]
+[frac: val]
 
 </code></pre>
 <p>→ <code>float</code></p>
@@ -250,7 +250,7 @@ The input number.</p>
 The input number.</p>
 <h2 id="max"><a class="header" href="#max">max</a></h2>
 <pre><code class="language-ranty">
-[%max: values+]
+[max: values+]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -272,7 +272,7 @@ The input values.</p>
 </code></pre>
 <h2 id="min"><a class="header" href="#min">min</a></h2>
 <pre><code class="language-ranty">
-[%min: values+]
+[min: values+]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -294,7 +294,7 @@ The input values.</p>
 </code></pre>
 <h2 id="mod"><a class="header" href="#mod">mod</a></h2>
 <pre><code class="language-ranty">
-[%mod: lhs; rhs]
+[mod: lhs; rhs]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -306,7 +306,7 @@ The left-hand operand (dividend).</p>
 The right-hand operand (divisor).</p>
 <h2 id="mul"><a class="header" href="#mul">mul</a></h2>
 <pre><code class="language-ranty">
-[%mul: lhs; rhs]
+[mul: lhs; rhs]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -318,7 +318,7 @@ The left-hand operand.</p>
 The right-hand operand.</p>
 <h2 id="mul-add"><a class="header" href="#mul-add">mul-add</a></h2>
 <pre><code class="language-ranty">
-[%mul-add: lhs; rhs; add]
+[mul-add: lhs; rhs; add]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -332,7 +332,7 @@ The right-hand operand of the multiplication.</p>
 The value to add to the product.</p>
 <h2 id="neg"><a class="header" href="#neg">neg</a></h2>
 <pre><code class="language-ranty">
-[%neg: val]
+[neg: val]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -342,14 +342,14 @@ The value to add to the product.</p>
 The input value.</p>
 <h2 id="recip"><a class="header" href="#recip">recip</a></h2>
 <pre><code class="language-ranty">
-[%recip: n]
+[recip: n]
 
 </code></pre>
 <p>→ <code>any</code></p>
 <p>Gets the reciprocal of a value.</p>
 <h2 id="sub"><a class="header" href="#sub">sub</a></h2>
 <pre><code class="language-ranty">
-[%sub: lhs; rhs]
+[sub: lhs; rhs]
 
 </code></pre>
 <p>→ <code>any</code></p>
@@ -361,7 +361,7 @@ The left-hand operand of the subtraction.</p>
 The right-hand side of the subtraction.</p>
 <h2 id="sin"><a class="header" href="#sin">sin</a></h2>
 <pre><code class="language-ranty">
-[%sin: x]
+[sin: x]
 
 </code></pre>
 <p>→ <code>float</code></p>
@@ -371,7 +371,7 @@ The right-hand side of the subtraction.</p>
 The input value, in radians.</p>
 <h2 id="cos"><a class="header" href="#cos">cos</a></h2>
 <pre><code class="language-ranty">
-[%cos: x]
+[cos: x]
 
 </code></pre>
 <p>→ <code>float</code></p>
@@ -381,7 +381,7 @@ The input value, in radians.</p>
 The input value, in radians.</p>
 <h2 id="tan"><a class="header" href="#tan">tan</a></h2>
 <pre><code class="language-ranty">
-[%tan: x]
+[tan: x]
 
 </code></pre>
 <p>→ <code>float</code></p>
@@ -391,7 +391,7 @@ The input value, in radians.</p>
 The input value, in radians.</p>
 <h2 id="asin"><a class="header" href="#asin">asin</a></h2>
 <pre><code class="language-ranty">
-[%asin: x]
+[asin: x]
 
 </code></pre>
 <p>→ <code>float</code></p>
@@ -401,7 +401,7 @@ The input value, in radians.</p>
 The input sine value.</p>
 <h2 id="acos"><a class="header" href="#acos">acos</a></h2>
 <pre><code class="language-ranty">
-[%acos: x]
+[acos: x]
 
 </code></pre>
 <p>→ <code>float</code></p>
@@ -411,7 +411,7 @@ The input sine value.</p>
 The input cosine value.</p>
 <h2 id="atan"><a class="header" href="#atan">atan</a></h2>
 <pre><code class="language-ranty">
-[%atan: x]
+[atan: x]
 
 </code></pre>
 <p>→ <code>float</code></p>
@@ -421,7 +421,7 @@ The input cosine value.</p>
 The input tangent value.</p>
 <h2 id="atan2"><a class="header" href="#atan2">atan2</a></h2>
 <pre><code class="language-ranty">
-[%atan2: y; x]
+[atan2: y; x]
 
 </code></pre>
 <p>→ <code>float</code></p>
@@ -434,7 +434,7 @@ The input tangent's numerator.</p>
 The input tangent's denominator.</p>
 <h2 id="sqrt"><a class="header" href="#sqrt">sqrt</a></h2>
 <pre><code class="language-ranty">
-[%sqrt: x]
+[sqrt: x]
 
 </code></pre>
 <p>→ <code>float</code></p>
@@ -444,7 +444,7 @@ The input tangent's denominator.</p>
 The input value.</p>
 <h2 id="pow"><a class="header" href="#pow">pow</a></h2>
 <pre><code class="language-ranty">
-[%pow: x; y]
+[pow: x; y]
 
 </code></pre>
 <p>→ <code>int | float</code></p>

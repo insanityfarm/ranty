@@ -178,7 +178,7 @@
                         <h1 id="assertion"><a class="header" href="#assertion">Assertion</a></h1>
 <h2 id="assert"><a class="header" href="#assert">assert</a></h2>
 <pre><code class="language-ranty">
-[%assert: condition; message?]
+[assert: condition; message?]
 
 </code></pre>
 <p>Verifies that <code>condition</code> is true before continuing program execution.</p>
@@ -201,14 +201,14 @@ The error message to display if the condition is not satisfied.</p>
 </code></pre>
 <h2 id="assert-not"><a class="header" href="#assert-not">assert-not</a></h2>
 <pre><code class="language-ranty">
-[%assert-not: condition; message?]
+[assert-not: condition; message?]
 
 </code></pre>
 <p>Verifies that <code>condition</code> is false before continuing program execution.</p>
 <p>Like <code>[assert]</code>, a custom error message can be provided.</p>
 <h2 id="assert-eq"><a class="header" href="#assert-eq">assert-eq</a></h2>
 <pre><code class="language-ranty">
-[%assert-eq: actual; expected; message?]
+[assert-eq: actual; expected; message?]
 
 </code></pre>
 <p>Verifies that <code>expected</code> and <code>actual</code> are equal before continuing program execution.</p>
@@ -222,7 +222,7 @@ The expected value to test against.</p>
 The error message to display if the condition is not satisfied.</p>
 <h2 id="assert-neq"><a class="header" href="#assert-neq">assert-neq</a></h2>
 <pre><code class="language-ranty">
-[%assert-neq: actual; unexpected; message?]
+[assert-neq: actual; unexpected; message?]
 
 </code></pre>
 <p>Verifies that <code>unexpected</code> and <code>actual</code> are not equal before continuing program execution.</p>

@@ -30,7 +30,7 @@ Map keys come in two flavors:
     "favorite color" = {red|green|blue};
 
     # An expression can also provide the key
-    {<secret-key>} = painter
+    (<secret-key>) = painter
 )
 ```
 

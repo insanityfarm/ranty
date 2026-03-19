@@ -50,14 +50,14 @@ Since lambdas produce `function` objects just like named functions, the call syn
     [?]{Hello from anonymous function}
 }
 
-[([get-anon-func])]         # -> "Hello from anonymous function"
+[([get-anon-func])]         # -> Hello from anonymous function
 
 # Define a function that returns a function with a single parameter
 [$get-greet-func] {
     [?:name]{Hello, <name>!}
 }
 
-[([get-greet-func]): Ranty]  # "Hello, Ranty!"
+[([get-greet-func]): Ranty]  # -> Hello, Ranty!
 ```
 
 ### Using piping to call an anonymous function produced by another function

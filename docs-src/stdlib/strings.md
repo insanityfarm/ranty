@@ -4,7 +4,7 @@
 
 ```ranty
 
-[%char: code]
+[char: code]
 
 ```
 &rarr; `string?`
@@ -22,7 +22,7 @@ The Unicode code point representing the character to print.
 
 ```ranty
 
-[%lines: str]
+[lines: str]
 
 ```
 &rarr; `list`
@@ -38,7 +38,7 @@ The input string.
 
 ```ranty
 
-[%indent: text; indent]
+[indent: text; indent]
 
 ```
 
@@ -49,7 +49,7 @@ Prefixes every line in `text` with the string `indent`.
 
 ```ranty
 
-[%lower: str]
+[lower: str]
 
 ```
 &rarr; `string`
@@ -65,7 +65,7 @@ The input string.
 
 ```ranty
 
-[%string-replace: input; query; replacement]
+[string-replace: input; query; replacement]
 
 ```
 
@@ -75,7 +75,7 @@ Prints `input` with every occurrence of `query` replaced by `replacement`.
 
 ```ranty
 
-[%ord: ch]
+[ord: ch]
 
 ```
 &rarr; `int?`
@@ -100,7 +100,7 @@ The input string that provides the character. This can be any length; the functi
 
 ```ranty
 
-[%ord-all: str]
+[ord-all: str]
 
 ```
 &rarr; `list`
@@ -116,7 +116,7 @@ The input string.
 
 ```ranty
 # Prints a list of hex values of each code point from the input string
-[%as-unicode-hex: str] {
+[$as-unicode-hex: str] {
   [cat: **[ord-all: <str>] 
     |> cat: [num-fmt: (:: system = hex; upper = @true)] U\+[] 
     |> tuple
@@ -132,7 +132,7 @@ The input string.
 
 ```ranty
 
-[%split: str; sep?]
+[split: str; sep?]
 
 ```
 &rarr; `list`
@@ -152,7 +152,7 @@ The delimiter to split on. If omitted, the string will be split into individual 
 
 ```ranty
 
-[%seg: str; size]
+[seg: str; size]
 
 ```
 &rarr; `list`
@@ -171,7 +171,7 @@ The size of the segments to produce.
 
 ```ranty
 
-[%trim: str]
+[trim: str]
 
 ```
 
@@ -182,7 +182,7 @@ Prints `str` with leading and trailing whitespace removed.
 
 ```ranty
 
-[%upper: str]
+[upper: str]
 
 ```
 &rarr; `string`

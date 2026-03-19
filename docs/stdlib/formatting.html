@@ -178,14 +178,14 @@
                         <h1 id="standard-library-formatting-functions"><a class="header" href="#standard-library-formatting-functions">Standard Library: Formatting functions</a></h1>
 <h2 id="ws-fmt"><a class="header" href="#ws-fmt">ws-fmt</a></h2>
 <pre><code class="language-ranty">
-[%ws-fmt: mode?; custom?]
+[ws-fmt: mode?; custom?]
 
 </code></pre>
 <p>→ <code>string | any</code></p>
 <p>Gets or sets the whitespace normalization mode for the current scope. <code>custom</code> is only used when <code>mode</code> is <code>custom</code>.</p>
 <h2 id="num-fmt"><a class="header" href="#num-fmt">num-fmt</a></h2>
 <pre><code class="language-ranty">
-[%num-fmt: options?; depth ? 0]
+[num-fmt: options?; depth ? 0]
 
 </code></pre>
 <p>→ <code>map | nothing</code></p>
@@ -242,7 +242,7 @@ Defaults to 0 (the calling scope).</p>
 </code></pre>
 <h2 id="num-fmt-system"><a class="header" href="#num-fmt-system">num-fmt-system</a></h2>
 <pre><code class="language-ranty">
-[%num-fmt-system: system?; depth ? 0]
+[num-fmt-system: system?; depth ? 0]
 </code></pre>
 <p>→ <code>string | nothing</code></p>
 <p>Gets or sets the number formatter's numeral system.</p>
@@ -270,7 +270,7 @@ Defaults to 0 (the calling scope).</p>
 </div>
 <h2 id="num-fmt-alt"><a class="header" href="#num-fmt-alt">num-fmt-alt</a></h2>
 <pre><code class="language-ranty">
-[%num-fmt-alt: flag?; depth ? 0]
+[num-fmt-alt: flag?; depth ? 0]
 
 </code></pre>
 <p>→ <code>bool | nothing</code></p>
@@ -285,7 +285,7 @@ The depth of the scope whose number format to access. Value must be positive. Sa
 Defaults to 0 (the calling scope).</p>
 <h2 id="num-fmt-precision"><a class="header" href="#num-fmt-precision">num-fmt-precision</a></h2>
 <pre><code class="language-ranty">
-[%num-fmt-precision: precision?; depth ? 0]
+[num-fmt-precision: precision?; depth ? 0]
 
 </code></pre>
 <p>→ <code>int | nothing</code></p>
@@ -301,7 +301,7 @@ The depth of the scope whose number format to access. Value must be positive. Sa
 Defaults to 0 (the calling scope).</p>
 <h2 id="num-fmt-padding"><a class="header" href="#num-fmt-padding">num-fmt-padding</a></h2>
 <pre><code class="language-ranty">
-[%num-fmt-padding: padding?; depth ? 0]
+[num-fmt-padding: padding?; depth ? 0]
 
 </code></pre>
 <p>→ <code>int | nothing</code></p>
@@ -315,7 +315,7 @@ The depth of the scope whose number format to access. Value must be positive. Sa
 Defaults to 0 (the calling scope).</p>
 <h2 id="num-fmt-upper"><a class="header" href="#num-fmt-upper">num-fmt-upper</a></h2>
 <pre><code class="language-ranty">
-[%num-fmt-upper: flag?; depth ? 0]
+[num-fmt-upper: flag?; depth ? 0]
 
 </code></pre>
 <p>→ <code>bool | nothing</code></p>
@@ -330,7 +330,7 @@ The depth of the scope whose number format to access. Value must be positive. Sa
 Defaults to 0 (the calling scope).</p>
 <h2 id="num-fmt-sign"><a class="header" href="#num-fmt-sign">num-fmt-sign</a></h2>
 <pre><code class="language-ranty">
-[%num-fmt-sign: sign?; depth ? 0]
+[num-fmt-sign: sign?; depth ? 0]
 
 </code></pre>
 <p>→ <code>string | nothing</code></p>
@@ -353,7 +353,7 @@ Defaults to 0 (the calling scope).</p>
 </div>
 <h2 id="num-fmt-endian"><a class="header" href="#num-fmt-endian">num-fmt-endian</a></h2>
 <pre><code class="language-ranty">
-[%num-fmt-endian: endianness?; depth ? 0]
+[num-fmt-endian: endianness?; depth ? 0]
 
 </code></pre>
 <p>→ <code>string | nothing</code></p>
@@ -375,7 +375,7 @@ Defaults to 0 (the calling scope).</p>
 </div>
 <h2 id="num-fmt-infinity"><a class="header" href="#num-fmt-infinity">num-fmt-infinity</a></h2>
 <pre><code class="language-ranty">
-[%num-fmt-infinity: infinity?; depth ? 0]
+[num-fmt-infinity: infinity?; depth ? 0]
 
 </code></pre>
 <p>→ <code>string | nothing</code></p>
@@ -397,7 +397,7 @@ Defaults to 0 (the calling scope).</p>
 </div>
 <h2 id="num-fmt-group-sep"><a class="header" href="#num-fmt-group-sep">num-fmt-group-sep</a></h2>
 <pre><code class="language-ranty">
-[%num-fmt-group-sep: group-sep?; depth ? 0]
+[num-fmt-group-sep: group-sep?; depth ? 0]
 
 </code></pre>
 <p>→ <code>string | nothing</code></p>
@@ -411,7 +411,7 @@ The depth of the scope whose number format to access. Value must be positive. Sa
 Defaults to 0 (the calling scope).</p>
 <h2 id="num-fmt-decimal-sep"><a class="header" href="#num-fmt-decimal-sep">num-fmt-decimal-sep</a></h2>
 <pre><code class="language-ranty">
-[%num-fmt-decimal-sep: decimal-sep?; depth ? 0]
+[num-fmt-decimal-sep: decimal-sep?; depth ? 0]
 
 </code></pre>
 <p>→ <code>string | nothing</code></p>

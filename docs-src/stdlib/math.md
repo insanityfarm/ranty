@@ -5,7 +5,7 @@
 
 ```ranty
 
-[%abs: num]
+[abs: num]
 
 ```
 &rarr; `int | float`
@@ -26,7 +26,7 @@ Raises an error if `num` is an integer and the absolute value overflows.
 
 ```ranty
 
-[%add: lhs; rhs]
+[add: lhs; rhs]
 
 ```
 &rarr; `any`
@@ -45,7 +45,7 @@ The right-hand operand of the addition.
 
 ```ranty
 
-[%clamp: value; a; b]
+[clamp: value; a; b]
 
 ```
 
@@ -56,7 +56,7 @@ Prints `value` clamped to the inclusive range between `a` and `b`.
 
 ```ranty
 
-[%ceil: val]
+[ceil: val]
 
 ```
 &rarr; `int`
@@ -73,7 +73,7 @@ The input number.
 
 ```ranty
 
-[%div: lhs; rhs]
+[div: lhs; rhs]
 
 ```
 &rarr; `any`
@@ -93,7 +93,7 @@ The right-hand operand (divisor).
 
 ```ranty
 
-[%floor: val]
+[floor: val]
 
 ```
 &rarr; `int`
@@ -110,7 +110,7 @@ The input number.
 
 ```ranty
 
-[%frac: val]
+[frac: val]
 
 ```
 &rarr; `float`
@@ -127,7 +127,7 @@ The input number.
 
 ```ranty
 
-[%max: values+]
+[max: values+]
 
 ```
 &rarr; `any`
@@ -160,7 +160,7 @@ The input values.
 
 ```ranty
 
-[%min: values+]
+[min: values+]
 
 ```
 &rarr; `any`
@@ -193,7 +193,7 @@ The input values.
 
 ```ranty
 
-[%mod: lhs; rhs]
+[mod: lhs; rhs]
 
 ```
 &rarr; `any`
@@ -213,7 +213,7 @@ The right-hand operand (divisor).
 
 ```ranty
 
-[%mul: lhs; rhs]
+[mul: lhs; rhs]
 
 ```
 &rarr; `any`
@@ -233,7 +233,7 @@ The right-hand operand.
 
 ```ranty
 
-[%mul-add: lhs; rhs; add]
+[mul-add: lhs; rhs; add]
 
 ```
 &rarr; `any`
@@ -256,7 +256,7 @@ The value to add to the product.
 
 ```ranty
 
-[%neg: val]
+[neg: val]
 
 ```
 &rarr; `any`
@@ -273,7 +273,7 @@ The input value.
 
 ```ranty
 
-[%recip: n]
+[recip: n]
 
 ```
 &rarr; `any`
@@ -285,7 +285,7 @@ Gets the reciprocal of a value.
 
 ```ranty
 
-[%sub: lhs; rhs]
+[sub: lhs; rhs]
 
 ```
 &rarr; `any`
@@ -305,7 +305,7 @@ The right-hand side of the subtraction.
 
 ```ranty
 
-[%sin: x]
+[sin: x]
 
 ```
 &rarr; `float`
@@ -322,7 +322,7 @@ The input value, in radians.
 
 ```ranty
 
-[%cos: x]
+[cos: x]
 
 ```
 &rarr; `float`
@@ -339,7 +339,7 @@ The input value, in radians.
 
 ```ranty
 
-[%tan: x]
+[tan: x]
 
 ```
 &rarr; `float`
@@ -356,7 +356,7 @@ The input value, in radians.
 
 ```ranty
 
-[%asin: x]
+[asin: x]
 
 ```
 &rarr; `float`
@@ -373,7 +373,7 @@ The input sine value.
 
 ```ranty
 
-[%acos: x]
+[acos: x]
 
 ```
 &rarr; `float`
@@ -390,7 +390,7 @@ The input cosine value.
 
 ```ranty
 
-[%atan: x]
+[atan: x]
 
 ```
 &rarr; `float`
@@ -407,7 +407,7 @@ The input tangent value.
 
 ```ranty
 
-[%atan2: y; x]
+[atan2: y; x]
 
 ```
 &rarr; `float`
@@ -429,7 +429,7 @@ The input tangent's denominator.
 
 ```ranty
 
-[%sqrt: x]
+[sqrt: x]
 
 ```
 &rarr; `float`
@@ -446,7 +446,7 @@ The input value.
 
 ```ranty
 
-[%pow: x; y]
+[pow: x; y]
 
 ```
 &rarr; `int | float`

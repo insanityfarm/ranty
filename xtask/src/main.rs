@@ -3,6 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::env;
 use std::ffi::OsStr;
 use std::fs;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
@@ -38,6 +39,9 @@ fn docs_verify() -> Result<()> {
     build_book(&repo)?;
     check_links(&repo.join("docs"))?;
     check_examples(&repo)?;
+    check_docs_code_blocks(&repo)?;
+    check_ranty_highlighting(&repo)?;
+    check_tutorial_code_pairs(&repo)?;
     check_forbidden_strings(&repo)?;
     check_chapter_coverage(&repo)?;
     check_stdlib_docs(&repo)?;
@@ -198,7 +202,7 @@ fn generate_stdlib_inventory_markdown(repo: &Path) -> Result<String> {
 
     let mut out = String::new();
     out.push_str("## Stdlib Inventory\n\n");
-    out.push_str("| Symbol | Category | Call Form | Summary | Canonical Location |\n");
+    out.push_str("| Symbol | Category | Usage | Summary | Canonical Location |\n");
     out.push_str("| --- | --- | --- | --- | --- |\n");
 
     for name in exports {
@@ -292,25 +296,390 @@ fn check_examples(repo: &Path) -> Result<()> {
     bail!("documentation example failures:\n{}", failures.join("\n"))
 }
 
-fn build_cli_binary(repo: &Path) -> Result<()> {
-    run_command(
-        repo,
-        "cargo",
-        &["build", "--quiet", "--features", "cli", "--bin", "ranty"],
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum AuditedFenceKind {
+    Ranty,
+    RantyExample,
+    Sh,
+    Rust,
+    Text,
+    TextExpected,
+}
+
+fn check_docs_code_blocks(repo: &Path) -> Result<()> {
+    let docs_src = repo.join("docs-src");
+    let markdown_paths = markdown_files(&docs_src);
+    if markdown_paths.is_empty() {
+        return Ok(());
+    }
+
+    build_cli_binary(repo)?;
+    let cli = cli_binary_path(repo);
+    let mut failures = vec![];
+
+    for path in markdown_paths {
+        check_markdown_code_blocks(repo, &cli, &path, &mut failures)?;
+    }
+
+    if failures.is_empty() {
+        return Ok(());
+    }
+
+    bail!(
+        "documentation code block failures:\n{}",
+        failures.join("\n\n")
     )
 }
 
-fn run_cli_eval(cli: &Path, code: &str) -> Result<String> {
-    let output = Command::new(cli)
-        .arg("--seed")
-        .arg("1")
-        .arg("--eval")
-        .arg(code)
+fn check_markdown_code_blocks(
+    repo: &Path,
+    cli: &Path,
+    path: &Path,
+    failures: &mut Vec<String>,
+) -> Result<()> {
+    let text =
+        fs::read_to_string(path).with_context(|| format!("failed to read {}", path.display()))?;
+    let lines: Vec<_> = text.lines().collect();
+    let mut index = 0usize;
+
+    while index < lines.len() {
+        let line = lines[index].trim();
+        let Some(kind) = audited_fence_kind(line) else {
+            index += 1;
+            continue;
+        };
+
+        let (body, next_index) = read_fenced_block(&lines, index)?;
+        let start_line = index + 1;
+
+        match kind {
+            AuditedFenceKind::RantyExample => {
+                match read_following_output_block(&lines, next_index) {
+                    Ok(Some((expected, output_end, _))) => {
+                        match run_cli_eval_in_dir(cli, &body, repo) {
+                            Ok(actual) if matches_expected_output(&expected, &actual) => {}
+                            Ok(actual) => failures.push(format!(
+                                "{}:{}: expected {:?}, got {:?}",
+                                path.display(),
+                                start_line,
+                                expected,
+                                actual
+                            )),
+                            Err(err) => failures.push(format!(
+                                "{}:{}: failed to execute ranty example: {err:#}",
+                                path.display(),
+                                start_line
+                            )),
+                        }
+                        index = output_end;
+                    }
+                    Ok(None) => {
+                        failures.push(format!(
+                            "{}:{}: `ranty example` block is not followed by a text output block",
+                            path.display(),
+                            start_line
+                        ));
+                        index = next_index;
+                    }
+                    Err(err) => {
+                        failures.push(format!(
+                            "{}:{}: {err:#}",
+                            path.display(),
+                            start_line
+                        ));
+                        index = next_index;
+                    }
+                }
+            }
+            AuditedFenceKind::Ranty => {
+                let paired_output = read_following_output_block(&lines, next_index)?;
+                if let Some((expected, output_end, _)) = paired_output {
+                    match run_cli_capture_in_dir(cli, &body, repo) {
+                        Ok(outcome) if matches_expected_output(&expected, &outcome.text) => {}
+                        Ok(outcome) => failures.push(format!(
+                            "{}:{}: expected {:?}, got {:?}",
+                            path.display(),
+                            start_line,
+                            expected,
+                            outcome.text
+                        )),
+                        Err(err) => failures.push(format!(
+                            "{}:{}: failed to execute ranty block: {err:#}",
+                            path.display(),
+                            start_line
+                        )),
+                    }
+                    index = output_end;
+                    continue;
+                }
+
+                let expectation_checks = parse_comment_expectation_checks(&body, start_line);
+                if !expectation_checks.is_empty() {
+                    for check in expectation_checks {
+                        match run_cli_eval_in_dir(cli, &check.source, repo) {
+                            Ok(actual) if actual == check.expected => {}
+                            Ok(actual) => failures.push(format!(
+                                "{}:{}: expected {:?}, got {:?}",
+                                path.display(),
+                                check.line,
+                                check.expected,
+                                actual
+                            )),
+                            Err(err) => failures.push(format!(
+                                "{}:{}: failed to execute ranty probe: {err:#}",
+                                path.display(),
+                                check.line
+                            )),
+                        }
+                    }
+                    index = next_index;
+                    continue;
+                }
+
+                index = next_index;
+            }
+            AuditedFenceKind::Sh => {
+                let paired_output = read_following_output_block(&lines, next_index)?;
+                if let Some((expected, output_end, _)) = paired_output {
+                    match run_shell_block(repo, cli, &body) {
+                        Ok(actual) if actual == expected => {}
+                        Ok(actual) => failures.push(format!(
+                            "{}:{}: expected shell output {:?}, got {:?}",
+                            path.display(),
+                            start_line,
+                            expected,
+                            actual
+                        )),
+                        Err(err) => failures.push(format!(
+                            "{}:{}: failed to execute shell block: {err:#}",
+                            path.display(),
+                            start_line
+                        )),
+                    }
+                    index = output_end;
+                    continue;
+                }
+
+                if let Err(err) = check_shell_syntax(&body) {
+                    failures.push(format!(
+                        "{}:{}: shell example is not syntactically valid: {err:#}",
+                        path.display(),
+                        start_line
+                    ));
+                }
+                index = next_index;
+            }
+            AuditedFenceKind::Rust => {
+                if let Err(err) = check_rust_snippet(repo, &body) {
+                    failures.push(format!(
+                        "{}:{}: rust example failed to compile: {err:#}",
+                        path.display(),
+                        start_line
+                    ));
+                }
+                index = next_index;
+            }
+            AuditedFenceKind::Text | AuditedFenceKind::TextExpected => {
+                index = next_index;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+#[derive(Debug)]
+struct CommentExpectationCheck {
+    line: usize,
+    source: String,
+    expected: String,
+}
+
+fn parse_comment_expectation_checks(body: &str, start_line: usize) -> Vec<CommentExpectationCheck> {
+    #[derive(Clone)]
+    struct Probe {
+        body_index: usize,
+        line: usize,
+        code: String,
+        expected: String,
+    }
+
+    let lines: Vec<_> = body.lines().collect();
+    let mut probes = vec![];
+    let mut pending_probe_candidate: Option<usize> = None;
+
+    for (index, raw_line) in lines.iter().enumerate() {
+        let line_no = start_line + 1 + index;
+
+        if let Some(expected) = comment_only_expectation(raw_line) {
+            if let Some(candidate_index) = pending_probe_candidate.take() {
+                probes.push(Probe {
+                    body_index: candidate_index,
+                    line: start_line + 1 + candidate_index,
+                    code: lines[candidate_index].to_owned(),
+                    expected: expected.to_owned(),
+                });
+            }
+            continue;
+        }
+
+        if let Some((code, expected)) = inline_expectation(raw_line) {
+            probes.push(Probe {
+                body_index: index,
+                line: line_no,
+                code: code.to_owned(),
+                expected: expected.to_owned(),
+            });
+            pending_probe_candidate = None;
+            continue;
+        }
+
+        if has_error_annotation(raw_line) {
+            pending_probe_candidate = None;
+            continue;
+        }
+
+        if raw_line.trim().is_empty() || raw_line.trim_start().starts_with('#') {
+            pending_probe_candidate = None;
+            continue;
+        }
+
+        pending_probe_candidate = Some(index);
+    }
+
+    let probe_lookup: BTreeMap<usize, Probe> = probes
+        .iter()
+        .cloned()
+        .map(|probe| (probe.body_index, probe))
+        .collect();
+
+    probes
+        .into_iter()
+        .map(|probe| {
+            let source = lines
+                .iter()
+                .enumerate()
+                .filter_map(|(index, raw_line)| {
+                    if comment_only_expectation(raw_line).is_some() || has_error_annotation(raw_line)
+                    {
+                        return None;
+                    }
+
+                    match probe_lookup.get(&index) {
+                        Some(active_probe) if index == probe.body_index => {
+                            Some(active_probe.code.clone())
+                        }
+                        Some(_) => None,
+                        None => Some((*raw_line).to_owned()),
+                    }
+                })
+                .collect::<Vec<_>>()
+                .join("\n");
+
+            CommentExpectationCheck {
+                line: probe.line,
+                source,
+                expected: probe.expected,
+            }
+        })
+        .collect()
+}
+
+fn comment_only_expectation(line: &str) -> Option<&str> {
+    line.trim_start()
+        .strip_prefix("# ->")
+        .map(|expected| expected.trim_start())
+}
+
+fn inline_expectation(line: &str) -> Option<(&str, &str)> {
+    let marker_index = line.find("# ->")?;
+    let code = line[..marker_index].trim_end();
+    if code.is_empty() {
+        return None;
+    }
+    let expected = line[marker_index + "# ->".len()..].trim_start();
+    Some((code, expected))
+}
+
+fn has_error_annotation(line: &str) -> bool {
+    let Some(comment_index) = line.find('#') else {
+        return false;
+    };
+    let annotation = line[comment_index + 1..].trim_start().to_ascii_lowercase();
+    annotation.starts_with("error") || annotation.starts_with("runtime error")
+}
+
+fn audited_fence_kind(line: &str) -> Option<AuditedFenceKind> {
+    if !line.starts_with("```") {
+        return None;
+    }
+
+    match line.trim_start_matches("```").trim() {
+        "ranty" => Some(AuditedFenceKind::Ranty),
+        "ranty example" => Some(AuditedFenceKind::RantyExample),
+        "sh" => Some(AuditedFenceKind::Sh),
+        "rust" => Some(AuditedFenceKind::Rust),
+        "text" => Some(AuditedFenceKind::Text),
+        "text expected" => Some(AuditedFenceKind::TextExpected),
+        _ => None,
+    }
+}
+
+fn read_following_output_block(
+    lines: &[&str],
+    next_index: usize,
+) -> Result<Option<(String, usize, AuditedFenceKind)>> {
+    let output_index = skip_tutorial_pair_gap(lines, next_index);
+    if output_index >= lines.len() {
+        return Ok(None);
+    }
+
+    let Some(kind) = audited_fence_kind(lines[output_index].trim()) else {
+        return Ok(None);
+    };
+    if !matches!(kind, AuditedFenceKind::Text | AuditedFenceKind::TextExpected) {
+        return Ok(None);
+    }
+
+    let (expected, output_end) = read_fenced_block(lines, output_index)?;
+    Ok(Some((expected, output_end, kind)))
+}
+
+fn check_shell_syntax(script: &str) -> Result<()> {
+    let status = Command::new("sh")
+        .arg("-n")
+        .arg("-c")
+        .arg(script)
+        .status()
+        .context("failed to invoke sh for syntax checking")?;
+
+    if status.success() {
+        Ok(())
+    } else {
+        bail!("shell exited with {status}")
+    }
+}
+
+fn run_shell_block(repo: &Path, cli: &Path, script: &str) -> Result<String> {
+    let mut path_entries = vec![cli
+        .parent()
+        .with_context(|| format!("failed to locate parent dir for {}", cli.display()))?
+        .display()
+        .to_string()];
+    if let Some(existing_path) = env::var_os("PATH") {
+        path_entries.push(existing_path.to_string_lossy().into_owned());
+    }
+
+    let output = Command::new("sh")
+        .arg("-c")
+        .arg(script)
+        .current_dir(repo)
+        .env("PATH", path_entries.join(":"))
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .output()
-        .with_context(|| format!("failed to run {}", cli.display()))?;
+        .context("failed to execute shell block")?;
 
     if !output.status.success() {
         bail!(
@@ -322,6 +691,265 @@ fn run_cli_eval(cli: &Path, code: &str) -> Result<String> {
     Ok(String::from_utf8_lossy(&output.stdout)
         .trim_end_matches('\n')
         .replace("\r\n", "\n"))
+}
+
+fn check_rust_snippet(repo: &Path, snippet: &str) -> Result<()> {
+    let temp = tempfile::tempdir().context("failed to create temp dir for rust snippet")?;
+    fs::write(
+        temp.path().join("Cargo.toml"),
+        format!(
+            r#"[package]
+name = "doc-snippet-check"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+ranty = {{ path = "{}" }}
+"#,
+            repo.display()
+        ),
+    )
+    .context("failed to write Cargo.toml for rust snippet")?;
+
+    let src_dir = temp.path().join("src");
+    fs::create_dir_all(&src_dir).context("failed to create src dir for rust snippet")?;
+    fs::write(
+        src_dir.join("main.rs"),
+        format!(
+            "fn main() -> Result<(), Box<dyn std::error::Error>> {{\n{}\n}}\n",
+            indent_block(&normalize_rust_doc_snippet(snippet), "    ")
+        ),
+    )
+    .context("failed to write main.rs for rust snippet")?;
+
+    run_command(temp.path(), "cargo", &["check", "--quiet", "--offline"])
+}
+
+fn indent_block(text: &str, indent: &str) -> String {
+    text.lines()
+        .map(|line| format!("{indent}{line}"))
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn normalize_rust_doc_snippet(snippet: &str) -> String {
+    snippet
+        .lines()
+        .map(|line| {
+            line.strip_prefix("# ")
+                .or_else(|| line.strip_prefix('#'))
+                .unwrap_or(line)
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn check_tutorial_code_pairs(repo: &Path) -> Result<()> {
+    let mut paths = markdown_files(&repo.join("docs-src/getting-started/tutorial"));
+    let landing = repo.join("docs-src/getting-started/tutorial.md");
+    if landing.exists() {
+        paths.push(landing);
+    }
+    paths.sort();
+
+    let mut failures = vec![];
+
+    for path in paths {
+        let text = fs::read_to_string(&path)
+            .with_context(|| format!("failed to read {}", path.display()))?;
+        let lines: Vec<_> = text.lines().collect();
+        let mut index = 0usize;
+
+        while index < lines.len() {
+            let line = lines[index].trim();
+            let Some(kind) = tutorial_block_kind(line) else {
+                index += 1;
+                continue;
+            };
+
+            let (_, next_index) = read_fenced_block(&lines, index)?;
+            match kind {
+                TutorialBlockKind::RantyExample => {
+                    let output_index = skip_tutorial_pair_gap(&lines, next_index);
+                    if output_index >= lines.len()
+                        || !is_expected_text_start(lines[output_index].trim())
+                    {
+                        failures.push(format!(
+                            "{}:{}: tutorial `ranty example` block is not followed by `text expected`",
+                            path.display(),
+                            index + 1
+                        ));
+                        index = next_index;
+                        continue;
+                    }
+                    let (_, output_end) = read_fenced_block(&lines, output_index)?;
+                    index = output_end;
+                }
+                TutorialBlockKind::Ranty | TutorialBlockKind::Sh => {
+                    let output_index = skip_tutorial_pair_gap(&lines, next_index);
+                    if output_index >= lines.len()
+                        || !is_plain_text_start(lines[output_index].trim())
+                    {
+                        failures.push(format!(
+                            "{}:{}: tutorial `{}` block is not followed by `text`",
+                            path.display(),
+                            index + 1,
+                            match kind {
+                                TutorialBlockKind::Ranty => "ranty",
+                                TutorialBlockKind::Sh => "sh",
+                                _ => unreachable!(),
+                            }
+                        ));
+                        index = next_index;
+                        continue;
+                    }
+                    let (_, output_end) = read_fenced_block(&lines, output_index)?;
+                    index = output_end;
+                }
+                TutorialBlockKind::Text | TutorialBlockKind::TextExpected => {
+                    failures.push(format!(
+                        "{}:{}: tutorial output block does not follow an input block",
+                        path.display(),
+                        index + 1
+                    ));
+                    index = next_index;
+                }
+            }
+        }
+    }
+
+    if failures.is_empty() {
+        return Ok(());
+    }
+
+    bail!("tutorial code block pairing failures:\n{}", failures.join("\n"))
+}
+
+struct HighlightExpectation {
+    class_name: &'static str,
+    text: &'static str,
+}
+
+struct RantyHighlightCase {
+    name: &'static str,
+    code: &'static str,
+    expectations: Vec<HighlightExpectation>,
+    absent_spans: Vec<&'static str>,
+}
+
+fn check_ranty_highlighting(repo: &Path) -> Result<()> {
+    let mut failures = vec![];
+
+    for case in ranty_highlight_cases() {
+        let html = run_ranty_highlight(repo, case.code)
+            .with_context(|| format!("failed to highlight case `{}`", case.name))?;
+
+        for expectation in &case.expectations {
+            let expected_span = format!(
+                r#"<span class="hljs-{}">{}</span>"#,
+                expectation.class_name,
+                escape_html(expectation.text),
+            );
+            if !html.contains(&expected_span) {
+                failures.push(format!(
+                    "{}: missing {} span for {:?}\nhtml: {}",
+                    case.name, expectation.class_name, expectation.text, html
+                ));
+            }
+        }
+
+        for unexpected in &case.absent_spans {
+            if html.contains(unexpected) {
+                failures.push(format!(
+                    "{}: found unexpected highlighted fragment {:?}\nhtml: {}",
+                    case.name, unexpected, html
+                ));
+            }
+        }
+    }
+
+    if failures.is_empty() {
+        return Ok(());
+    }
+
+    bail!("ranty syntax highlighting failures:\n{}", failures.join("\n\n"))
+}
+
+fn build_cli_binary(repo: &Path) -> Result<()> {
+    run_command(
+        repo,
+        "cargo",
+        &["build", "--quiet", "--features", "cli", "--bin", "ranty"],
+    )
+}
+
+fn run_cli_eval(cli: &Path, code: &str) -> Result<String> {
+    let cwd = env::current_dir().context("failed to read current working directory")?;
+    run_cli_eval_in_dir(cli, code, &cwd)
+}
+
+fn run_cli_eval_in_dir(cli: &Path, code: &str, cwd: &Path) -> Result<String> {
+    let outcome = run_cli_capture_in_dir(cli, code, cwd)?;
+    if outcome.success {
+        Ok(outcome.text)
+    } else {
+        bail!("{}", outcome.text)
+    }
+}
+
+struct CliRunOutcome {
+    success: bool,
+    text: String,
+}
+
+fn run_cli_capture_in_dir(cli: &Path, code: &str, cwd: &Path) -> Result<CliRunOutcome> {
+    let output = Command::new(cli)
+        .arg("--seed")
+        .arg("1")
+        .arg("--eval")
+        .arg(code)
+        .current_dir(cwd)
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .output()
+        .with_context(|| format!("failed to run {}", cli.display()))?;
+
+    let text = if output.status.success() {
+        String::from_utf8_lossy(&output.stdout)
+            .replace("\r\n", "\n")
+    } else {
+        String::from_utf8_lossy(&output.stderr)
+            .replace("\r\n", "\n")
+    };
+
+    Ok(CliRunOutcome {
+        success: output.status.success(),
+        text: normalize_cli_output(&text),
+    })
+}
+
+fn normalize_cli_output(text: &str) -> String {
+    Regex::new(r"\x1B\[[0-9;]*[A-Za-z]")
+        .expect("ansi regex should compile")
+        .replace_all(text, "")
+        .trim_matches('\n')
+        .to_string()
+}
+
+fn matches_expected_output(expected: &str, actual: &str) -> bool {
+    if expected == actual {
+        return true;
+    }
+    if !expected.contains("...") {
+        return false;
+    }
+
+    let pattern = format!("(?s)^{}$", regex::escape(expected).replace("\\.\\.\\.", ".*"));
+    Regex::new(&pattern)
+        .map(|re| re.is_match(actual))
+        .unwrap_or(false)
 }
 
 fn check_forbidden_strings(repo: &Path) -> Result<()> {
@@ -412,9 +1040,7 @@ fn check_stdlib_docs(repo: &Path) -> Result<()> {
 
     for name in exports {
         let entry = docs.get(&name).unwrap();
-        if entry.call_form.trim().is_empty() {
-            bail!("stdlib symbol `{name}` has an empty call form");
-        }
+        validate_stdlib_entry(&name, entry)?;
         if looks_placeholder(&entry.summary) {
             bail!("stdlib symbol `{name}` has a placeholder summary");
         }
@@ -492,6 +1118,39 @@ struct StdlibDoc {
     call_form: String,
     summary: String,
     location: String,
+}
+
+fn stdlib_usage_head(call_form: &str) -> Result<&str> {
+    let trimmed = call_form.trim();
+    let inner = trimmed
+        .strip_prefix('[')
+        .and_then(|s| s.strip_suffix(']'))
+        .with_context(|| format!("usage is not a bracket form: {trimmed}"))?;
+    Ok(inner.split(':').next().unwrap_or(inner).trim())
+}
+
+fn validate_stdlib_entry(name: &str, entry: &StdlibDoc) -> Result<()> {
+    if entry.call_form.trim().is_empty() {
+        bail!("stdlib symbol `{name}` has an empty call form");
+    }
+    if entry.call_form.trim() == name {
+        return Ok(());
+    }
+    if entry.call_form.trim_start().starts_with("[%") {
+        bail!(
+            "stdlib symbol `{name}` uses invalid `%`-prefixed signature notation: {}",
+            entry.call_form
+        );
+    }
+    let usage_head = stdlib_usage_head(&entry.call_form)
+        .with_context(|| format!("unable to parse stdlib usage for symbol `{name}`"))?;
+    if usage_head != name {
+        bail!(
+            "stdlib symbol `{name}` has mismatched usage signature `{}`",
+            entry.call_form
+        );
+    }
+    Ok(())
 }
 
 fn parse_stdlib_docs(docs_src: &Path) -> Result<BTreeMap<String, StdlibDoc>> {
@@ -686,6 +1345,12 @@ fn parse_examples(docs_src: &Path) -> Result<Vec<Example>> {
             while index < lines.len() && lines[index].trim().is_empty() {
                 index += 1;
             }
+            if index < lines.len() && is_output_label_line(lines[index].trim()) {
+                index += 1;
+                while index < lines.len() && lines[index].trim().is_empty() {
+                    index += 1;
+                }
+            }
             if index >= lines.len() || !is_expected_text_start(lines[index].trim()) {
                 bail!(
                     "example block in {} is not followed by a `text expected` block",
@@ -710,6 +1375,66 @@ fn is_rant_example_start(line: &str) -> bool {
 
 fn is_expected_text_start(line: &str) -> bool {
     line.starts_with("```") && line.contains("text") && line.contains("expected")
+}
+
+fn is_plain_text_start(line: &str) -> bool {
+    line.starts_with("```") && line.trim_start_matches("```").trim() == "text"
+}
+
+fn is_output_label_line(line: &str) -> bool {
+    let normalized = line
+        .trim()
+        .trim_matches(|c| c == '*' || c == '_')
+        .trim();
+    matches!(normalized, "Output" | "Output:")
+}
+
+#[derive(Clone, Copy)]
+enum TutorialBlockKind {
+    RantyExample,
+    Ranty,
+    Sh,
+    TextExpected,
+    Text,
+}
+
+fn tutorial_block_kind(line: &str) -> Option<TutorialBlockKind> {
+    if !line.starts_with("```") {
+        return None;
+    }
+    let info = line.trim_start_matches("```").trim();
+    match info {
+        "ranty example" => Some(TutorialBlockKind::RantyExample),
+        "ranty" => Some(TutorialBlockKind::Ranty),
+        "sh" => Some(TutorialBlockKind::Sh),
+        "text expected" => Some(TutorialBlockKind::TextExpected),
+        "text" => Some(TutorialBlockKind::Text),
+        _ => None,
+    }
+}
+
+fn skip_tutorial_pair_gap(lines: &[&str], mut index: usize) -> usize {
+    while index < lines.len() && lines[index].trim().is_empty() {
+        index += 1;
+    }
+    if index < lines.len() && is_tutorial_output_label_line(lines[index].trim()) {
+        index += 1;
+        while index < lines.len() && lines[index].trim().is_empty() {
+            index += 1;
+        }
+    }
+    index
+}
+
+fn is_tutorial_output_label_line(line: &str) -> bool {
+    let normalized = line
+        .trim()
+        .trim_matches(|c| c == '*' || c == '_')
+        .trim();
+    matches!(
+        normalized,
+        "Output" | "Output:" | "What happened" | "What happened:"
+    )
 }
 
 fn read_fenced_block(lines: &[&str], start: usize) -> Result<(String, usize)> {
@@ -812,6 +1537,388 @@ fn markdown_escape_code(text: &str) -> Cow<'_, str> {
 
 fn markdown_table_escape(text: &str) -> String {
     normalize_whitespace(text).replace('|', "\\|")
+}
+
+fn escape_html(text: &str) -> String {
+    text.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+        .replace('\'', "&#x27;")
+}
+
+fn run_ranty_highlight(repo: &Path, code: &str) -> Result<String> {
+    let script = r#"
+const fs = require("fs");
+const hljs = require(process.argv[1]);
+const code = fs.readFileSync(0, "utf8");
+const result = hljs.highlight("ranty", code, true);
+process.stdout.write(result.value);
+"#;
+
+    let mut child = Command::new("node")
+        .arg("-e")
+        .arg(script)
+        .arg(repo.join("theme/highlight.js"))
+        .current_dir(repo)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .context("failed to spawn node for ranty highlighting")?;
+
+    child
+        .stdin
+        .take()
+        .context("failed to open node stdin")?
+        .write_all(code.as_bytes())
+        .context("failed to send highlight input to node")?;
+
+    let output = child
+        .wait_with_output()
+        .context("failed to read node highlight output")?;
+
+    if !output.status.success() {
+        bail!(
+            "{}",
+            String::from_utf8_lossy(&output.stderr).trim().to_owned()
+        );
+    }
+
+    Ok(String::from_utf8_lossy(&output.stdout).into_owned())
+}
+
+fn ranty_highlight_cases() -> Vec<RantyHighlightCase> {
+    vec![
+        RantyHighlightCase {
+            name: "comments stay opaque",
+            code: r#"# $vendor @if"#,
+            expectations: vec![HighlightExpectation {
+                class_name: "comment",
+                text: "# $vendor @if",
+            }],
+            absent_spans: vec![
+                r#"<span class="hljs-variable">$vendor</span>"#,
+                r#"<span class="hljs-keyword">@if</span>"#,
+            ],
+        },
+        RantyHighlightCase {
+            name: "strings stay opaque",
+            code: r#""Quote ""$vendor""""#,
+            expectations: vec![HighlightExpectation {
+                class_name: "string",
+                text: r#""Quote ""$vendor""""#,
+            }],
+            absent_spans: vec![r#"<span class="hljs-variable">$vendor</span>"#],
+        },
+        RantyHighlightCase {
+            name: "escapes and numbers",
+            code: r#"\n \x41 \u0041 \U00000041 \U(41) 12 3.5 9E2"#,
+            expectations: vec![
+                HighlightExpectation {
+                    class_name: "symbol",
+                    text: r#"\n"#,
+                },
+                HighlightExpectation {
+                    class_name: "symbol",
+                    text: r#"\x41"#,
+                },
+                HighlightExpectation {
+                    class_name: "symbol",
+                    text: r#"\u0041"#,
+                },
+                HighlightExpectation {
+                    class_name: "symbol",
+                    text: r#"\U00000041"#,
+                },
+                HighlightExpectation {
+                    class_name: "symbol",
+                    text: r#"\U(41)"#,
+                },
+                HighlightExpectation {
+                    class_name: "number",
+                    text: "12",
+                },
+                HighlightExpectation {
+                    class_name: "number",
+                    text: "3.5",
+                },
+                HighlightExpectation {
+                    class_name: "number",
+                    text: "9E2",
+                },
+            ],
+            absent_spans: vec![],
+        },
+        RantyHighlightCase {
+            name: "keywords and literals",
+            code: r#"<> @true @false @if @return @eq @text @lazy"#,
+            expectations: vec![
+                HighlightExpectation {
+                    class_name: "literal",
+                    text: "<>",
+                },
+                HighlightExpectation {
+                    class_name: "literal",
+                    text: "@true",
+                },
+                HighlightExpectation {
+                    class_name: "literal",
+                    text: "@false",
+                },
+                HighlightExpectation {
+                    class_name: "keyword",
+                    text: "@if",
+                },
+                HighlightExpectation {
+                    class_name: "keyword",
+                    text: "@return",
+                },
+                HighlightExpectation {
+                    class_name: "keyword",
+                    text: "@eq",
+                },
+                HighlightExpectation {
+                    class_name: "keyword",
+                    text: "@text",
+                },
+                HighlightExpectation {
+                    class_name: "keyword",
+                    text: "@lazy",
+                },
+            ],
+            absent_spans: vec![],
+        },
+        RantyHighlightCase {
+            name: "sigils and scoped identifiers",
+            code: r#"<$foo = 1><%bar = 2><$/baz = 3>[$^next] { <^^foo> }"#,
+            expectations: vec![
+                HighlightExpectation {
+                    class_name: "variable",
+                    text: "$foo",
+                },
+                HighlightExpectation {
+                    class_name: "variable",
+                    text: "%bar",
+                },
+                HighlightExpectation {
+                    class_name: "variable",
+                    text: "$/baz",
+                },
+                HighlightExpectation {
+                    class_name: "variable",
+                    text: "$^next",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "=",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: "<",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: ">",
+                },
+            ],
+            absent_spans: vec![],
+        },
+        RantyHighlightCase {
+            name: "call heads params and access paths",
+            code: r#"[$greet: @text name; title ? "vendor"] { [kit/opening-line: Juniper] <stall/name> [step] [upper: hush] }"#,
+            expectations: vec![
+                HighlightExpectation {
+                    class_name: "variable",
+                    text: "$greet",
+                },
+                HighlightExpectation {
+                    class_name: "params",
+                    text: "name",
+                },
+                HighlightExpectation {
+                    class_name: "params",
+                    text: "title",
+                },
+                HighlightExpectation {
+                    class_name: "title",
+                    text: "kit",
+                },
+                HighlightExpectation {
+                    class_name: "title",
+                    text: "opening-line",
+                },
+                HighlightExpectation {
+                    class_name: "title",
+                    text: "step",
+                },
+                HighlightExpectation {
+                    class_name: "title",
+                    text: "upper",
+                },
+                HighlightExpectation {
+                    class_name: "attr",
+                    text: "name",
+                },
+            ],
+            absent_spans: vec![],
+        },
+        RantyHighlightCase {
+            name: "operators punctuation and temporal labels",
+            code: r#"<> < > [ ] { } ( ) : ; :: .. + - * ** / % & | ^ = += -= *= **= /= %= &= |= ^= ?= |> [] ` ~ *pair*"#,
+            expectations: vec![
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: "<",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: ">",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: "[",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: "]",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: "{",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: "}",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: "(",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: ")",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: ":",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: ";",
+                },
+                HighlightExpectation {
+                    class_name: "punctuation",
+                    text: "::",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "..",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "+",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "-",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "*",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "**",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "/",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "%",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "&",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "|",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "^",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "=",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "+=",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "-=",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "*=",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "**=",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "/=",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "%=",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "&=",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "|=",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "^=",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "?=",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "|>",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "[]",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "`",
+                },
+                HighlightExpectation {
+                    class_name: "operator",
+                    text: "~",
+                },
+                HighlightExpectation {
+                    class_name: "symbol",
+                    text: "*pair*",
+                },
+            ],
+            absent_spans: vec![],
+        },
+    ]
 }
 
 fn looks_placeholder(summary: &str) -> bool {
@@ -1144,3 +2251,176 @@ const REQUIRED_DOCS: &[RequiredDoc] = &[
         path: "docs-src/rant-3-vs-ranty.md",
     },
 ];
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+
+    fn parse_examples_from(markdown: &str) -> Result<Vec<Example>> {
+        let dir = tempdir()?;
+        fs::write(dir.path().join("page.md"), markdown)?;
+        parse_examples(dir.path())
+    }
+
+    #[test]
+    fn parse_examples_accepts_adjacent_expected_block() {
+        let examples = parse_examples_from(
+            r#"
+```ranty example
+hello
+```
+
+```text expected
+hello
+```
+"#,
+        )
+        .expect("adjacent expected block should parse");
+
+        assert_eq!(examples.len(), 1);
+        assert_eq!(examples[0].code, "hello");
+        assert_eq!(examples[0].expected, "hello");
+    }
+
+    #[test]
+    fn parse_examples_accepts_output_label_between_blocks() {
+        let examples = parse_examples_from(
+            r#"
+```ranty example
+hello
+```
+
+**Output**
+
+```text expected
+hello
+```
+"#,
+        )
+        .expect("output label should be allowed");
+
+        assert_eq!(examples.len(), 1);
+        assert_eq!(examples[0].code, "hello");
+        assert_eq!(examples[0].expected, "hello");
+    }
+
+    #[test]
+    fn parse_examples_rejects_non_label_paragraph_between_blocks() {
+        let err = parse_examples_from(
+            r#"
+```ranty example
+hello
+```
+
+Not output.
+
+```text expected
+hello
+```
+"#,
+        )
+        .expect_err("non-label paragraph should fail");
+
+        assert!(err
+            .to_string()
+            .contains("is not followed by a `text expected` block"));
+    }
+
+    fn check_tutorial_pairs_from(markdown: &str) -> Result<()> {
+        let dir = tempdir()?;
+        let tutorial_dir = dir.path().join("docs-src/getting-started/tutorial");
+        fs::create_dir_all(&tutorial_dir)?;
+        fs::write(tutorial_dir.join("page.md"), markdown)?;
+        check_tutorial_code_pairs(dir.path())
+    }
+
+    #[test]
+    fn tutorial_pairs_accept_ranty_and_text_blocks() {
+        check_tutorial_pairs_from(
+            r#"
+**Wrong attempt**
+
+```ranty
+hello
+```
+
+**What happened**
+
+```text
+hello
+```
+"#,
+        )
+        .expect("ordinary tutorial pairs should parse");
+    }
+
+    #[test]
+    fn tutorial_pairs_reject_lone_ranty_block() {
+        let err = check_tutorial_pairs_from(
+            r#"
+```ranty
+hello
+```
+"#,
+        )
+        .expect_err("lone tutorial ranty block should fail");
+
+        assert!(err.to_string().contains("is not followed by `text`"));
+    }
+
+    #[test]
+    fn tutorial_pairs_reject_output_without_input() {
+        let err = check_tutorial_pairs_from(
+            r#"
+```text
+hello
+```
+"#,
+        )
+        .expect_err("stray tutorial text block should fail");
+
+        assert!(err
+            .to_string()
+            .contains("tutorial output block does not follow an input block"));
+    }
+
+    #[test]
+    fn ranty_highlighting_covers_audited_token_families() {
+        check_ranty_highlighting(&repo_root()).expect("ranty highlighting should cover audited syntax");
+    }
+
+    #[test]
+    fn stdlib_validation_rejects_percent_prefixed_usage() {
+        let entry = StdlibDoc {
+            category: "General".into(),
+            call_form: "[%len: value]".into(),
+            summary: "Prints a length.".into(),
+            location: "stdlib/general.md#len".into(),
+        };
+
+        let err = validate_stdlib_entry("len", &entry)
+            .expect_err("percent-prefixed stdlib usage should fail");
+
+        assert!(err
+            .to_string()
+            .contains("uses invalid `%`-prefixed signature notation"));
+    }
+
+    #[test]
+    fn stdlib_validation_rejects_heading_signature_mismatches() {
+        let entry = StdlibDoc {
+            category: "Collections".into(),
+            call_form: "[augment-self: dst-map; src-map]".into(),
+            summary: "Prints the result.".into(),
+            location: "stdlib/collections.md#augment-thru".into(),
+        };
+
+        let err = validate_stdlib_entry("augment-thru", &entry)
+            .expect_err("mismatched stdlib usage should fail");
+
+        assert!(err
+            .to_string()
+            .contains("has mismatched usage signature"));
+    }
+}

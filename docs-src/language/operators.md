@@ -112,7 +112,7 @@ This operator is short-circuiting: if LHS is falsy, RHS will not be evaluated.
 1 & 0            # -> 0
 0 & 2            # -> 0
 0 & <>           # -> 0
-<> & 0           # -> <>
+<> & 0           # -> <> (nothing value, no output printed)
 ```
 
 ### Logical OR
@@ -138,7 +138,7 @@ This operator is short-circuiting: if LHS is truthy, RHS will not be evaluated.
 1 | 2             # -> 1
 1 | 0             # -> 1
 0 | 2             # -> 2
-0 | <>            # -> <>
+0 | <>            # -> <> (nothing value, no output printed)
 <> | 0            # -> 0
 ```
 
@@ -176,7 +176,7 @@ Returns `@true` if exactly *one* of the two operands is truthy; otherwise, retur
 
 ```ranty
 # Logical XOR using booleans
-@true ^ @true    # -> @true
+@true ^ @true    # -> @false
 @true ^ @false   # -> @true
 @false ^ @true   # -> @true
 @false ^ @false  # -> @false
@@ -237,9 +237,9 @@ Returns `@true` if LHS is greater than RHS; otherwise, returns `@false`.
 Returns `@true` if LHS is less than RHS; otherwise, returns `@false`.
 
 ```ranty
-1 @gt 1     # -> @false
-1 @gt 2     # -> @true
-2 @gt 1     # -> @false
+1 @lt 1     # -> @false
+1 @lt 2     # -> @true
+2 @lt 1     # -> @false
 ```
 
 ### Greater than or equal
@@ -249,9 +249,9 @@ Returns `@true` if LHS is less than RHS; otherwise, returns `@false`.
 Returns `@true` if LHS is greater than or equal to RHS; otherwise, returns `@false`.
 
 ```ranty
-1 @gt 1     # -> @true
-1 @gt 2     # -> @false
-2 @gt 1     # -> @true
+1 @ge 1     # -> @true
+1 @ge 2     # -> @false
+2 @ge 1     # -> @true
 ```
 
 ### Less than or equal
@@ -261,9 +261,9 @@ Returns `@true` if LHS is greater than or equal to RHS; otherwise, returns `@fal
 Returns `@true` if LHS is less than or equal to RHS; otherwise, returns `@false`.
 
 ```ranty
-1 @gt 1     # -> @true
-1 @gt 2     # -> @true
-2 @gt 1     # -> @false
+1 @le 1     # -> @true
+1 @le 2     # -> @true
+2 @le 1     # -> @false
 ```
 
 

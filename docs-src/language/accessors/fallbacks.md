@@ -22,11 +22,11 @@ Fallbacks are still relevant when using lazy bindings:
     <$foo = "I exist!">
 
     # Get `foo` with fallback
-    <foo ? <fallback>> # -> "I exist!"
-}\n
+    <foo ? <fallback>> # -> I exist!
+}
 
 # Getting `foo` again out of scope will trigger the fallback
-<foo ? <fallback>> # -> "I don't exist!"
+<foo ? <fallback>> # -> I don't exist!
 
 # Getting `foo` without a fallback here would crash the program
 <foo> # error

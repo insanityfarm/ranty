@@ -178,7 +178,7 @@
                         <h1 id="standard-library-string-functions"><a class="header" href="#standard-library-string-functions">Standard Library: String functions</a></h1>
 <h2 id="char"><a class="header" href="#char">char</a></h2>
 <pre><code class="language-ranty">
-[%char: code]
+[char: code]
 
 </code></pre>
 <p>→ <code>string?</code></p>
@@ -189,7 +189,7 @@ If <code>code</code> doesn't correspond to a valid character, prints nothing.</p
 The Unicode code point representing the character to print.</p>
 <h2 id="lines"><a class="header" href="#lines">lines</a></h2>
 <pre><code class="language-ranty">
-[%lines: str]
+[lines: str]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -199,13 +199,13 @@ The Unicode code point representing the character to print.</p>
 The input string.</p>
 <h2 id="indent"><a class="header" href="#indent">indent</a></h2>
 <pre><code class="language-ranty">
-[%indent: text; indent]
+[indent: text; indent]
 
 </code></pre>
 <p>Prefixes every line in <code>text</code> with the string <code>indent</code>.</p>
 <h2 id="lower"><a class="header" href="#lower">lower</a></h2>
 <pre><code class="language-ranty">
-[%lower: str]
+[lower: str]
 
 </code></pre>
 <p>→ <code>string</code></p>
@@ -215,13 +215,13 @@ The input string.</p>
 The input string.</p>
 <h2 id="string-replace"><a class="header" href="#string-replace">string-replace</a></h2>
 <pre><code class="language-ranty">
-[%string-replace: input; query; replacement]
+[string-replace: input; query; replacement]
 
 </code></pre>
 <p>Prints <code>input</code> with every occurrence of <code>query</code> replaced by <code>replacement</code>.</p>
 <h2 id="ord"><a class="header" href="#ord">ord</a></h2>
 <pre><code class="language-ranty">
-[%ord: ch]
+[ord: ch]
 
 </code></pre>
 <p>→ <code>int?</code></p>
@@ -236,7 +236,7 @@ The input string that provides the character. This can be any length; the functi
 </code></pre>
 <h2 id="ord-all"><a class="header" href="#ord-all">ord-all</a></h2>
 <pre><code class="language-ranty">
-[%ord-all: str]
+[ord-all: str]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -246,7 +246,7 @@ The input string that provides the character. This can be any length; the functi
 The input string.</p>
 <h3 id="example-1"><a class="header" href="#example-1">Example</a></h3>
 <pre><code class="language-ranty"># Prints a list of hex values of each code point from the input string
-[%as-unicode-hex: str] {
+[$as-unicode-hex: str] {
   [cat: **[ord-all: &lt;str&gt;] 
     |&gt; cat: [num-fmt: (:: system = hex; upper = @true)] U\+[] 
     |&gt; tuple
@@ -258,7 +258,7 @@ The input string.</p>
 </code></pre>
 <h2 id="split"><a class="header" href="#split">split</a></h2>
 <pre><code class="language-ranty">
-[%split: str; sep?]
+[split: str; sep?]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -270,7 +270,7 @@ The input string.</p>
 The delimiter to split on. If omitted, the string will be split into individual characters.</p>
 <h2 id="seg"><a class="header" href="#seg">seg</a></h2>
 <pre><code class="language-ranty">
-[%seg: str; size]
+[seg: str; size]
 
 </code></pre>
 <p>→ <code>list</code></p>
@@ -282,13 +282,13 @@ The input string.</p>
 The size of the segments to produce.</p>
 <h2 id="trim"><a class="header" href="#trim">trim</a></h2>
 <pre><code class="language-ranty">
-[%trim: str]
+[trim: str]
 
 </code></pre>
 <p>Prints <code>str</code> with leading and trailing whitespace removed.</p>
 <h2 id="upper"><a class="header" href="#upper">upper</a></h2>
 <pre><code class="language-ranty">
-[%upper: str]
+[upper: str]
 
 </code></pre>
 <p>→ <code>string</code></p>

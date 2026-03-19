@@ -4,7 +4,7 @@
 
 ```ranty
 
-[%eq: lhs; rhs]
+[eq: lhs; rhs]
 
 ```
 &rarr; `bool`
@@ -24,7 +24,7 @@ The right-hand operand of the comparison.
 
 ```ranty
 
-[%ge: lhs; rhs]
+[ge: lhs; rhs]
 
 ```
 &rarr; `bool`
@@ -44,7 +44,7 @@ The right-hand operand of the comparison.
 
 ```ranty
 
-[%gt: lhs; rhs]
+[gt: lhs; rhs]
 
 ```
 &rarr; `bool`
@@ -64,7 +64,7 @@ The right-hand operand of the comparison.
 
 ```ranty
 
-[%le: lhs; rhs]
+[le: lhs; rhs]
 
 ```
 &rarr; `bool`
@@ -84,7 +84,7 @@ The right-hand operand of the comparison.
 
 ```ranty
 
-[%lt: lhs; rhs]
+[lt: lhs; rhs]
 
 ```
 &rarr; `bool`
@@ -104,7 +104,7 @@ The right-hand operand of the comparison.
 
 ```ranty
 
-[%neq: lhs; rhs]
+[neq: lhs; rhs]
 
 ```
 &rarr; `bool`

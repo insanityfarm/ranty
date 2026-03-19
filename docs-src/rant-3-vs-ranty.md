@@ -73,15 +73,18 @@ Ranty replaces that system with [accessors](language/accessors.md), giving varia
 
 ### Example
 
-```ranty
-# Rant 3 style
+Before:
+```text
+# Rant 3 syntax
 [vn: foo; 1]
 [vn: bar; 2]
 [add: [v: foo]; [v: bar]]
 # -> 3
+```
 
-
-# Ranty equivalent
+After:
+```ranty
+# Ranty syntax
 <$foo = 1; $bar = 2>
 <foo> + <bar>
 # -> 3
@@ -121,15 +124,18 @@ In Ranty, selectors are ordinary values of type [`selector`](language/data-types
 
 **Reusing a selector**
 
-```ranty
-# Old Rant 3 style
+Before:
+```text
+# Rant 3 syntax
 [x:foo;locked]
 {a|b|c|d|e|f|g|h}
 [x:foo;locked]
 {1|2|3|4|5|6|7|8}
+```
 
-
-# Ranty equivalent
+After:
+```ranty
+# Ranty syntax
 <%sync = [mksel: one]>
 [sel: <sync>] {a|b|c|d|e|f|g|h}
 [sel: <sync>] {1|2|3|4|5|6|7|8}
@@ -137,12 +143,15 @@ In Ranty, selectors are ordinary values of type [`selector`](language/data-types
 
 **Single-use selector**
 
-```ranty
-# Rant 3 style
+Before:
+```text
+# Rant 3 syntax
 [x:foo;deck][rep:each]{A|B|C|D|E|F|G|H}
 [xdel:foo]
+```
 
-
-# Ranty equivalent
+After:
+```ranty
+Ranty syntax:
 [sel: deck] [rep: all] {A|B|C|D|E|F|G|H}
 ```

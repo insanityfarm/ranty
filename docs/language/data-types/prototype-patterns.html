@@ -207,7 +207,7 @@
 <p>A prototype can also serve as a behavior bundle:</p>
 <pre><code class="language-ranty">&lt;$describable = (::
   describe = [?: obj] {
-    &lt;obj/name&gt; the &lt;obj/species&gt;
+    `&lt;obj/name&gt; the `&lt;obj/species&gt;
   };
 )&gt;
 
@@ -229,10 +229,8 @@ The factory creates a fresh map, then attaches the shared prototype:</p>
 )&gt;
 
 [$make-counter: start ? 0] {
-  &lt;
-    $counter = (:: value = &lt;start&gt;);
-    [set-proto: &lt;counter&gt;; &lt;counter-proto&gt;];
-  &gt;
+  &lt;$counter = (:: value = &lt;start&gt;)&gt;
+  [set-proto: &lt;counter&gt;; &lt;counter-proto&gt;]
   &lt;counter&gt;
 }
 
@@ -243,7 +241,7 @@ The factory creates a fresh map, then attaches the shared prototype:</p>
 [counter-a/inc: &lt;counter-a&gt;]
 [counter-b/inc: &lt;counter-b&gt;]
 
-[counter-a/read: &lt;counter-a&gt;], [counter-b/read: &lt;counter-b&gt;]
+[counter-a/read: &lt;counter-a&gt;],\s[counter-b/read: &lt;counter-b&gt;]
 # -&gt; 2, 11
 </code></pre>
 <p>This pattern is a good fit when you want many small objects that share the same behavior.</p>

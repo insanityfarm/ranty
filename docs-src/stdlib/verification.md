@@ -4,7 +4,7 @@
 
 ```ranty
 
-[%is-some: value] 
+[is-some: value]
 
 ```
 &rarr; `bool`
@@ -21,7 +21,7 @@ The value to check.
 
 ```ranty
 
-[%is-between: value; a; b]
+[is-between: value; a; b]
 
 ```
 &rarr; `bool`
@@ -44,7 +44,7 @@ The second bound.
 
 ```ranty
 
-[%is-bool: value]
+[is-bool: value]
 
 ```
 &rarr; `bool`
@@ -61,7 +61,7 @@ The value to check.
 
 ```ranty
 
-[%is-nothing: value]
+[is-nothing: value]
 
 ```
 &rarr; `bool`
@@ -78,7 +78,7 @@ The value to check.
 
 ```ranty
 
-[%is-even: number]
+[is-even: number]
 
 ```
 &rarr; `bool`
@@ -94,7 +94,7 @@ The number to check.
 
 ```ranty
 
-[%is-factor: value; factor]
+[is-factor: value; factor]
 
 ```
 &rarr; `bool`
@@ -106,7 +106,7 @@ Returns `@true` if `value` is evenly divisible by `factor`.
 
 ```ranty
 
-[%is-float: value]
+[is-float: value]
 
 ```
 &rarr; `bool`
@@ -123,7 +123,7 @@ The value to check.
 
 ```ranty
 
-[%is-int: value]
+[is-int: value]
 
 ```
 &rarr; `bool`
@@ -140,7 +140,7 @@ The value to check.
 
 ```ranty
 
-[%is-nan: value]
+[is-nan: value]
 
 ```
 &rarr; `bool`
@@ -157,7 +157,7 @@ The value to check.
 
 ```ranty
 
-[%is-number: value]
+[is-number: value]
 
 ```
 &rarr; `bool`
@@ -173,7 +173,7 @@ The value to check.
 
 ```ranty
 
-[%is: value; type-name]
+[is: value; type-name]
 
 ```
 &rarr; `bool`
@@ -185,7 +185,7 @@ Returns `@true` when `value`'s runtime type name exactly matches `type-name`.
 
 ```ranty
 
-[%is-odd: number]
+[is-odd: number]
 
 ```
 &rarr; `bool`
@@ -202,7 +202,7 @@ The value to check.
 
 ```ranty
 
-[%is-string: value]
+[is-string: value]
 
 ```
 &rarr; `bool`

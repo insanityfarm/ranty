@@ -169,7 +169,7 @@ Lazy parameters can also be captured by returned closures, and they capture oute
 <$value = 1>
 <$reader = [defer: <value>]>
 <value = 2>
-[reader] # -> "2"
+[reader] # -> 2
 ```
 
 `@lazy` is supported on user-defined function and lambda parameters, but not on variadic parameters.

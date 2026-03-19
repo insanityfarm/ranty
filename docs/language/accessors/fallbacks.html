@@ -193,11 +193,11 @@
     &lt;$foo = "I exist!"&gt;
 
     # Get `foo` with fallback
-    &lt;foo ? &lt;fallback&gt;&gt; # -&gt; "I exist!"
-}\n
+    &lt;foo ? &lt;fallback&gt;&gt; # -&gt; I exist!
+}
 
 # Getting `foo` again out of scope will trigger the fallback
-&lt;foo ? &lt;fallback&gt;&gt; # -&gt; "I don't exist!"
+&lt;foo ? &lt;fallback&gt;&gt; # -&gt; I don't exist!
 
 # Getting `foo` without a fallback here would crash the program
 &lt;foo&gt; # error

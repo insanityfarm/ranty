@@ -25,9 +25,7 @@ A module is just a program that returns a value, usually a map:
 Use `@require` to load a module and bind it by filename:
 
 ```ranty
-@require "seq"
-
-[seq/fib: 16]
+@require "test-module"
 ```
 
 The default resolver prefers `.ranty` when no extension is supplied, falls back to `.rant`, preserves explicit `.ranty` and `.rant` paths, and normalizes relative paths before loading.
@@ -49,7 +47,7 @@ Modules are cached per `Ranty` context. Requiring the same module again returns 
 Relative paths are resolved relative to the active search roots:
 
 ```ranty
-@require "modules/my-module"
+@require tm: "test-module"
 ```
 
 ## Failures
