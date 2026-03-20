@@ -1,3 +1,4 @@
 /target
 Cargo.lock
 debug.log
+/benchmarks/latest-results.json

@@ -6,9 +6,18 @@
 
 */
 
+#[cfg(feature = "cli")]
+mod common;
+
 use ranty::*;
 
 use assert_matches::*;
+
+#[cfg(feature = "cli")]
+use common::{
+    discover_executable_fixture_files, load_fixture_corpus, load_fuzz_corpus, relevant_stderr,
+    repo_root, run_cli,
+};
 
 #[macro_export]
 macro_rules! test_ranty_file {
@@ -894,4 +903,74 @@ fn access_and_assign() {
 #[test]
 fn access_or_assign() {
     test_ranty_file!("sources/access/or_assign.ranty");
+}
+
+#[cfg(feature = "cli")]
+#[test]
+fn corpus_fixture_set_matches_the_executable_non_tutorial_fixtures() {
+    let corpus = load_fixture_corpus();
+    let corpus_files = corpus
+        .cases
+        .iter()
+        .map(|case| case.file.clone())
+        .collect::<Vec<_>>();
+
+    assert_eq!(corpus_files, discover_executable_fixture_files());
+}
+
+#[cfg(feature = "cli")]
+#[test]
+fn executable_fixture_corpus_matches_rust_cli_output() {
+    let corpus = load_fixture_corpus();
+
+    for case in corpus.cases {
+        let output = run_cli(std::slice::from_ref(&case.file), None, &repo_root());
+        assert_eq!(
+            output.status, case.status,
+            "fixture '{}' exit mismatch",
+            case.file
+        );
+        assert_eq!(
+            output.stdout, case.stdout,
+            "fixture '{}' stdout mismatch",
+            case.file
+        );
+        assert_eq!(
+            relevant_stderr(&output.stderr, output.status),
+            case.stderr,
+            "fixture '{}' stderr mismatch",
+            case.file
+        );
+    }
+}
+
+#[cfg(feature = "cli")]
+#[test]
+fn fuzz_corpus_matches_rust_cli_output() {
+    let corpus = load_fuzz_corpus();
+
+    for case in corpus.cases {
+        let mut args = vec!["--eval".to_owned(), case.source.clone()];
+        if let Some(seed) = &case.seed {
+            args.splice(0..0, ["--seed".to_owned(), seed.clone()]);
+        }
+
+        let output = run_cli(&args, None, &repo_root());
+        assert_eq!(
+            output.status, case.status,
+            "fuzz case '{}' exit mismatch",
+            case.label
+        );
+        assert_eq!(
+            output.stdout, case.stdout,
+            "fuzz case '{}' stdout mismatch",
+            case.label
+        );
+        assert_eq!(
+            relevant_stderr(&output.stderr, output.status),
+            case.stderr,
+            "fuzz case '{}' stderr mismatch",
+            case.label
+        );
+    }
 }

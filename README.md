@@ -101,6 +101,42 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 ```
 
+## Benchmarking
+
+The benchmark suite measures **cold-start CLI performance** of the final distributable, not compile time. Each run spawns a fresh `ranty` process against a checked-in stress workload and times how long it takes to produce output.
+
+This project uses [`hyperfine`](https://github.com/sharkdp/hyperfine) for benchmarking because it is built specifically for repeated external-command timing. In practice, that makes it a better fit than in-process microbenchmark tools for CLI startup measurements.
+
+Install `hyperfine` using the package manager you prefer, for example:
+
+```sh
+brew install hyperfine
+# or
+cargo install hyperfine
+```
+
+Then build the release CLI and run the benchmark script:
+
+```sh
+cargo build --release --features cli --bin ranty
+bash benchmarks/run-hyperfine.sh
+```
+
+The benchmark inputs live in `benchmarks/workloads`. The script writes machine-readable results to `benchmarks/latest-results.json`.
+
+If you want to time a custom command manually with `hyperfine`, keep the same basic approach:
+
+```sh
+hyperfine -N --warmup 3 --runs 20 --output=pipe \
+  './target/release/ranty --no-debug --no-warnings examples/helloworld.ranty'
+```
+
+Notes:
+
+- `-N` tells `hyperfine` to execute the command directly instead of through a shell.
+- `--output=pipe` keeps stdout generation in the measurement without terminal rendering noise.
+- The suite is intentionally cold-start by process: every timed iteration launches a new CLI process.
+
 ## [Examples](./examples/)
 
 This repository includes a collection of example Ranty scripts for you to learn from. Check them out.
