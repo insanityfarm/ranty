@@ -1,0 +1,59 @@
+name: Sync Ranty.js
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out Ranty
+        uses: actions/checkout@v4
+        with:
+          path: ranty
+
+      - name: Check out Ranty.js
+        uses: actions/checkout@v4
+        with:
+          repository: insanityfarm/ranty-js
+          token: ${{ secrets.RANTY_JS_REPO_TOKEN }}
+          path: ranty-js
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Sync upstream contract
+        working-directory: ranty-js
+        run: >
+          node scripts/upstream/sync-ranty.mjs
+          --source-repo ../ranty
+          --ref "${{ github.sha }}"
+          --summary-file .sync-ranty-summary.json
+
+      - name: Read sync summary
+        id: summary
+        working-directory: ranty-js
+        run: |
+          node -e 'const fs=require("node:fs"); const summary=JSON.parse(fs.readFileSync(".sync-ranty-summary.json","utf8")); const changed=(summary.changedComponents||[]).join(", "); fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed_components=${changed || "none"}\n`); fs.appendFileSync(process.env.GITHUB_OUTPUT, `source_commit=${summary.sourceCommit}\n`);'
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.RANTY_JS_REPO_TOKEN }}
+          path: ranty-js
+          branch: codex/sync-ranty-upstream
+          commit-message: "chore: sync upstream Ranty contract"
+          title: "chore: sync upstream Ranty contract"
+          body: |
+            Sync the checked-in upstream Ranty parity contract.
+
+            Source repo: https://github.com/insanityfarm/ranty
+            Source commit: `${{ steps.summary.outputs.source_commit }}`
+            Changed components: `${{ steps.summary.outputs.changed_components }}`

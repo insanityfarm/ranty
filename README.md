@@ -147,17 +147,29 @@ The latest reference documentation is published at [insanityfarm.github.com/rant
 
 A bundled copy of the stable language and standard-library reference is also included in this repository under [docs/intro.html](./docs/intro.html).
 
+## Ranty.js parity
+
+The standalone TypeScript port lives at
+[insanityfarm/ranty-js](https://github.com/insanityfarm/ranty-js). This Rust
+repo is the authoritative upstream for shared language and runtime behavior.
+
+Ranty's checked-in downstream contract for Ranty.js lives under
+[`parity/ranty-js/`](./parity/ranty-js). Regenerate it with:
+
+```sh
+cargo xtask parity build
+```
+
+Verify it is current with:
+
+```sh
+cargo xtask parity verify
+```
+
 ## [Changelog](./CHANGELOG.md)
 
 The changelog summarizes the changes that landed in the stable fork and the work required to ship Ranty 1.0.0.
 
 ## License
 
-Licensed under either of
-
-* Apache License, Version 2.0
-  ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
-* MIT license
-  ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
-
-at your option.
+Licensed under the MIT license in [LICENSE](LICENSE).

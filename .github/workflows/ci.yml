@@ -12,8 +12,11 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
-      - name: Run tests
-        run: cargo test --all --all-features
+      - name: Run Rust tests
+        run: cargo test --features cli
 
       - name: Verify docs
         run: cargo xtask docs verify
+
+      - name: Verify parity contract
+        run: cargo xtask parity verify

@@ -1,3 +1,5 @@
+mod parity;
+
 use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet};
 use std::env;
@@ -22,7 +24,9 @@ fn main() -> Result<()> {
     ) {
         (Some("docs"), Some("build"), None) => docs_build(),
         (Some("docs"), Some("verify"), None) => docs_verify(),
-        _ => bail!("usage: cargo xtask docs <build|verify>"),
+        (Some("parity"), Some("build"), None) => parity::parity_build(),
+        (Some("parity"), Some("verify"), None) => parity::parity_verify(),
+        _ => bail!("usage: cargo xtask <docs|parity> <build|verify>"),
     }
 }
 
