@@ -13,19 +13,19 @@ jobs:
       contents: read
     steps:
       - name: Check out Ranty
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: ranty
 
       - name: Check out Ranty.js
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: insanityfarm/ranty-js
           token: ${{ secrets.RANTY_JS_REPO_TOKEN }}
           path: ranty-js
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
@@ -44,7 +44,7 @@ jobs:
           node -e 'const fs=require("node:fs"); const summary=JSON.parse(fs.readFileSync(".sync-ranty-summary.json","utf8")); const changed=(summary.changedComponents||[]).join(", "); fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed_components=${changed || "none"}\n`); fs.appendFileSync(process.env.GITHUB_OUTPUT, `source_commit=${summary.sourceCommit}\n`);'
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.RANTY_JS_REPO_TOKEN }}
           path: ranty-js

@@ -272,9 +272,13 @@ fn resolve_component_files(repo: &Path, component: &ComponentDefinition) -> Resu
             if path.is_dir() {
                 continue;
             }
-            let relative = path
+            let relative_path = path
                 .strip_prefix(repo)
-                .with_context(|| format!("path {} escaped repo root", path.display()))?
+                .with_context(|| format!("path {} escaped repo root", path.display()))?;
+            if path_has_hidden_component(relative_path) {
+                continue;
+            }
+            let relative = relative_path
                 .to_string_lossy()
                 .replace('\\', "/");
             matches.insert(relative);
@@ -298,6 +302,21 @@ fn signature_for_files(repo: &Path, files: &[String]) -> Result<String> {
     Ok(format!("{:x}", hasher.finalize()))
 }
 
+fn path_has_hidden_component(path: &Path) -> bool {
+    path.components().any(|component| {
+        component
+            .as_os_str()
+            .to_str()
+            .is_some_and(|name| name.starts_with('.'))
+    })
+}
+
+fn path_is_hidden_within(root: &Path, path: &Path) -> bool {
+    path.strip_prefix(root)
+        .ok()
+        .is_some_and(path_has_hidden_component)
+}
+
 fn collect_parity_surface_files(repo: &Path) -> Result<BTreeSet<String>> {
     let mut files = BTreeSet::new();
     for root in ["src", SOURCE_CORPUS_ROOT, SOURCE_SOURCES_ROOT] {
@@ -305,7 +324,11 @@ fn collect_parity_surface_files(repo: &Path) -> Result<BTreeSet<String>> {
         if !absolute.exists() {
             continue;
         }
-        for entry in WalkDir::new(&absolute).into_iter().filter_map(Result::ok) {
+        for entry in WalkDir::new(&absolute)
+            .into_iter()
+            .filter_entry(|entry| !path_is_hidden_within(&absolute, entry.path()))
+            .filter_map(Result::ok)
+        {
             if !entry.file_type().is_file() {
                 continue;
             }
@@ -336,7 +359,11 @@ fn collect_synced_test_files(repo: &Path) -> Result<BTreeMap<String, Vec<u8>>> {
             continue;
         }
 
-        for entry in WalkDir::new(&absolute_root).into_iter().filter_map(Result::ok) {
+        for entry in WalkDir::new(&absolute_root)
+            .into_iter()
+            .filter_entry(|entry| !path_is_hidden_within(&absolute_root, entry.path()))
+            .filter_map(Result::ok)
+        {
             if !entry.file_type().is_file() {
                 continue;
             }
@@ -391,7 +418,9 @@ fn verify_outputs(repo: &Path, generated: &GeneratedContract) -> Result<()> {
     let contract_path = repo.join(CONTRACT_PATH);
     let current_contract = fs::read_to_string(&contract_path)
         .with_context(|| format!("failed to read {}", contract_path.display()))?;
-    if current_contract != generated.contract_json {
+    if normalized_contract_for_verify(&current_contract)?
+        != normalized_contract_for_verify(&generated.contract_json)?
+    {
         bail!(
             "parity contract is out of date; run `cargo xtask parity build` and commit {}",
             CONTRACT_PATH
@@ -402,7 +431,11 @@ fn verify_outputs(repo: &Path, generated: &GeneratedContract) -> Result<()> {
     let mut actual_files = BTreeSet::new();
     let actual_root = repo.join(OUTPUT_TESTS_ROOT);
     if actual_root.exists() {
-        for entry in WalkDir::new(&actual_root).into_iter().filter_map(Result::ok) {
+        for entry in WalkDir::new(&actual_root)
+            .into_iter()
+            .filter_entry(|entry| !path_is_hidden_within(&actual_root, entry.path()))
+            .filter_map(Result::ok)
+        {
             if !entry.file_type().is_file() {
                 continue;
             }
@@ -460,6 +493,16 @@ fn verify_outputs(repo: &Path, generated: &GeneratedContract) -> Result<()> {
     Ok(())
 }
 
+fn normalized_contract_for_verify(json: &str) -> Result<serde_json::Value> {
+    let mut value: serde_json::Value =
+        serde_json::from_str(json).context("failed to parse parity contract json")?;
+    value
+        .as_object_mut()
+        .context("parity contract root must be a JSON object")?
+        .remove("source_commit");
+    Ok(value)
+}
+
 fn git_head_commit(repo: &Path) -> Result<String> {
     let output = Command::new("git")
         .arg("rev-parse")
@@ -471,4 +514,29 @@ fn git_head_commit(repo: &Path) -> Result<String> {
         bail!("git rev-parse HEAD failed");
     }
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_owned())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{normalized_contract_for_verify, path_has_hidden_component};
+    use std::path::Path;
+
+    #[test]
+    fn hidden_components_are_detected_anywhere_in_the_path() {
+        assert!(path_has_hidden_component(Path::new(".DS_Store")));
+        assert!(path_has_hidden_component(Path::new("tests/sources/.DS_Store")));
+        assert!(path_has_hidden_component(Path::new("src/.cache/file.rs")));
+        assert!(!path_has_hidden_component(Path::new("tests/sources/access/add_assign.ranty")));
+    }
+
+    #[test]
+    fn parity_verify_ignores_source_commit_metadata() {
+        let current = r#"{"schema_version":1,"source_commit":"aaa","components":[]}"#;
+        let generated = r#"{"schema_version":1,"source_commit":"bbb","components":[]}"#;
+
+        assert_eq!(
+            normalized_contract_for_verify(current).unwrap(),
+            normalized_contract_for_verify(generated).unwrap()
+        );
+    }
 }
