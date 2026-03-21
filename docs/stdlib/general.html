@@ -220,6 +220,7 @@
 <pre><code class="language-ranty">[require: module-path]
 </code></pre>
 <p>Imports a module through the active module resolver.</p>
+<p>See <a href="../modules.html">Modules</a> for the default behavior and <a href="../runtime/module-resolvers.html">Module Resolvers</a> for host customization.</p>
 <h2 id="irange"><a class="header" href="#irange">irange</a></h2>
 <pre><code class="language-ranty">[irange: a; b?; step?]
 </code></pre>
@@ -240,10 +241,12 @@
 <pre><code class="language-ranty">[ds-request: id; ...args]
 </code></pre>
 <p>Calls a registered data source by ID and prints its result.</p>
+<p>See <a href="../runtime/data-sources.html">Data Sources</a> for host registration, error behavior, and security guidance.</p>
 <h2 id="ds-query-sources"><a class="header" href="#ds-query-sources">ds-query-sources</a></h2>
 <pre><code class="language-ranty">[ds-query-sources]
 </code></pre>
 <p>Prints the list of currently registered data-source IDs.</p>
+<p>See <a href="../runtime/data-sources.html">Data Sources</a>.</p>
 <h2 id="proto"><a class="header" href="#proto">proto</a></h2>
 <pre><code class="language-ranty">[proto: map]
 </code></pre>

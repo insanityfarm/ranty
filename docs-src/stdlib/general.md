@@ -88,6 +88,8 @@ Builds a half-open integer range.
 
 Imports a module through the active module resolver.
 
+See [Modules](../modules.md) for the default behavior and [Module Resolvers](../runtime/module-resolvers.md) for host customization.
+
 ## irange
 
 ```ranty
@@ -128,6 +130,8 @@ Runs `context` and optionally dispatches runtime failures to `handler`.
 
 Calls a registered data source by ID and prints its result.
 
+See [Data Sources](../runtime/data-sources.md) for host registration, error behavior, and security guidance.
+
 ## ds-query-sources
 
 ```ranty
@@ -135,6 +139,8 @@ Calls a registered data source by ID and prints its result.
 ```
 
 Prints the list of currently registered data-source IDs.
+
+See [Data Sources](../runtime/data-sources.md).
 
 ## proto
 

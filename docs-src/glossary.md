@@ -15,7 +15,7 @@ An access path is the first part of an accessor that specifies what is being acc
 Attributes are special variables that specify how the next **block** will resolve. 
 They are stored in frames in the **attribute stack**.
 
-Attributes can be set through **attribute functions**.
+Attributes can be set through [**attribute functions**](stdlib/control-flow.md).
 
 ### Attribute frame
 
@@ -142,6 +142,10 @@ A prototype is a map used as a fallback source of keys for another map.
 
 Prototype inheritance is the process of a map getter searching the map's own keys first and then walking up that map's prototype chain when a key is missing.
 
+### Data source
+
+A data source is a host-registered runtime service that scripts can call through [[ds-request]](stdlib/general.md#ds-request).
+
 ### Repeater
 
 A looping block that uses **attributes**. Blocks can be made to loop by setting the repetition count with `[rep]`.
@@ -153,6 +157,10 @@ Resolution refers to the process of Ranty selecting which branch to run on a **b
 ### Resolver
 
 The component of the Ranty runtime that handles block resolution.
+
+### Module resolver
+
+A host-provided component that turns `@require` requests into compiled `RantyProgram`s.
 
 ### Shadowing
 

@@ -212,16 +212,13 @@ ranty examples/helloworld.ranty
 <li>REPL</li>
 </ol>
 <h2 id="embed-in-rust"><a class="header" href="#embed-in-rust">Embed in Rust</a></h2>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use ranty::Ranty;
+<pre><code class="language-rust ignore">use ranty::Ranty;
 
 let mut ranty = Ranty::new();
 let program = ranty.compile_quiet("Hello, world!")?;
 let output = ranty.run(&amp;program)?;
-assert_eq!(output.to_string(), "Hello, world!");
-<span class="boring">Ok::&lt;(), Box&lt;dyn std::error::Error&gt;&gt;(())
-</span><span class="boring">}</span></code></pre></pre>
+assert_eq!(output.to_string(), "Hello, world!");</code></pre>
+<p>If you are embedding Ranty, see <a href="runtime/embedding-in-rust.html">Embedding in Rust</a> for the full host API. For integration points beyond plain compile-and-run, see <a href="runtime/data-sources.html">Data Sources</a> and <a href="runtime/module-resolvers.html">Module Resolvers</a>.</p>
 
                     </main>
 

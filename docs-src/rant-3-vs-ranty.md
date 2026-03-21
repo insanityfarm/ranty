@@ -59,11 +59,13 @@ Ranty splits those concerns:
 - modules handle code dependency management;
 - data sources handle external data access.
 
+See [Modules](modules.md), [Module Resolvers](runtime/module-resolvers.md), and [Data Sources](runtime/data-sources.md).
+
 ## Querying
 
 Rant 3 included a built-in query system for filtering and printing entries from packaged string tables.
 
-Ranty removes query expressions from the language itself. The equivalent workflow is to pull data through a module or data source and then manipulate it with ordinary language features and stdlib functions.
+Ranty removes query expressions from the language itself. The equivalent workflow is to pull data through a module or data source and then manipulate it with ordinary language features and stdlib functions. See [Modules](modules.md) and [Data Sources](runtime/data-sources.md).
 
 ## Variables
 

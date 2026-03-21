@@ -208,10 +208,12 @@ or even reference it multiple times in one argument.</p>
 <p>Temporal arguments in piped calls behave differently than those in nested calls.</p>
 <p>To illustrate this, suppose we have a call to <code>[foo]</code> that passes its return value into <code>[bar]</code>.</p>
 <p>In the nested scenario, a temporal argument in <code>[foo]</code> will not duplicate the call to <code>[bar]</code>:</p>
+<!-- xtask: skip-ranty-audit -->
 <pre><code class="language-ranty">[bar: [foo: **(1; 2; 3)]]
 # -&gt; [bar: [foo: 1][foo: 2][foo: 3]]
 </code></pre>
 <p>In the piped scenario, the temporal argument in <code>[foo]</code> duplicates the entire call chain:</p>
+<!-- xtask: skip-ranty-audit -->
 <pre><code class="language-ranty">[foo: **(1; 2; 3) |&gt; bar]
 # -&gt; [bar: [foo: 1]]
 # -&gt; [bar: [foo: 2]]

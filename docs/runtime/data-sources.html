@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CLI / REPL - Ranty Reference</title>
+        <title>Data Sources - Ranty Reference</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="theme/custom.css">
+        <link rel="stylesheet" href="../theme/custom.css">
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "";
+            const path_to_root = "../";
             const default_light_theme = "ayu";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex.js";
+            window.path_to_searchindex_js = "../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -175,50 +175,106 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="cli--repl"><a class="header" href="#cli--repl">CLI / REPL</a></h1>
-<p>The <code>ranty</code> CLI runs inline code, files, or piped stdin. When no source is provided and stdin is a TTY, it starts the interactive REPL. Direct file execution accepts both <code>.ranty</code> and <code>.rant</code> source files.</p>
-<h2 id="execution-order"><a class="header" href="#execution-order">Execution order</a></h2>
-<ol>
-<li><code>--eval PROGRAM</code></li>
-<li><code>FILE</code></li>
-<li>piped stdin</li>
-<li>REPL</li>
-</ol>
-<h2 id="flags"><a class="header" href="#flags">Flags</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Flag</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>-e</code>, <code>--eval</code></td><td>Runs an inline program string.</td></tr>
-<tr><td><code>-s</code>, <code>--seed</code></td><td>Sets the initial RNG seed as 1 to 16 hexadecimal digits, with an optional <code>0x</code> prefix.</td></tr>
-<tr><td><code>-b</code>, <code>--bench-mode</code></td><td>Prints compile and execution timing.</td></tr>
-<tr><td><code>-W</code>, <code>--no-warnings</code></td><td>Suppresses compiler warnings.</td></tr>
-<tr><td><code>-D</code>, <code>--no-debug</code></td><td>Disables debug symbol emission during compilation.</td></tr>
-</tbody></table>
-</div>
-<h2 id="exit-codes"><a class="header" href="#exit-codes">Exit codes</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Code</th><th>Meaning</th></tr></thead><tbody>
-<tr><td><code>0</code></td><td>Success.</td></tr>
-<tr><td><code>64</code></td><td>Invalid CLI usage, such as an invalid seed.</td></tr>
-<tr><td><code>65</code></td><td>Compilation failed.</td></tr>
-<tr><td><code>66</code></td><td>Input file not found.</td></tr>
-<tr><td><code>70</code></td><td>Runtime execution failed.</td></tr>
-</tbody></table>
-</div>
-<h2 id="repl-behavior"><a class="header" href="#repl-behavior">REPL behavior</a></h2>
-<p>The REPL keeps top-level definitions between lines and suppresses noisy unused-variable and unused-function warnings that would otherwise fire on every entry.</p>
-<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
-<pre><code class="language-sh">ranty --seed deadbeef --eval '[rand:1;6]'
-ranty examples/helloworld.ranty
-printf '"from stdin"' | ranty
+                        <h1 id="data-sources"><a class="header" href="#data-sources">Data Sources</a></h1>
+<p>Ranty can call <strong>data sources</strong> supplied by the embedding host at runtime.
+A data source is registered on a <code>Ranty</code> context under a short ID and is then available to scripts through <a href="../stdlib/general.html#ds-request">[ds-request]</a>.</p>
+<p>Unlike <a href="../modules.html">modules</a>, data sources are not Ranty code.
+They are Rust-side integration points for controlled access to external state.</p>
+<h2 id="when-to-use-them"><a class="header" href="#when-to-use-them">When to use them</a></h2>
+<p>Use a module when the dependency itself is written in Ranty and should be loaded through <code>@require</code>.</p>
+<p>Use a data source when the host application needs to expose something that lives outside Ranty, such as:</p>
+<ul>
+<li>application or game state,</li>
+<li>asset metadata,</li>
+<li>filesystem or network lookups,</li>
+<li>database queries,</li>
+<li>process or build information.</li>
+</ul>
+<p>Because data sources are host code, the host decides what capabilities are exposed and how they are sandboxed.</p>
+<h2 id="registering-a-data-source"><a class="header" href="#registering-a-data-source">Registering a data source</a></h2>
+<p>Implement <code>DataSource</code> and register it with <code>Ranty::add_data_source</code>.</p>
+<pre><code class="language-rust ignore">use ranty::{Ranty, RantyValue};
+use ranty::data::{DataSource, DataSourceError};
+
+#[derive(Debug)]
+struct BuildInfoSource;
+
+impl DataSource for BuildInfoSource {
+    fn type_id(&amp;self) -&gt; &amp;str {
+        "build-info"
+    }
+
+    fn request_data(&amp;self, _args: Vec&lt;RantyValue&gt;) -&gt; Result&lt;RantyValue, DataSourceError&gt; {
+        Ok(RantyValue::String("stable".into()))
+    }
+}
+
+let mut ranty = Ranty::new();
+ranty
+    .add_data_source(BuildInfoSource)
+    .expect("data source IDs should be unique");</code></pre>
+<p>The <code>type_id()</code> string is the script-facing ID.
+It must be unique within a single <code>Ranty</code> context.
+Registering a second data source with the same ID returns an error.</p>
+<h2 id="calling-data-sources-from-scripts"><a class="header" href="#calling-data-sources-from-scripts">Calling data sources from scripts</a></h2>
+<p>Scripts access data sources through the <a href="../stdlib/general.html">Standard Library: General functions</a> helpers:</p>
+<pre><code class="language-ranty">[ds-query-sources]
+[ds-request: build-info]
 </code></pre>
+<ul>
+<li><a href="../stdlib/general.html#ds-query-sources">[ds-query-sources]</a> prints the IDs currently registered on the context.</li>
+<li><a href="../stdlib/general.html#ds-request">[ds-request: id; ...args]</a> calls the named data source with zero or more arguments.</li>
+</ul>
+<p>The arguments arrive at <code>request_data()</code> as <code>Vec&lt;RantyValue&gt;</code>.
+The host is responsible for validating argument count and types.</p>
+<h2 id="return-values-and-errors"><a class="header" href="#return-values-and-errors">Return values and errors</a></h2>
+<p>A data source returns any ordinary <code>RantyValue</code>.
+That means it can provide strings, numbers, lists, maps, functions, or <code>nothing</code>, depending on what makes sense for the integration.</p>
+<p>Use:</p>
+<ul>
+<li><code>DataSourceError::User</code> for caller mistakes such as bad arguments or unknown keys,</li>
+<li><code>DataSourceError::Internal</code> for host-side failures such as I/O or service errors.</li>
+</ul>
+<p>Both surface to scripts as <code>DATA_SOURCE_ERROR</code>.
+If a script calls an ID that is not registered, <a href="../stdlib/general.html#ds-request">[ds-request]</a> also raises <code>DATA_SOURCE_ERROR</code>.</p>
+<h2 id="lifetime-and-scope"><a class="header" href="#lifetime-and-scope">Lifetime and scope</a></h2>
+<p>Data sources are attached to a single <code>Ranty</code> context.
+They are not global to the process and they are not serialized into compiled programs.</p>
+<p>The host can manage them with:</p>
+<ul>
+<li><code>add_data_source()</code> to register,</li>
+<li><code>remove_data_source()</code> to unregister one,</li>
+<li><code>clear_data_sources()</code> to remove all of them,</li>
+<li><code>iter_data_sources()</code> to inspect the current registry.</li>
+</ul>
+<p>This makes it practical to give different contexts different capability sets.</p>
+<h2 id="security-model"><a class="header" href="#security-model">Security model</a></h2>
+<p>Ranty does not grant ambient filesystem, network, or database access on its own.
+All such access must be provided explicitly through host code.</p>
+<p>That means data sources are the right place to:</p>
+<ul>
+<li>enforce allowlists,</li>
+<li>validate arguments,</li>
+<li>redact or shape returned data,</li>
+<li>translate host failures into stable script-facing errors.</li>
+</ul>
+<p>In short, a data source should expose the smallest capability surface the script actually needs.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
+<ul>
+<li><a href="../stdlib/general.html">Standard Library: General functions</a></li>
+<li><a href="../modules.html">Modules</a></li>
+<li><a href="module-resolvers.html">Module Resolvers</a></li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="runtime/module-resolvers.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../runtime/embedding-in-rust.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="stdlib.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../modules.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -228,11 +284,11 @@ printf '"from stdin"' | ranty
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="runtime/module-resolvers.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../runtime/embedding-in-rust.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="stdlib.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../modules.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -247,13 +303,13 @@ printf '"from stdin"' | ranty
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
 

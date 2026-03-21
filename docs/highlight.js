@@ -435,6 +435,324 @@ var hljs=function(){"use strict";function e(n){Object.freeze(n);var t="function"
     return typeof name === "string" && /^(ranty|rant)$/i.test(name);
   }
 
+  const RUST_KEYWORDS = new Set([
+    "as", "async", "await", "break", "const", "continue", "crate", "dyn", "else",
+    "enum", "extern", "false", "fn", "for", "if", "impl", "in", "let", "loop",
+    "match", "mod", "move", "mut", "pub", "ref", "return", "self", "Self",
+    "static", "struct", "super", "trait", "true", "type", "unsafe", "use",
+    "where", "while",
+  ]);
+  const RUST_SPECIAL_TYPES = new Set([
+    "bool", "char", "str", "String", "i8", "i16", "i32", "i64", "i128", "isize",
+    "u8", "u16", "u32", "u64", "u128", "usize", "f32", "f64", "Option", "Result",
+    "Vec", "Box",
+  ]);
+  const RUST_IDENT_RE = /^[A-Za-z_][A-Za-z0-9_]*/;
+  const RUST_LIFETIME_RE = /^'[A-Za-z_][A-Za-z0-9_]*/;
+  const RUST_NUMBER_RE = /^(?:0x[0-9A-Fa-f_]+|0o[0-7_]+|0b[01_]+|\d[\d_]*(?:\.\d[\d_]*)?(?:[eE][+\-]?\d[\d_]*)?)(?:u8|u16|u32|u64|u128|usize|i8|i16|i32|i64|i128|isize|f32|f64)?/;
+  const RUST_MULTI_CHAR_TOKENS = [
+    ["::", "punctuation"],
+    ["=>", "operator"],
+    ["->", "operator"],
+    ["==", "operator"],
+    ["!=", "operator"],
+    [">=", "operator"],
+    ["<=", "operator"],
+    ["&&", "operator"],
+    ["||", "operator"],
+    ["<<", "operator"],
+    [">>", "operator"],
+    ["+=", "operator"],
+    ["-=", "operator"],
+    ["*=", "operator"],
+    ["/=", "operator"],
+    ["%=", "operator"],
+    ["&=", "operator"],
+    ["|=", "operator"],
+    ["^=", "operator"],
+    ["..=", "operator"],
+    ["..", "operator"],
+  ];
+  const RUST_SINGLE_CHAR_TOKENS = new Map([
+    ["{", "punctuation"],
+    ["}", "punctuation"],
+    ["[", "punctuation"],
+    ["]", "punctuation"],
+    ["(", "punctuation"],
+    [")", "punctuation"],
+    ["<", "punctuation"],
+    [">", "punctuation"],
+    [",", "punctuation"],
+    [";", "punctuation"],
+    [":", "punctuation"],
+    [".", "punctuation"],
+    ["#", "meta"],
+    ["&", "operator"],
+    ["*", "operator"],
+    ["=", "operator"],
+    ["+", "operator"],
+    ["-", "operator"],
+    ["/", "operator"],
+    ["%", "operator"],
+    ["|", "operator"],
+    ["^", "operator"],
+    ["!", "operator"],
+    ["?", "operator"],
+  ]);
+
+  function rustReadLineComment(code, start) {
+    const newlineIndex = code.indexOf("\n", start);
+    if (newlineIndex === -1) {
+      return code.slice(start);
+    }
+    return code.slice(start, newlineIndex + 1);
+  }
+
+  function rustReadBlockComment(code, start) {
+    let index = start + 2;
+    let depth = 1;
+    while (index < code.length) {
+      if (code.startsWith("/*", index)) {
+        depth += 1;
+        index += 2;
+        continue;
+      }
+      if (code.startsWith("*/", index)) {
+        depth -= 1;
+        index += 2;
+        if (depth === 0) {
+          return code.slice(start, index);
+        }
+        continue;
+      }
+      index += 1;
+    }
+    return code.slice(start);
+  }
+
+  function rustReadQuotedLiteral(code, start) {
+    const quote = code[start];
+    let index = start + 1;
+    while (index < code.length) {
+      if (code[index] === "\\") {
+        index += 2;
+        continue;
+      }
+      if (code[index] === quote) {
+        return code.slice(start, index + 1);
+      }
+      index += 1;
+    }
+    return code.slice(start);
+  }
+
+  function rustReadRawString(code, start) {
+    let index = start;
+    if (code[index] === "b") {
+      index += 1;
+    }
+    if (code[index] !== "r") {
+      return null;
+    }
+    index += 1;
+    let hashes = 0;
+    while (code[index] === "#") {
+      hashes += 1;
+      index += 1;
+    }
+    if (code[index] !== "\"") {
+      return null;
+    }
+    const closing = "\"" + "#".repeat(hashes);
+    const endIndex = code.indexOf(closing, index + 1);
+    if (endIndex === -1) {
+      return code.slice(start);
+    }
+    return code.slice(start, endIndex + closing.length);
+  }
+
+  function rustPushToken(tokens, kind, text, className) {
+    tokens.push({
+      kind: kind,
+      text: text,
+      className: className || null,
+    });
+  }
+
+  function rustTokenize(code) {
+    const tokens = [];
+    let index = 0;
+
+    while (index < code.length) {
+      const rest = code.slice(index);
+      const whitespace = rest.match(/^\s+/);
+      if (whitespace) {
+        rustPushToken(tokens, "whitespace", whitespace[0], null);
+        index += whitespace[0].length;
+        continue;
+      }
+
+      if (rest.startsWith("//")) {
+        const text = rustReadLineComment(code, index);
+        rustPushToken(tokens, "comment", text, "comment");
+        index += text.length;
+        continue;
+      }
+
+      if (rest.startsWith("/*")) {
+        const text = rustReadBlockComment(code, index);
+        rustPushToken(tokens, "comment", text, "comment");
+        index += text.length;
+        continue;
+      }
+
+      const rawString = rustReadRawString(code, index);
+      if (rawString) {
+        rustPushToken(tokens, "string", rawString, "string");
+        index += rawString.length;
+        continue;
+      }
+
+      if (
+        rest[0] === "\"" ||
+        ((rest[0] === "b" || rest[0] === "c") && rest[1] === "\"")
+      ) {
+        const offset = rest[0] === "\"" ? 0 : 1;
+        const text = code.slice(index, index + offset) + rustReadQuotedLiteral(code, index + offset);
+        rustPushToken(tokens, "string", text, "string");
+        index += text.length;
+        continue;
+      }
+
+      const lifetime = rest.match(RUST_LIFETIME_RE);
+      if (lifetime) {
+        rustPushToken(tokens, "lifetime", lifetime[0], "symbol");
+        index += lifetime[0].length;
+        continue;
+      }
+
+      if (rest[0] === "'") {
+        const text = rustReadQuotedLiteral(code, index);
+        rustPushToken(tokens, "string", text, "string");
+        index += text.length;
+        continue;
+      }
+
+      const number = rest.match(RUST_NUMBER_RE);
+      if (number) {
+        rustPushToken(tokens, "number", number[0], "number");
+        index += number[0].length;
+        continue;
+      }
+
+      let matchedMultiChar = false;
+      for (const [token, className] of RUST_MULTI_CHAR_TOKENS) {
+        if (rest.startsWith(token)) {
+          rustPushToken(tokens, className, token, className);
+          index += token.length;
+          matchedMultiChar = true;
+          break;
+        }
+      }
+      if (matchedMultiChar) {
+        continue;
+      }
+
+      const ident = rest.match(RUST_IDENT_RE);
+      if (ident) {
+        const word = ident[0];
+        let className = null;
+        if (RUST_KEYWORDS.has(word)) {
+          className = word === "true" || word === "false" ? "literal" : "keyword";
+        } else if (RUST_SPECIAL_TYPES.has(word) || /^[A-Z]/.test(word)) {
+          className = "type";
+        }
+        rustPushToken(tokens, "word", word, className);
+        index += word.length;
+        continue;
+      }
+
+      const single = RUST_SINGLE_CHAR_TOKENS.get(rest[0]);
+      if (single) {
+        rustPushToken(tokens, single, rest[0], single);
+        index += 1;
+        continue;
+      }
+
+      rustPushToken(tokens, "text", rest[0], null);
+      index += 1;
+    }
+
+    return tokens;
+  }
+
+  function rustNextSignificant(tokens, startIndex) {
+    for (let index = startIndex; index < tokens.length; index += 1) {
+      if (tokens[index].kind !== "whitespace" && tokens[index].kind !== "comment") {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  function rustPreviousSignificant(tokens, startIndex) {
+    for (let index = startIndex; index >= 0; index -= 1) {
+      if (tokens[index].kind !== "whitespace" && tokens[index].kind !== "comment") {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  function rustAnnotateTokens(tokens) {
+    const declarationWords = new Set(["fn", "struct", "enum", "trait", "type", "mod", "impl"]);
+
+    for (let index = 0; index < tokens.length; index += 1) {
+      const token = tokens[index];
+      if (token.kind !== "word") {
+        continue;
+      }
+
+      const nextIndex = rustNextSignificant(tokens, index + 1);
+      const prevIndex = rustPreviousSignificant(tokens, index - 1);
+      const nextToken = nextIndex === -1 ? null : tokens[nextIndex];
+      const prevToken = prevIndex === -1 ? null : tokens[prevIndex];
+
+      if (nextToken && nextToken.text === "!") {
+        token.className = "built_in";
+        continue;
+      }
+
+      if (prevToken && prevToken.kind === "word" && declarationWords.has(prevToken.text)) {
+        token.className = prevToken.text === "fn" ? "title" : "type";
+        continue;
+      }
+
+      if (!token.className && nextToken && nextToken.text === "(") {
+        token.className = "title";
+      }
+    }
+  }
+
+  function rustHighlightValue(code) {
+    const tokens = rustTokenize(code);
+    rustAnnotateTokens(tokens);
+    return tokens.map((token) => rantySpan(token.className, token.text)).join("");
+  }
+
+  function rustHighlightResult(code) {
+    return {
+      relevance: 1,
+      value: rustHighlightValue(code),
+      language: "rust",
+      illegal: false,
+    };
+  }
+
+  function rustIsLanguageName(name) {
+    return typeof name === "string" && /^(rust|rs)$/i.test(name);
+  }
+
   const originalHighlight = hljs.highlight.bind(hljs);
   const originalHighlightAuto = hljs.highlightAuto.bind(hljs);
   const originalHighlightBlock = hljs.highlightBlock.bind(hljs);
@@ -442,6 +760,9 @@ var hljs=function(){"use strict";function e(n){Object.freeze(n);var t="function"
   hljs.highlight = function (languageName, code, ignoreIllegals, continuation) {
     if (rantyIsLanguageName(languageName)) {
       return rantyHighlightResult(code);
+    }
+    if (rustIsLanguageName(languageName)) {
+      return rustHighlightResult(code);
     }
     return originalHighlight(languageName, code, ignoreIllegals, continuation);
   };
@@ -454,17 +775,26 @@ var hljs=function(){"use strict";function e(n){Object.freeze(n);var t="function"
     ) {
       return rantyHighlightResult(code);
     }
+    if (
+      Array.isArray(languageSubset) &&
+      languageSubset.length === 1 &&
+      rustIsLanguageName(languageSubset[0])
+    ) {
+      return rustHighlightResult(code);
+    }
     return originalHighlightAuto(code, languageSubset);
   };
 
   hljs.highlightBlock = function (block) {
     const className = (block.className || "") + " " + (block.parentNode ? block.parentNode.className || "" : "");
-    const match = className.match(/\blang(?:uage)?-(ranty|rant)\b/i);
-    if (!match && !/\b(ranty|rant)\b/i.test(className)) {
+    const rantyMatch = className.match(/\blang(?:uage)?-(ranty|rant)\b/i);
+    if (!rantyMatch && !/\b(ranty|rant)\b/i.test(className) && !/\blang(?:uage)?-(rust|rs)\b/i.test(className) && !/\b(rust|rs)\b/i.test(className)) {
       return originalHighlightBlock(block);
     }
 
-    const result = rantyHighlightResult(block.textContent);
+    const result = (rantyMatch || /\b(ranty|rant)\b/i.test(className))
+      ? rantyHighlightResult(block.textContent)
+      : rustHighlightResult(block.textContent);
     block.innerHTML = result.value;
     if (!/\bhljs\b/.test(block.className)) {
       block.className = (block.className ? block.className + " " : "") + "hljs";
@@ -480,6 +810,14 @@ var hljs=function(){"use strict";function e(n){Object.freeze(n);var t="function"
     return {
       name: "Ranty",
       aliases: ["rant"],
+      disableAutodetect: true,
+    };
+  });
+
+  hljs.registerLanguage("rust", function () {
+    return {
+      name: "Rust",
+      aliases: ["rs"],
       disableAutodetect: true,
     };
   });

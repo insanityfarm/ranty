@@ -2,13 +2,13 @@
 
 **Attributes** are special runtime settings that modify block behavior, such as how many times a block repeats or how it selects which element to run.
 
-Attributes are set by calling the standard library's **attribute functions** or by using the
+Attributes are set by calling the standard library's [**attribute functions**](../stdlib/control-flow.md) or by using the
 attribute keywords and are stored in the program's **attribute stack**.
 Each frame of the attribute stack stores a full set of attributes.
 
 When a block resolves, it consumes attributes from the topmost attribute frame and replaces them with their default values.
 
-Frames can be added to and removed from the attribute stack using `[push-attrs]` and `[pop-attrs]`.
+Frames can be added to and removed from the attribute stack using [[push-attrs]](../stdlib/control-flow.md#push-attrs) and [[pop-attrs]](../stdlib/control-flow.md#pop-attrs).
 
 ## Working with attributes
 

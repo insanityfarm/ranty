@@ -51,6 +51,7 @@ To illustrate this, suppose we have a call to `[foo]` that passes its return val
 
 In the nested scenario, a temporal argument in `[foo]` will not duplicate the call to `[bar]`:
 
+<!-- xtask: skip-ranty-audit -->
 ```ranty
 [bar: [foo: **(1; 2; 3)]]
 # -> [bar: [foo: 1][foo: 2][foo: 3]]
@@ -58,6 +59,7 @@ In the nested scenario, a temporal argument in `[foo]` will not duplicate the ca
 
 In the piped scenario, the temporal argument in `[foo]` duplicates the entire call chain:
 
+<!-- xtask: skip-ranty-audit -->
 ```ranty
 [foo: **(1; 2; 3) |> bar]
 # -> [bar: [foo: 1]]

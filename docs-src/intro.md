@@ -10,7 +10,7 @@ This documentation is a reference for the language features, standard library, a
 
 - [**Getting Started**](getting-started.md) covers installation, the first program, and the CLI quickstart.
 - [**Language**](language.md) covers text behavior, blocks, functions, accessors, keywords, operators, and conditionals.
-- [**Runtime Features**](runtime.md) covers attributes, formatters, modules, determinism, and the CLI.
+- [**Runtime Features**](runtime.md) covers [Attributes](runtime/attributes.md), [Formatters](runtime/formatters.md), [Embedding in Rust](runtime/embedding-in-rust.md), [Data Sources](runtime/data-sources.md), [Modules](modules.md), [Module Resolvers](runtime/module-resolvers.md), and [CLI / REPL](cli.md).
 - [**Standard Library**](stdlib.md) groups every exported builtin by category and includes a generated inventory.
 - [**Diagnostics**](compiler-messages.md) is regenerated from the current compiler and runtime sources.
 - [**Appendix**](rant-3-vs-ranty.md) includes the comparison of Rant 3 and Ranty, plus the glossary.

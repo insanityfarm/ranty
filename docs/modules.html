@@ -195,6 +195,8 @@
 <pre><code class="language-ranty">@require "test-module"
 </code></pre>
 <p>The default resolver prefers <code>.ranty</code> when no extension is supplied, falls back to <code>.rant</code>, preserves explicit <code>.ranty</code> and <code>.rant</code> paths, and normalizes relative paths before loading.</p>
+<p>Embedding hosts are not limited to this behavior.
+They can replace the default filesystem resolver entirely; see <a href="runtime/module-resolvers.html">Module Resolvers</a>.</p>
 <h2 id="search-order"><a class="header" href="#search-order">Search order</a></h2>
 <p>When you use <code>@require</code>, the default resolver checks the following locations in order:</p>
 <ol>
@@ -215,16 +217,25 @@
 <li>Runtime failures during module initialization propagate as ordinary runtime errors from the module body.</li>
 <li>Cyclic imports are rejected deterministically as <code>MODULE_ERROR</code>.</li>
 </ul>
+<h2 id="host-customization"><a class="header" href="#host-customization">Host customization</a></h2>
+<p>The behavior described above is specific to the built-in <code>DefaultModuleResolver</code>.</p>
+<p>Embedding hosts can instead:</p>
+<ul>
+<li>serve modules from memory or another backing store,</li>
+<li>restrict which module paths are legal,</li>
+<li>disable modules entirely with <code>NoModuleResolver</code>.</li>
+</ul>
+<p>See <a href="runtime/module-resolvers.html">Module Resolvers</a> for the resolver contract, <code>DefaultModuleResolver</code> configuration, and host-side preloading with <code>try_load_global_module()</code>.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="runtime/whitespace-formatter.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="runtime/data-sources.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="cli.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="runtime/module-resolvers.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -234,11 +245,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="runtime/whitespace-formatter.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="runtime/data-sources.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="cli.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="runtime/module-resolvers.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -310,6 +310,8 @@ enum AuditedFenceKind {
     TextExpected,
 }
 
+const SKIP_RANTY_AUDIT_DIRECTIVE: &str = "<!-- xtask: skip-ranty-audit -->";
+
 fn check_docs_code_blocks(repo: &Path) -> Result<()> {
     let docs_src = repo.join("docs-src");
     let markdown_paths = markdown_files(&docs_src);
@@ -352,9 +354,15 @@ fn check_markdown_code_blocks(
             index += 1;
             continue;
         };
+        let skip_ranty_audit = has_skip_ranty_audit_directive(&lines, index);
 
         let (body, next_index) = read_fenced_block(&lines, index)?;
         let start_line = index + 1;
+
+        if skip_ranty_audit {
+            index = next_index;
+            continue;
+        }
 
         match kind {
             AuditedFenceKind::RantyExample => {
@@ -421,7 +429,7 @@ fn check_markdown_code_blocks(
                 if !expectation_checks.is_empty() {
                     for check in expectation_checks {
                         match run_cli_eval_in_dir(cli, &check.source, repo) {
-                            Ok(actual) if actual == check.expected => {}
+                            Ok(actual) if matches_expected_output(&check.expected, &actual) => {}
                             Ok(actual) => failures.push(format!(
                                 "{}:{}: expected {:?}, got {:?}",
                                 path.display(),
@@ -943,6 +951,7 @@ fn normalize_cli_output(text: &str) -> String {
 }
 
 fn matches_expected_output(expected: &str, actual: &str) -> bool {
+    let expected = normalize_expected_output_hint(expected);
     if expected == actual {
         return true;
     }
@@ -950,10 +959,31 @@ fn matches_expected_output(expected: &str, actual: &str) -> bool {
         return false;
     }
 
-    let pattern = format!("(?s)^{}$", regex::escape(expected).replace("\\.\\.\\.", ".*"));
+    let pattern = format!("(?s)^{}$", regex::escape(&expected).replace("\\.\\.\\.", ".*"));
     Regex::new(&pattern)
         .map(|re| re.is_match(actual))
         .unwrap_or(false)
+}
+
+fn normalize_expected_output_hint(expected: &str) -> String {
+    let trimmed = expected.trim();
+    if trimmed == "<> (nothing value, no output printed)" {
+        return String::new();
+    }
+    expected.to_owned()
+}
+
+fn has_skip_ranty_audit_directive(lines: &[&str], fence_index: usize) -> bool {
+    let mut index = fence_index;
+    while index > 0 {
+        index -= 1;
+        let trimmed = lines[index].trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        return trimmed == SKIP_RANTY_AUDIT_DIRECTIVE;
+    }
+    false
 }
 
 fn check_forbidden_strings(repo: &Path) -> Result<()> {
@@ -2426,5 +2456,44 @@ hello
         assert!(err
             .to_string()
             .contains("has mismatched usage signature"));
+    }
+
+    #[test]
+    fn matches_expected_output_accepts_nothing_annotation() {
+        assert!(matches_expected_output(
+            "<> (nothing value, no output printed)",
+            ""
+        ));
+        assert!(!matches_expected_output(
+            "<> (nothing value, no output printed)",
+            "value"
+        ));
+    }
+
+    #[test]
+    fn skip_ranty_audit_directive_applies_to_immediately_following_fence() {
+        let lines = vec![
+            "text",
+            SKIP_RANTY_AUDIT_DIRECTIVE,
+            "",
+            "```ranty",
+            "example",
+            "```",
+        ];
+
+        assert!(has_skip_ranty_audit_directive(&lines, 3));
+    }
+
+    #[test]
+    fn skip_ranty_audit_directive_does_not_cross_nonblank_content() {
+        let lines = vec![
+            SKIP_RANTY_AUDIT_DIRECTIVE,
+            "Not a blank separator.",
+            "```ranty",
+            "example",
+            "```",
+        ];
+
+        assert!(!has_skip_ranty_audit_directive(&lines, 2));
     }
 }

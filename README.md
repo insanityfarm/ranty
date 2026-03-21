@@ -12,34 +12,40 @@ Ranty was created in 2026 with the assistance of agentic AI (OpenAI's [Codex](ht
 
 ## Features
 
-**Painless API**  
+**🧰 Painless API**  
 Ranty has a no-nonsense API designed for ease of use. No getting lost in configuration hell. Integrating Ranty into your project only takes a few lines of code.
 
-**Cross-platform**  
+**💻 Cross-platform**  
 Write once, run anywhere. The runtime works the same across Windows, macOS, Linux, and WebAssembly.
 
-**Templating that does more**  
+**✍ Templating that does more**  
 Ranty is all about "printing": each lexical scope has an output to print to, which then prints itself to the parent output, and so on. This enables you to intuitively build strings, collections, and more in a familiar templating setting.
 
-**Generate structured values, not just text**  
+**🎨 Turing-complete!**
+In addition to being a templating language, Ranty adopts declarative and imperative programming concepts with design influences from many other popular languages.
+
+**✨ Generate anything — not just text**  
 Ranty outputs arbitrary data structures using built-in value types such as strings, numbers, collections, closures, and more.
 
-**Deterministic randomness**  
-Ranty is built with procedural generation in mind. The internal RNG can be manually seeded, forked, and reused to produce repeatable outputs.
+**🎲 Built with ♥ for RNG**  
+Ranty is built with procedural generation in mind. Make use of a wide array of built-in utilities for generating random numbers, strings, booleans, lists, list subsets, and much more for all your randomization needs. The internal RNG can be manually seeded to produce repeatable outputs.
 
-**Branching and beyond**  
+**🔱 Branching and beyond**  
 Augment regular control flow behavior with iterative, randomized, and weighted branch selection.
 
-**Delightful combinatorics**  
-Perform nested mappings, filters, zips, combinations, and more with shorter, more readable code through the language's piping syntax.
+**🧬 Delightful combinatorics**  
+Perform nested mappings, filters, zips, combinations, and more with shorter, more readable code through Ranty's piping syntax.
 
-**Automatic text formatting**  
+**📝 Automatic text formatting**  
 Passively format text output with capitalization, whitespace normalization, hinting, sinking, and number formatting.
 
-**Simple module system**  
-Sharing code between Ranty programs is trivial. Write a `.ranty` module and `@require` it elsewhere. Legacy `.rant` files still load for compatibility.
+**📦 Data sources**
+Attach custom data sources to your Ranty execution context to give your scripts controlled access to external resources.
 
-**Batteries included**  
+**🧩 Simple module system**  
+Sharing code between Ranty programs is trivial. Write a `.ranty` module and `@require` it elsewhere. Legacy `.rant` files still load for compatibility. Need custom module resolution logic? No problem. You can write your own resolver and just plug it in.
+
+**🔋 Batteries included**  
 A comprehensive standard library, CLI, REPL, and embeddable Rust library cover common content-generation workflows out of the box.
 
 ## Getting started

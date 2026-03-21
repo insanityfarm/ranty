@@ -1,6 +1,6 @@
 # @require
 
-The `@require` keyword is used to import a module.
+The `@require` keyword is used to import a module through the active module resolver.
 
 ## Examples
 
@@ -19,3 +19,4 @@ The `@require` keyword is used to import a module.
 ## See also
 
 * [Modules](../../modules.md)
+* [Module Resolvers](../../runtime/module-resolvers.md)

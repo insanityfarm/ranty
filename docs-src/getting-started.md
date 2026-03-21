@@ -54,12 +54,13 @@ Execution priority is:
 
 ## Embed in Rust
 
-```rust
+```rust,ignore
 use ranty::Ranty;
 
 let mut ranty = Ranty::new();
 let program = ranty.compile_quiet("Hello, world!")?;
 let output = ranty.run(&program)?;
 assert_eq!(output.to_string(), "Hello, world!");
-# Ok::<(), Box<dyn std::error::Error>>(())
 ```
+
+If you are embedding Ranty, see [Embedding in Rust](runtime/embedding-in-rust.md) for the full host API. For integration points beyond plain compile-and-run, see [Data Sources](runtime/data-sources.md) and [Module Resolvers](runtime/module-resolvers.md).

@@ -184,7 +184,7 @@
 <h3 id="attribute"><a class="header" href="#attribute">Attribute</a></h3>
 <p>Attributes are special variables that specify how the next <strong>block</strong> will resolve.
 They are stored in frames in the <strong>attribute stack</strong>.</p>
-<p>Attributes can be set through <strong>attribute functions</strong>.</p>
+<p>Attributes can be set through <a href="stdlib/control-flow.html"><strong>attribute functions</strong></a>.</p>
 <h3 id="attribute-frame"><a class="header" href="#attribute-frame">Attribute frame</a></h3>
 <p>A full set of all available attributes. The <strong>attribute stack</strong> contains one or more frames, which can be consumed by <strong>blocks</strong>.</p>
 <h3 id="attribute-function"><a class="header" href="#attribute-function">Attribute function</a></h3>
@@ -252,12 +252,16 @@ It is an implicit form of <strong>descoping</strong>.</p>
 <p>A prototype is a map used as a fallback source of keys for another map.</p>
 <h3 id="prototype-inheritance"><a class="header" href="#prototype-inheritance">Prototype inheritance</a></h3>
 <p>Prototype inheritance is the process of a map getter searching the map's own keys first and then walking up that map's prototype chain when a key is missing.</p>
+<h3 id="data-source"><a class="header" href="#data-source">Data source</a></h3>
+<p>A data source is a host-registered runtime service that scripts can call through <a href="stdlib/general.html#ds-request">[ds-request]</a>.</p>
 <h3 id="repeater"><a class="header" href="#repeater">Repeater</a></h3>
 <p>A looping block that uses <strong>attributes</strong>. Blocks can be made to loop by setting the repetition count with <code>[rep]</code>.</p>
 <h3 id="resolution"><a class="header" href="#resolution">Resolution</a></h3>
 <p>Resolution refers to the process of Ranty selecting which branch to run on a <strong>block</strong>.</p>
 <h3 id="resolver"><a class="header" href="#resolver">Resolver</a></h3>
 <p>The component of the Ranty runtime that handles block resolution.</p>
+<h3 id="module-resolver"><a class="header" href="#module-resolver">Module resolver</a></h3>
+<p>A host-provided component that turns <code>@require</code> requests into compiled <code>RantyProgram</code>s.</p>
 <h3 id="shadowing"><a class="header" href="#shadowing">Shadowing</a></h3>
 <p>A variable is <strong>shadowed</strong> (hidden) when it is overridden by a variable of the same name in a child scope.</p>
 <h3 id="setter"><a class="header" href="#setter">Setter</a></h3>

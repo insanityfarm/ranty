@@ -177,11 +177,11 @@
                     <main>
                         <h1 id="attributes"><a class="header" href="#attributes">Attributes</a></h1>
 <p><strong>Attributes</strong> are special runtime settings that modify block behavior, such as how many times a block repeats or how it selects which element to run.</p>
-<p>Attributes are set by calling the standard library's <strong>attribute functions</strong> or by using the
+<p>Attributes are set by calling the standard library's <a href="../stdlib/control-flow.html"><strong>attribute functions</strong></a> or by using the
 attribute keywords and are stored in the program's <strong>attribute stack</strong>.
 Each frame of the attribute stack stores a full set of attributes.</p>
 <p>When a block resolves, it consumes attributes from the topmost attribute frame and replaces them with their default values.</p>
-<p>Frames can be added to and removed from the attribute stack using <code>[push-attrs]</code> and <code>[pop-attrs]</code>.</p>
+<p>Frames can be added to and removed from the attribute stack using <a href="../stdlib/control-flow.html#push-attrs">[push-attrs]</a> and <a href="../stdlib/control-flow.html#pop-attrs">[pop-attrs]</a>.</p>
 <h2 id="working-with-attributes"><a class="header" href="#working-with-attributes">Working with attributes</a></h2>
 <p>Stable 4.0 exposes the attribute system in three complementary ways:</p>
 <ul>
