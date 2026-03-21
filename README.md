@@ -149,7 +149,7 @@ This repository includes a collection of example Ranty scripts for you to learn 
 
 ## Documentation
 
-The latest reference documentation is published at [insanityfarm.github.com/ranty](https://insanityfarm.github.com/ranty).
+The latest reference documentation is published at [insanityfarm.github.io/ranty/](https://insanityfarm.github.io/ranty/).
 
 A bundled copy of the stable language and standard-library reference is also included in this repository under [docs/intro.html](./docs/intro.html).
 
