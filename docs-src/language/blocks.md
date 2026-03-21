@@ -70,6 +70,32 @@ Blocks can be used to combine collections with conditional, repeating, or probab
 [rep: 10] { ([step]) }
 ```
 
+### Nested expansion
+
+Ordinary nested blocks expand recursively into duplicates of the containing element.
+Expansion proceeds from left to right, so earlier nested blocks vary slowest and later nested blocks vary fastest.
+
+```ranty example
+[rep: all][sel:[mksel:forward]]{A{B|C}{1|2}}
+```
+
+```text expected
+AB1AB2AC1AC2
+```
+
+Any `@weight` or `@on` metadata lifted out of nested elements becomes metadata on the duplicated parent element.
+If expansion would produce more than one `@weight` or more than one `@on` on the final element, compilation fails with the usual duplicate metadata error.
+
+Protected blocks stay as barriers to parent expansion.
+
+```ranty example
+[rep: all]{A@{B|C}}
+```
+
+```text expected
+AC
+```
+
 > **Important to note:**
 >
 > Blocks used for function bodies and dynamic accessor keys are slightly different: 

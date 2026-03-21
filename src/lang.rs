@@ -354,7 +354,7 @@ impl Display for AccessPath {
 }
 
 /// A series of Ranty expressions to be executed in order.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Sequence {
     elements: Vec<Rc<Expression>>,
     /// An optional name for the sequence.
@@ -423,7 +423,7 @@ impl DerefMut for Sequence {
 }
 
 /// A block is an ordered collection of one or more Ranty expressions.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Block {
     /// Determines whether the block uses weights.
     pub is_weighted: bool,
@@ -587,7 +587,7 @@ pub enum ArgumentSpreadMode {
 }
 
 /// Describes a function argument expression.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ArgumentExpr {
     /// The expression that produces the argument value.
     pub expr: Rc<Sequence>,
@@ -596,7 +596,7 @@ pub struct ArgumentExpr {
 }
 
 /// Describes what to call for a function call.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum FunctionCallTarget {
     /// Indicates a path to a function variable.
     /// Used for named function calls.
@@ -604,7 +604,7 @@ pub enum FunctionCallTarget {
 }
 
 /// A function call.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FunctionCall {
     /// The function to call.
     pub target: FunctionCallTarget,
@@ -615,7 +615,7 @@ pub struct FunctionCall {
 }
 
 /// A piped function call.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PipedCall {
     /// The function calls in the chain.
     pub steps: Rc<Vec<FunctionCall>>,
@@ -626,7 +626,7 @@ pub struct PipedCall {
 }
 
 /// Represents the target for an assignment pipe expression.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AssignmentPipeTarget {
     /// Set a value.
     Set(Rc<AccessPath>),
@@ -742,7 +742,7 @@ pub struct LambdaExpr {
 }
 
 /// Describes a function parameter.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Parameter {
     /// The name of the parameter
     pub name: Identifier,
@@ -775,7 +775,7 @@ impl Parameter {
 }
 
 /// Key creation methods for map initializer entries.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum MapKeyExpr {
     /// Map key is evaluated from an expression at runtime.
     Dynamic(Rc<Sequence>),
@@ -784,7 +784,7 @@ pub enum MapKeyExpr {
 }
 
 /// Represents a getter accessor.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Getter {
     /// The path to the value.
     pub path: Rc<AccessPath>,
@@ -793,7 +793,7 @@ pub struct Getter {
 }
 
 /// Represents a setter accessor.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Setter {
     /// The path to the target whose value will be set.
     pub path: Rc<AccessPath>,
@@ -829,7 +829,7 @@ pub enum CompAssignOp {
 }
 
 /// Represents a variable definition accessor.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Definition {
     /// The name of the variable to define.
     pub name: Identifier,
@@ -871,7 +871,7 @@ impl AttributeKeyword {
 }
 
 /// Defines Ranty expression tree node types. These are directly executable by the VM.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expression {
     /// No Operation
     Nop,
@@ -1034,7 +1034,7 @@ impl Display for Expression {
 }
 
 /// Provides debug information about a program element.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum DebugInfo {
     /// Provides source code location information for the following sequence element.
     Location { line: usize, col: usize },

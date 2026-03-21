@@ -181,6 +181,7 @@
 <ol>
 <li>They don't consume attributes.</li>
 <li>Attribute changes inside the block won't persist outside of the block.</li>
+<li>They do not expand into duplicates of a parent block element.</li>
 </ol>
 <h2 id="syntax"><a class="header" href="#syntax">Syntax</a></h2>
 <p>Prefix a block with <code>@</code> to protect it.</p>
@@ -189,6 +190,7 @@
 {C}
 # -&gt; ABCCC
 </code></pre>
+<p>The protected block is still normalized internally, but it stays a single element from the parent's point of view.</p>
 
                     </main>
 

@@ -223,6 +223,20 @@ value form the candidate pool. If none match, untagged elements are used as the 
 <pre><code class="language-ranty"># Evaluates to (1; 2; 3; 4; 5; 6; 7; 8; 9; 10)
 [rep: 10] { ([step]) }
 </code></pre>
+<h3 id="nested-expansion"><a class="header" href="#nested-expansion">Nested expansion</a></h3>
+<p>Ordinary nested blocks expand recursively into duplicates of the containing element.
+Expansion proceeds from left to right, so earlier nested blocks vary slowest and later nested blocks vary fastest.</p>
+<pre><code class="language-ranty example">[rep: all][sel:[mksel:forward]]{A{B|C}{1|2}}
+</code></pre>
+<pre><code class="language-text expected">AB1AB2AC1AC2
+</code></pre>
+<p>Any <code>@weight</code> or <code>@on</code> metadata lifted out of nested elements becomes metadata on the duplicated parent element.
+If expansion would produce more than one <code>@weight</code> or more than one <code>@on</code> on the final element, compilation fails with the usual duplicate metadata error.</p>
+<p>Protected blocks stay as barriers to parent expansion.</p>
+<pre><code class="language-ranty example">[rep: all]{A@{B|C}}
+</code></pre>
+<pre><code class="language-text expected">AC
+</code></pre>
 <blockquote>
 <p><strong>Important to note:</strong></p>
 <p>Blocks used for function bodies and dynamic accessor keys are slightly different:</p>

@@ -395,6 +395,41 @@ struct ParsedBlock {
     block: Block,
 }
 
+#[derive(Debug, Clone)]
+struct NormalizedBlockElement {
+    main: Rc<Sequence>,
+    weight: Option<BlockWeight>,
+    match_trigger: Option<Rc<Sequence>>,
+    lifted_metadata_order: Vec<BlockElementMetadataKind>,
+    own_metadata_order: Vec<BlockElementMetadataKind>,
+    output_modifier: Option<OutputModifierSig>,
+}
+
+impl NormalizedBlockElement {
+    fn from_block_element(element: &BlockElement) -> Self {
+        Self {
+            main: Rc::clone(&element.main),
+            weight: element.weight.clone(),
+            match_trigger: element.match_trigger.clone(),
+            lifted_metadata_order: vec![],
+            own_metadata_order: element.metadata_order.clone(),
+            output_modifier: element.output_modifier.clone(),
+        }
+    }
+
+    fn into_block_element(self) -> Rc<BlockElement> {
+        let mut metadata_order = self.lifted_metadata_order;
+        metadata_order.extend(self.own_metadata_order);
+        Rc::new(BlockElement {
+            main: self.main,
+            weight: self.weight,
+            match_trigger: self.match_trigger,
+            metadata_order,
+            output_modifier: self.output_modifier,
+        })
+    }
+}
+
 /// Contains information about a successfully parsed accessor.
 struct ParsedAccessor {
     nodes: Vec<Expression>,
@@ -546,6 +581,562 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
     #[inline]
     fn report_expected_token_error(&mut self, expected: &str, span: &Range<usize>) {
         self.report_error(Problem::ExpectedToken(expected.to_owned()), span);
+    }
+
+    fn normalize_block(&mut self, block: &Block, span: &Range<usize>) -> ParseResult<Block> {
+        let mut normalized_elements = Vec::with_capacity(block.elements.len());
+
+        for element in block.elements.iter() {
+            let normalized = self.normalize_block_element(element.as_ref(), span)?;
+            normalized_elements.extend(self.expand_block_element(normalized, span)?);
+        }
+
+        let is_weighted = normalized_elements
+            .iter()
+            .any(|element| element.weight.is_some());
+        let has_match_triggers = normalized_elements
+            .iter()
+            .any(|element| element.match_trigger.is_some());
+
+        Ok(Block::new(
+            is_weighted,
+            has_match_triggers,
+            block.protection,
+            normalized_elements
+                .into_iter()
+                .map(NormalizedBlockElement::into_block_element)
+                .collect(),
+        ))
+    }
+
+    fn normalize_block_element(
+        &mut self,
+        element: &BlockElement,
+        span: &Range<usize>,
+    ) -> ParseResult<NormalizedBlockElement> {
+        let weight = match &element.weight {
+            Some(BlockWeight::Constant(weight)) => Some(BlockWeight::Constant(*weight)),
+            Some(BlockWeight::Dynamic(sequence)) => Some(BlockWeight::Dynamic(
+                self.normalize_rc_sequence(sequence, span)?,
+            )),
+            None => None,
+        };
+
+        Ok(NormalizedBlockElement {
+            main: self.normalize_rc_sequence(&element.main, span)?,
+            weight,
+            match_trigger: element
+                .match_trigger
+                .as_ref()
+                .map(|sequence| self.normalize_rc_sequence(sequence, span))
+                .transpose()?,
+            lifted_metadata_order: vec![],
+            own_metadata_order: element.metadata_order.clone(),
+            output_modifier: element.output_modifier.clone(),
+        })
+    }
+
+    fn expand_block_element(
+        &mut self,
+        element: NormalizedBlockElement,
+        span: &Range<usize>,
+    ) -> ParseResult<Vec<NormalizedBlockElement>> {
+        let expandable_children = element
+            .main
+            .iter()
+            .enumerate()
+            .filter_map(|(index, expr)| match expr.as_ref() {
+                Expression::Block(block) if block.protection.is_none() && block.len() > 1 => {
+                    Some((index, Rc::clone(block)))
+                }
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+
+        if expandable_children.is_empty() {
+            return Ok(vec![element]);
+        }
+
+        let mut expanded = vec![element];
+
+        for (expr_index, child_block) in expandable_children {
+            let mut next = Vec::with_capacity(expanded.len() * child_block.len());
+
+            for candidate in expanded {
+                for child_element in child_block.elements.iter() {
+                    next.push(self.inline_child_block_element(
+                        &candidate,
+                        expr_index,
+                        child_element.as_ref(),
+                        span,
+                    )?);
+                }
+            }
+
+            expanded = next;
+        }
+
+        Ok(expanded)
+    }
+
+    fn inline_child_block_element(
+        &mut self,
+        candidate: &NormalizedBlockElement,
+        expr_index: usize,
+        child_element: &BlockElement,
+        span: &Range<usize>,
+    ) -> ParseResult<NormalizedBlockElement> {
+        let mut expanded = candidate.clone();
+        self.lift_block_element_metadata(&mut expanded, child_element, span)?;
+
+        let wrapper = Block::new(
+            false,
+            false,
+            None,
+            vec![NormalizedBlockElement::from_block_element(
+                &self.strip_block_element_metadata(child_element),
+            )
+            .into_block_element()],
+        );
+
+        let mut sequence = expanded.main.as_ref().clone();
+        sequence[expr_index] = Rc::new(Expression::Block(Rc::new(wrapper)));
+        expanded.main = Rc::new(sequence);
+
+        Ok(expanded)
+    }
+
+    fn strip_block_element_metadata(&self, element: &BlockElement) -> BlockElement {
+        BlockElement {
+            main: Rc::clone(&element.main),
+            weight: None,
+            match_trigger: None,
+            metadata_order: vec![],
+            output_modifier: element.output_modifier.clone(),
+        }
+    }
+
+    fn lift_block_element_metadata(
+        &mut self,
+        target: &mut NormalizedBlockElement,
+        source: &BlockElement,
+        span: &Range<usize>,
+    ) -> ParseResult<()> {
+        for kind in source.metadata_order.iter().copied() {
+            match kind {
+                BlockElementMetadataKind::Weight => {
+                    if target.weight.is_some() {
+                        self.report_error(Problem::DuplicateBlockMetadata(KW_WEIGHT), span);
+                        return Err(());
+                    }
+                    target.weight = source.weight.clone();
+                    target
+                        .lifted_metadata_order
+                        .push(BlockElementMetadataKind::Weight);
+                }
+                BlockElementMetadataKind::MatchTrigger => {
+                    if target.match_trigger.is_some() {
+                        self.report_error(Problem::DuplicateBlockMetadata(KW_ON), span);
+                        return Err(());
+                    }
+                    target.match_trigger = source.match_trigger.clone();
+                    target
+                        .lifted_metadata_order
+                        .push(BlockElementMetadataKind::MatchTrigger);
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    fn normalize_expression(
+        &mut self,
+        expr: &Expression,
+        span: &Range<usize>,
+    ) -> ParseResult<Expression> {
+        Ok(match expr {
+            Expression::Nop
+            | Expression::PipeValue
+            | Expression::NothingVal
+            | Expression::GetAttribute(_)
+            | Expression::Integer(_)
+            | Expression::Float(_)
+            | Expression::Boolean(_)
+            | Expression::Fragment(_)
+            | Expression::Whitespace(_)
+            | Expression::DebugCursor(_)
+            | Expression::Require { .. } => expr.clone(),
+            Expression::Sequence(sequence) => {
+                Expression::Sequence(self.normalize_rc_sequence(sequence, span)?)
+            }
+            Expression::Block(block) => Expression::Block(self.normalize_rc_block(block, span)?),
+            Expression::ListInit(elements) => Expression::ListInit(Rc::new(
+                elements
+                    .iter()
+                    .map(|sequence| self.normalize_rc_sequence(sequence, span))
+                    .collect::<ParseResult<Vec<_>>>()?,
+            )),
+            Expression::TupleInit(elements) => Expression::TupleInit(Rc::new(
+                elements
+                    .iter()
+                    .map(|sequence| self.normalize_rc_sequence(sequence, span))
+                    .collect::<ParseResult<Vec<_>>>()?,
+            )),
+            Expression::MapInit(entries) => Expression::MapInit(Rc::new(
+                entries
+                    .iter()
+                    .map(|(key, value)| {
+                        Ok((
+                            self.normalize_map_key_expr(key, span)?,
+                            self.normalize_rc_sequence(value, span)?,
+                        ))
+                    })
+                    .collect::<ParseResult<Vec<_>>>()?,
+            )),
+            Expression::Lambda(lambda) => Expression::Lambda(LambdaExpr {
+                body: self.normalize_rc_sequence(&lambda.body, span)?,
+                params: Rc::new(
+                    lambda
+                        .params
+                        .iter()
+                        .map(|param| self.normalize_parameter(param, span))
+                        .collect::<ParseResult<Vec<_>>>()?,
+                ),
+                capture_vars: Rc::clone(&lambda.capture_vars),
+            }),
+            Expression::FuncCall(call) => Expression::FuncCall(FunctionCall {
+                target: self.normalize_function_call_target(&call.target, span)?,
+                arguments: Rc::new(
+                    call.arguments
+                        .iter()
+                        .map(|arg| {
+                            Ok(ArgumentExpr {
+                                expr: self.normalize_rc_sequence(&arg.expr, span)?,
+                                spread_mode: arg.spread_mode,
+                            })
+                        })
+                        .collect::<ParseResult<Vec<_>>>()?,
+                ),
+                is_temporal: call.is_temporal,
+            }),
+            Expression::PipedCall(call) => Expression::PipedCall(PipedCall {
+                steps: Rc::new(
+                    call.steps
+                        .iter()
+                        .map(|step| {
+                            Ok(FunctionCall {
+                                target: self.normalize_function_call_target(&step.target, span)?,
+                                arguments: Rc::new(
+                                    step.arguments
+                                        .iter()
+                                        .map(|arg| {
+                                            Ok(ArgumentExpr {
+                                                expr: self
+                                                    .normalize_rc_sequence(&arg.expr, span)?,
+                                                spread_mode: arg.spread_mode,
+                                            })
+                                        })
+                                        .collect::<ParseResult<Vec<_>>>()?,
+                                ),
+                                is_temporal: step.is_temporal,
+                            })
+                        })
+                        .collect::<ParseResult<Vec<_>>>()?,
+                ),
+                assignment_pipe: call
+                    .assignment_pipe
+                    .as_ref()
+                    .map(|target| self.normalize_assignment_pipe_target(target, span))
+                    .transpose()?,
+                is_temporal: call.is_temporal,
+            }),
+            Expression::FuncDef(def) => Expression::FuncDef(FunctionDef {
+                path: Rc::new(self.normalize_access_path(&def.path, span)?),
+                is_const: def.is_const,
+                params: Rc::new(
+                    def.params
+                        .iter()
+                        .map(|param| self.normalize_parameter(param, span))
+                        .collect::<ParseResult<Vec<_>>>()?,
+                ),
+                capture_vars: Rc::clone(&def.capture_vars),
+                body: self.normalize_rc_sequence(&def.body, span)?,
+            }),
+            Expression::Define(def) => Expression::Define(Definition {
+                name: def.name.clone(),
+                is_const: def.is_const,
+                is_lazy: def.is_lazy,
+                access_mode: def.access_mode,
+                value: def
+                    .value
+                    .as_ref()
+                    .map(|value| self.normalize_rc_sequence(value, span))
+                    .transpose()?,
+            }),
+            Expression::Get(getter) => Expression::Get(Getter {
+                path: Rc::new(self.normalize_access_path(&getter.path, span)?),
+                fallback: getter
+                    .fallback
+                    .as_ref()
+                    .map(|fallback| self.normalize_rc_sequence(fallback, span))
+                    .transpose()?,
+            }),
+            Expression::Set(setter) => Expression::Set(Setter {
+                path: Rc::new(self.normalize_access_path(&setter.path, span)?),
+                value: self.normalize_rc_sequence(&setter.value, span)?,
+            }),
+            Expression::SetAttribute { keyword, value } => Expression::SetAttribute {
+                keyword: *keyword,
+                value: self.normalize_rc_sequence(value, span)?,
+            },
+            Expression::Return(value) => Expression::Return(
+                value
+                    .as_ref()
+                    .map(|value| self.normalize_rc_sequence(value, span))
+                    .transpose()?,
+            ),
+            Expression::Continue(value) => Expression::Continue(
+                value
+                    .as_ref()
+                    .map(|value| self.normalize_rc_sequence(value, span))
+                    .transpose()?,
+            ),
+            Expression::Break(value) => Expression::Break(
+                value
+                    .as_ref()
+                    .map(|value| self.normalize_rc_sequence(value, span))
+                    .transpose()?,
+            ),
+            Expression::LogicNot(value) => {
+                Expression::LogicNot(self.normalize_rc_sequence(value, span)?)
+            }
+            Expression::Negate(value) => {
+                Expression::Negate(self.normalize_rc_sequence(value, span)?)
+            }
+            Expression::Power(lhs, rhs) => Expression::Power(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::Multiply(lhs, rhs) => Expression::Multiply(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::Divide(lhs, rhs) => Expression::Divide(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::Modulo(lhs, rhs) => Expression::Modulo(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::Add(lhs, rhs) => Expression::Add(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::Subtract(lhs, rhs) => Expression::Subtract(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::Less(lhs, rhs) => Expression::Less(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::LessOrEqual(lhs, rhs) => Expression::LessOrEqual(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::Greater(lhs, rhs) => Expression::Greater(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::GreaterOrEqual(lhs, rhs) => Expression::GreaterOrEqual(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::Equals(lhs, rhs) => Expression::Equals(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::NotEquals(lhs, rhs) => Expression::NotEquals(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::LogicAnd(lhs, rhs) => Expression::LogicAnd(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::LogicXor(lhs, rhs) => Expression::LogicXor(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::LogicOr(lhs, rhs) => Expression::LogicOr(
+                self.normalize_rc_sequence(lhs, span)?,
+                self.normalize_rc_sequence(rhs, span)?,
+            ),
+            Expression::Conditional {
+                conditions,
+                fallback,
+            } => Expression::Conditional {
+                conditions: Rc::new(
+                    conditions
+                        .iter()
+                        .map(|(condition, block)| {
+                            Ok((
+                                self.normalize_rc_sequence(condition, span)?,
+                                self.normalize_rc_block(block, span)?,
+                            ))
+                        })
+                        .collect::<ParseResult<Vec<_>>>()?,
+                ),
+                fallback: fallback
+                    .as_ref()
+                    .map(|block| self.normalize_rc_block(block, span))
+                    .transpose()?,
+            },
+        })
+    }
+
+    fn normalize_sequence(
+        &mut self,
+        sequence: &Sequence,
+        span: &Range<usize>,
+    ) -> ParseResult<Sequence> {
+        let mut normalized = sequence.clone();
+        for expr in normalized.iter_mut() {
+            *expr = Rc::new(self.normalize_expression(expr.as_ref(), span)?);
+        }
+        Ok(normalized)
+    }
+
+    fn normalize_rc_sequence(
+        &mut self,
+        sequence: &Rc<Sequence>,
+        span: &Range<usize>,
+    ) -> ParseResult<Rc<Sequence>> {
+        Ok(Rc::new(self.normalize_sequence(sequence.as_ref(), span)?))
+    }
+
+    fn normalize_rc_block(
+        &mut self,
+        block: &Rc<Block>,
+        span: &Range<usize>,
+    ) -> ParseResult<Rc<Block>> {
+        Ok(Rc::new(self.normalize_block(block.as_ref(), span)?))
+    }
+
+    fn normalize_map_key_expr(
+        &mut self,
+        key: &MapKeyExpr,
+        span: &Range<usize>,
+    ) -> ParseResult<MapKeyExpr> {
+        Ok(match key {
+            MapKeyExpr::Dynamic(sequence) => {
+                MapKeyExpr::Dynamic(self.normalize_rc_sequence(sequence, span)?)
+            }
+            MapKeyExpr::Static(key) => MapKeyExpr::Static(key.clone()),
+        })
+    }
+
+    fn normalize_function_call_target(
+        &mut self,
+        target: &FunctionCallTarget,
+        span: &Range<usize>,
+    ) -> ParseResult<FunctionCallTarget> {
+        Ok(match target {
+            FunctionCallTarget::Path(path) => {
+                FunctionCallTarget::Path(Rc::new(self.normalize_access_path(path, span)?))
+            }
+        })
+    }
+
+    fn normalize_assignment_pipe_target(
+        &mut self,
+        target: &AssignmentPipeTarget,
+        span: &Range<usize>,
+    ) -> ParseResult<Rc<AssignmentPipeTarget>> {
+        Ok(Rc::new(match target {
+            AssignmentPipeTarget::Set(path) => {
+                AssignmentPipeTarget::Set(Rc::new(self.normalize_access_path(path, span)?))
+            }
+            AssignmentPipeTarget::Def {
+                ident,
+                is_const,
+                access_mode,
+            } => AssignmentPipeTarget::Def {
+                ident: ident.clone(),
+                is_const: *is_const,
+                access_mode: *access_mode,
+            },
+        }))
+    }
+
+    fn normalize_parameter(
+        &mut self,
+        parameter: &Parameter,
+        span: &Range<usize>,
+    ) -> ParseResult<Parameter> {
+        Ok(Parameter {
+            name: parameter.name.clone(),
+            is_lazy: parameter.is_lazy,
+            varity: parameter.varity,
+            default_value_expr: parameter
+                .default_value_expr
+                .as_ref()
+                .map(|value| self.normalize_rc_sequence(value, span))
+                .transpose()?,
+        })
+    }
+
+    fn normalize_access_path(
+        &mut self,
+        path: &AccessPath,
+        span: &Range<usize>,
+    ) -> ParseResult<AccessPath> {
+        let mut normalized = path.clone();
+
+        for component in normalized.iter_mut() {
+            match component {
+                AccessPathComponent::Slice(slice) => self.normalize_slice_expr(slice, span)?,
+                AccessPathComponent::Expression(sequence) => {
+                    *sequence = self.normalize_rc_sequence(sequence, span)?
+                }
+                _ => {}
+            }
+        }
+
+        Ok(normalized)
+    }
+
+    fn normalize_slice_expr(
+        &mut self,
+        slice: &mut SliceExpr,
+        span: &Range<usize>,
+    ) -> ParseResult<()> {
+        match slice {
+            SliceExpr::Full => {}
+            SliceExpr::From(index) | SliceExpr::To(index) => {
+                self.normalize_slice_index(index, span)?
+            }
+            SliceExpr::Between(start, end) => {
+                self.normalize_slice_index(start, span)?;
+                self.normalize_slice_index(end, span)?;
+            }
+        }
+
+        Ok(())
+    }
+
+    fn normalize_slice_index(
+        &mut self,
+        index: &mut SliceIndex,
+        span: &Range<usize>,
+    ) -> ParseResult<()> {
+        if let SliceIndex::Dynamic(sequence) = index {
+            *sequence = self.normalize_rc_sequence(sequence, span)?;
+        }
+
+        Ok(())
     }
 
     /// Parses a sequence of items with a new variable scope. Items are individual elements of a Ranty program (fragments, blocks, function calls, etc.)
@@ -3295,8 +3886,11 @@ impl<'source, 'report, R: Reporter> RantyParser<'source, 'report, R> {
             }
         }
 
+        let raw_block = Block::new(is_weighted, has_match_triggers, protection, elements);
+        let block_span = start_pos..self.reader.last_token_span().end;
+
         Ok(ParsedBlock {
-            block: Block::new(is_weighted, has_match_triggers, protection, elements),
+            block: self.normalize_block(&raw_block, &block_span)?,
             is_auto_hinted: auto_hint,
         })
     }
