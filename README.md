@@ -1,3 +1,5 @@
+[![Crates.io](https://img.shields.io/crates/v/ranty)](https://crates.io/crates/ranty)
+
 # Ranty
 
 **Ranty** is a dynamically-typed, multi-paradigm templating language designed primarily for procedural generation. It is designed with scalability in mind: it can handle tasks ranging from simple randomized string generation to more complex workloads such as procedural dialogue, character generation, and worldbuilding.
