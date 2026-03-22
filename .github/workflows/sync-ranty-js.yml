@@ -53,12 +53,16 @@ jobs:
         run: |
           node -e 'const fs=require("node:fs"); const summary=JSON.parse(fs.readFileSync(".sync-ranty-summary.json","utf8")); const changed=(summary.changedComponents||[]).join(", "); fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed_components=${changed || "none"}\n`); fs.appendFileSync(process.env.GITHUB_OUTPUT, `source_commit=${summary.sourceCommit}\n`);'
 
+      - name: Generate pull request branch name
+        id: branch
+        run: echo "name=codex/sync-ranty-upstream-$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
+
       - name: Create pull request
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.RANTY_JS_REPO_TOKEN }}
           path: ranty-js
-          branch: codex/sync-ranty-upstream
+          branch: ${{ steps.branch.outputs.name }}
           commit-message: "chore: sync upstream Ranty contract"
           title: "chore: sync upstream Ranty contract"
           body: |
