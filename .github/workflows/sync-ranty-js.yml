@@ -28,6 +28,12 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: ranty-js/package-lock.json
+
+      - name: Install Ranty.js dependencies
+        working-directory: ranty-js
+        run: npm ci
 
       - name: Sync upstream contract
         working-directory: ranty-js
@@ -36,6 +42,10 @@ jobs:
           --source-repo ../ranty
           --ref "${{ github.sha }}"
           --summary-file .sync-ranty-summary.json
+
+      - name: Format synced files
+        working-directory: ranty-js
+        run: npm run format
 
       - name: Read sync summary
         id: summary
