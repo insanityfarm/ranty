@@ -4,13 +4,6 @@ So you want to help develop Ranty. Great!
 
 Here's a brief overview of how you can contribute:
 
-## Developer resources
-
-* [Ranty Discord](https://discord.gg/U8Bj6gSshJ)
-* [Ranty Reference](docs/index.html)
-
-## Ways to contribute
-
 ### Bug reports
 
 If you find something in Ranty that isn't behaving correctly, please tell us!
